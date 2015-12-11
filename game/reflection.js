@@ -107,30 +107,3 @@ NVMCClient.drawOnReflectionMap = function (gl, position){//line61, Listing 7.9{
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 }
 
-NVMCClient.createTechniqueReflection = function (gl){
-    
-    this.sgl_renderer = new SglModelRenderer(gl);	
-    this.sgl_technique = new SglTechnique( gl,
-		                           {	vertexShader	:this.reflectionMapShader.vertexShaderSource, 
-			                        fragmentShader	:this.reflectionMapShader.fragmentShaderSource,
-			                        vertexStreams 		: 
-			                        {
-				                    "aPosition"		: [ 0.0,0.0,0.0],
-				                    "aDiffuse"		: [ 0.0,0.0,0.0,1.0],
-				                    "aSpecular"		: [ 0.0,0.0,0.0,1.0],
-				                    "aNormal" 		: [ 0.0,1.0,1.0],
-				                    "aAmbient" 		: [ 0.0,1.0,1.0,1.0]
-			                        },
-			                        globals : {
-				                    "uProjectionMatrix" : { semantic : "PROJECTION_MATRIX", value : this.projectionMatrix },
-				                    "uModelViewMatrix":{semantic:"WORLD_VIEW_MATRIX",value : this.stack.matrix },
-				                    "uViewSpaceNormalMatrix"     : { semantic : "VIEW_SPACE_NORMAL_MATRIX",     value :SglMat4.to33(this.stack.matrix) },
-				                    "uViewToWorldMatrix": { semantic : "VIEW_TO_WORLD_MATRIX",     value :SglMat4.identity()},
- 				                    "uCubeMap":						{semantic: "CUBE_MAP", value:2},
-				                    "uLightDirection": 		{semantic: "LIGHTS_GEOMETRY",value: this.sunLightDirectionViewSpace},
-				                    "uLightColor": 				{semantic: "LIGHT_COLOR",value: [0.4,0.4,0.4]},
-			                        }
-		                           });
-};
-
-

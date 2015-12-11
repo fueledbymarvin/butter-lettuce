@@ -44,19 +44,12 @@ NVMCClient.onInitialize = function () {
     this.showCubeMapShader			= new showCubeMapShader(gl);
     this.shadowMapCreateShader		= new shadowMapCreateShader(gl);
     this.shadowMapShader			= new shadowMapShader(gl);
-    this.T		= new textureShadowShader(gl);
-    this.TPCF		= new texturePCFShadowShader(gl);
 
-    this.textureShadowShader		= this.T;
+    this.textureShadowShader		= new texturePCFShadowShader(gl);
     this.textureNormalMapShadowShader 	= new textureNormalMapShadowShader(gl);
 
-    this.RM = new reflectionMapShadowShader(gl);
-    this.RMPCF = new reflectionMapPCFShadowShader(gl);
-    this.L = new lambertianSingleColorShadowShader(gl);
-    this.LPCF = new lambertianSingleColorPCFShadowShader(gl);
-
-    this.reflectionMapShadowShader 	= this.RM;
-    this.lambertianSingleColorShadowShader = this.L;
+    this.reflectionMapShadowShader 	= new reflectionMapPCFShadowShader(gl);
+    this.lambertianSingleColorShadowShader = new lambertianSingleColorPCFShadowShader(gl);
 
     /*************************************************************/
 
@@ -83,13 +76,6 @@ NVMCClient.onInitialize = function () {
     
     this.createTechniqueShadow(gl);
 
-    this.sgl_techniqueN =  this.sgl_technique;
-
-    this.reflectionMapShadowShader = this.RMPCF; 
-    this.createTechniqueShadow(gl);
-    this.sgl_techniquePCF =  this.sgl_technique;
-    this.reflectionMapShadowShader = this.RM; 
-
     this.createDepthOnlyTechnique(gl);
 
     this.rearMirrorTextureTarget = this.prepareRenderToTextureFrameBuffer(gl);
@@ -105,20 +91,6 @@ NVMCClient.onKeyDown = function (keyCode, event) {
 	(this.carMotionKey[keyCode]) && (this.carMotionKey[keyCode])(true);
     
     this.cameras[this.currentCamera].keyDown(keyCode);
-    
-    if (keyCode == "X")
-    {
-	if(this.sgl_technique == this.sgl_techniqueN){
-	    this.sgl_technique = this.sgl_techniquePCF;	
-	    this.lambertianSingleColorShadowShader = this.LPCF;
-	    this.textureShadowShader = this.TPCF;
-	}else
-	{
-	    this.sgl_technique = this.sgl_techniqueN;	
-	    this.lambertianSingleColorShadowShader = this.L;
-	    this.textureShadowShader = this.T;		
-        }
-    }
 }
 
 NVMCClient.onKeyUp = function (keyCode, event) {
