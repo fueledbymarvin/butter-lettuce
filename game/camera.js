@@ -45,13 +45,8 @@ NVMCClient.cameras[1] = new DriverCamera();
 NVMCClient.n_cameras = 2;
 NVMCClient.currentCamera = 0;
 
-NVMCClient.nextCamera = function () {
-    if (this.n_cameras - 1 > this.currentCamera)
-	this.currentCamera++;
-};
-NVMCClient.prevCamera = function () {
-    if (0 < this.currentCamera)
-	this.currentCamera--;
+NVMCClient.toggleCamera = function () {
+    this.currentCamera = this.currentCamera == 0 ? 1 : 0;
 };
 
 /***********************************************************************/

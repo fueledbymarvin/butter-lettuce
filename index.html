@@ -29,49 +29,30 @@
     <script type="text/javascript" src="shaders/skybox.js"></script>
     <script type="text/javascript" src="shaders/pcf.js"></script>
     <script type="text/javascript" src="game/basic.js"></script>
-    <script type="text/javascript" src="game/chase.js"></script>
-    <script type="text/javascript" src="game/driver.js"></script>
-    <script type="text/javascript" src="game/sun.js"></script>
+    <script type="text/javascript" src="game/camera.js"></script>
+    <script type="text/javascript" src="game/color.js"></script>
+    <script type="text/javascript" src="game/objects.js"></script>
     <script type="text/javascript" src="game/normals.js"></script>
-    <script type="text/javascript" src="game/texture.js"></script>
-    <script type="text/javascript" src="game/mirror.js"></script>
+    <script type="text/javascript" src="game/textures.js"></script>
     <script type="text/javascript" src="game/skybox.js"></script>
     <script type="text/javascript" src="game/reflection.js"></script>
     <script type="text/javascript" src="game/shadow.js"></script>
-    <script type="text/javascript" src="game/pcf.js"></script>
+    <script type="text/javascript" src="game/draw.js"></script>
+    <script type="text/javascript" src="game/main.js"></script>
     <script type="text/javascript" src="lib/nvmc-glue.js"></script>
   </head>
   <body>
     <ul class="combar">
       <li>Instructions</li>
-      <li>[w]: move forward (mode 1 and 2)<br>
-        [s]: move backward (mode 1 and 3)<br>
-        [a]: steer left (mode 1) / pan left (mode 3)<br>
-        [d]: steer right (mode 1) / pan right (mode 3)<br>
-        [q]: move up (mode 2,3)<br>
-        [e]: move down (mode 2,3)<br>
-        [2]: ++mode<br>
-        [1]: --mode<br>
-        <br>
-        Modes:<br>
-        1: Chase View <br>
-        2: Photographer View<br>
-        3: The observer Camera<br>
-        4: Driver Perspective <br>
-        <br>
-        [n]: Orbit around a fix point in front of the camera<br>
-        [m]: Look around <br>
-        [l]: lock view to the car (in photographer mode)<br>
-        [u]: unlock view to the car (in photographer mode)<br>
-        <b>[x]: toggle Percentage Closest Filtering </b><br>
+      <li>[w]: move forward<br>
+        [s]: move backward<br>
+        [a]: turn left<br>
+        [d]: turn right<br>
+        [z]: toggle first person/third person<br>
     </ul>
 
-    <ul class="navbar">
-      <li> Section 8.3, page 263 </li>
-      <li>Here we introduce PCF for smoother shadows. Press "x" for enable/disable it.</li>
-    </ul>
     <center>
-      <h2>Shadow Mapping (PCF)</h2>
+      <h2>Butter Lettuce</h2>
       <div>
 	<hr/>
 	<canvas id="nvmc-canvas" width="600" height="400" style="border:1px solid gray;"></canvas>

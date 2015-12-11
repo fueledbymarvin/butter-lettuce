@@ -6,14 +6,14 @@ var NVMCClient = NVMCClient || {};
 
 NVMCClient.myPos = function () {
     return this.game.state.players.me.dynamicState.position;
-}
+};
 NVMCClient.myOri = function () {
     return this.game.state.players.me.dynamicState.orientation;
-}
+};
 
 NVMCClient.myFrame = function () {
     return this.game.state.players.me.dynamicState.frame;
-}
+};
 
 /***********************************************************************/
 
@@ -81,6 +81,26 @@ NVMCClient.onMouseButtonUp = function (button, x, y, event) {
 
 NVMCClient.onMouseMove = function (x, y, event) {
     this.cameras[this.currentCamera].mouseMove(x,y);
+};
+
+NVMCClient.onKeyDown = function (keyCode, event) {
+
+    if (this.currentCamera != 2)
+	(this.carMotionKey[keyCode]) && (this.carMotionKey[keyCode])(true);
+    
+    this.cameras[this.currentCamera].keyDown(keyCode);
+};
+
+NVMCClient.onKeyUp = function (keyCode, event) {
+
+    if (keyCode == "Z") {
+        this.toggleCamera();
+	return;
+    }
+    
+    (this.carMotionKey[keyCode]) && (this.carMotionKey[keyCode])(false);
+    
+    this.cameras[this.currentCamera].keyUp(keyCode);
 };
 
 NVMCClient.onKeyPress = function (keyCode, event) {};

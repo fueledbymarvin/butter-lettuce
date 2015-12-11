@@ -80,30 +80,3 @@ NVMCClient.onInitialize = function () {
 };
 
 
-NVMCClient.onKeyDown = function (keyCode, event) {
-
-    if (this.currentCamera != 2)
-	(this.carMotionKey[keyCode]) && (this.carMotionKey[keyCode])(true);
-    
-    this.cameras[this.currentCamera].keyDown(keyCode);
-}
-
-NVMCClient.onKeyUp = function (keyCode, event) {
-
-    if (keyCode == "2") {
-	this.nextCamera();
-	return;
-    }
-    
-    if (keyCode == "1") {
-	this.prevCamera();
-	return;
-    }
-
-    if (this.currentCamera != 2)
-	(this.carMotionKey[keyCode]) && (this.carMotionKey[keyCode])(false);
-    
-    this.cameras[this.currentCamera].keyUp(keyCode);
-};
-
-

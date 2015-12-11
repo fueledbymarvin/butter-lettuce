@@ -56,7 +56,7 @@ NVMCClient.createReflectionMap = function(gl){
     gl.texParameteri(	gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(	gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-}
+};
 
 NVMCClient.drawOnReflectionMap = function (gl, position){//line61, Listing 7.9{
     this.projectionMatrix = SglMat4.perspective(Math.PI/2.0,1.0,0.1,300);
@@ -105,5 +105,5 @@ NVMCClient.drawOnReflectionMap = function (gl, position){//line61, Listing 7.9{
     this.drawEverything(gl,true, this.cubeMapFrameBuffers[5]);
     
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-}
+};
 
