@@ -97,7 +97,7 @@ NVMCClient.drawTreeDepthOnly = function (gl) {
     stack.multiply(M_0_sca);
 
     gl.uniformMatrix4fv(this.shadowMapCreateShader.uShadowMatrixLocation, false, stack.matrix);
-    var InvT = SglMat4.inverse(this.stack.matrix)
+    var InvT = SglMat4.inverse(this.stack.matrix);
     InvT = SglMat4.transpose(InvT);
     this.drawObject(gl, this.cone, this.shadowMapCreateShader);
     stack.pop();
@@ -193,13 +193,16 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     this.viewMatrix = this.stack.matrix;
     this.sunLightDirectionViewSpace = SglMat4.mul4(this.stack.matrix,this.sunLightDirection);
     var pos  = this.game.state.players.me.dynamicState.position;	
-    
-    // Setup projection matrix
+
+    // set shadow map texture
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D,this.shadowMapTextureTarget.texture);
+
+    // Setup parameters for uniform shader
     gl.useProgram(this.uniformShader);
     gl.uniformMatrix4fv(this.uniformShader.uProjectionMatrixLocation, false, this.projectionMatrix);
-    
-    
 
+    // Setup parameters for phong shader
     gl.useProgram(this.phongShader);
     gl.uniformMatrix4fv(this.phongShader.uProjectionMatrixLocation,false,this.projectionMatrix);
     gl.uniformMatrix4fv(this.phongShader.uModelViewMatrixLocation,false,stack.matrix  );
@@ -212,22 +215,41 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     gl.uniform1f(this.phongShader.uKdLocation,0.5);
     gl.uniform1f(this.phongShader.uKsLocation, 1.0);
     
+    // Setup parameters for lambertian shader
     gl.useProgram(this.lambertianSingleColorShadowShader);
 
-    gl.activeTexture(gl.TEXTURE2);
-    gl.bindTexture(gl.TEXTURE_2D,this.shadowMapTextureTarget.texture);
-    gl.uniform1i(this.lambertianSingleColorShadowShader.uShadowMapLocation, 2);
+    gl.uniform1i(this.lambertianSingleColorShadowShader.uShadowMapLocation, 1);
 
     gl.uniformMatrix4fv(this.lambertianSingleColorShadowShader.uProjectionMatrixLocation,false,this.projectionMatrix);
     gl.uniformMatrix4fv(this.lambertianSingleColorShadowShader.uViewMatrixLocation,false, this.stack.matrix);
     gl.uniformMatrix4fv(this.lambertianSingleColorShadowShader.uShadowMatrixLocation,false, this.shadowMatrix);
 
-
     gl.uniform4fv(this.lambertianSingleColorShadowShader.uLightDirectionLocation,this.sunLightDirectionViewSpace);
     gl.uniform3fv(this.lambertianSingleColorShadowShader.uLightColorLocation,[1.0,1.0,1.0]);
+
+    // Setup parameters for texture shader
+    gl.useProgram(this.textureShadowShader);
+
+    gl.uniformMatrix4fv(this.textureShadowShader.uProjectionMatrixLocation, false, this.projectionMatrix);
+    gl.uniformMatrix4fv(this.textureShadowShader.uModelViewMatrixLocation, false, this.stack.matrix);
+    gl.uniformMatrix4fv(this.textureShadowShader.uShadowMatrixLocation, false, this.shadowMatrix);
+    gl.uniform1i(this.textureShadowShader.uTextureLocation, 0);
+    gl.uniform1i(this.textureShadowShader.uShadowMapLocation, 1);
+
+    // Setup parameters for texture bump shader
+    gl.useProgram(this.textureNormalMapShadowShader);
+
+    gl.uniformMatrix4fv(this.textureNormalMapShadowShader.uProjectionMatrixLocation, false, this.projectionMatrix);
+    gl.uniformMatrix4fv(this.textureNormalMapShadowShader.uModelViewMatrixLocation, false, stack.matrix);
+    gl.uniformMatrix4fv(this.textureNormalMapShadowShader.uShadowMatrixLocation, false, this.shadowMatrix);
+    gl.uniform4fv(this.textureNormalMapShadowShader.uLightDirectionLocation,this.sunLightDirection);
+    gl.uniform1i(this.textureNormalMapShadowShader.uTextureLocation,0);
+    gl.uniform1i(this.textureNormalMapShadowShader.uShadowMapLocation,1);
+    gl.uniform1i(this.textureNormalMapShadowShader.uNormalMapLocation,2);
+
+    gl.useProgram(this.lambertianSingleColorShadowShader);
     var trees = this.game.race.trees;
     
-
     for (var t in trees) {
 	stack.push();
 	stack.loadIdentity();
@@ -237,44 +259,22 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
 	stack.pop();
     }
     
-    
     gl.useProgram(this.textureNormalMapShadowShader);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D,this.texture_street);
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D,this.normal_map_street);
     gl.activeTexture(gl.TEXTURE2);
-    gl.bindTexture(gl.TEXTURE_2D,this.shadowMapTextureTarget.texture);
+    gl.bindTexture(gl.TEXTURE_2D,this.normal_map_street);
 
-    gl.uniformMatrix4fv(this.textureNormalMapShadowShader.uProjectionMatrixLocation, false, this.projectionMatrix);
-    gl.uniformMatrix4fv(this.textureNormalMapShadowShader.uModelViewMatrixLocation, false, stack.matrix);
-    gl.uniformMatrix4fv(this.textureNormalMapShadowShader.uShadowMatrixLocation, false, this.shadowMatrix);
-    gl.uniform4fv(this.textureNormalMapShadowShader.uLightDirectionLocation,this.sunLightDirection);
-    gl.uniform1i(this.textureNormalMapShadowShader.uTextureLocation,0);
-    gl.uniform1i(this.textureNormalMapShadowShader.uNormalMapLocation,1);
-    gl.uniform1i(this.textureNormalMapShadowShader.uShadowMapLocation,2);
     this.drawObject(gl, this.track,this.textureNormalMapShadowShader, [0.9, 0.8, 0.7,1.0]);
-
 
     gl.useProgram(this.textureShadowShader);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D,this.texture_ground);
-    gl.uniform1i(this.textureShadowShader.uTextureLocation, 0);
-
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D,this.shadowMapTextureTarget.texture);
-    gl.uniform1i(this.textureShadowShader.uShadowMapLocation, 1);
-
-    gl.uniformMatrix4fv(this.textureShadowShader.uProjectionMatrixLocation, false, this.projectionMatrix);
-    gl.uniformMatrix4fv(this.textureShadowShader.uModelViewMatrixLocation, false, this.stack.matrix);
-    gl.uniformMatrix4fv(this.textureShadowShader.uShadowMatrixLocation, false, this.shadowMatrix);
 
     this.drawObject(gl,this.ground,this.textureShadowShader);
-    
 
     gl.activeTexture(gl.TEXTURE0);
-    gl.uniformMatrix4fv(this.textureShadowShader.uModelViewMatrixLocation, false, this.stack.matrix);
 
     for (var i in this.buildings) {
  	gl.bindTexture(gl.TEXTURE_2D, this.texture_facade[i%this.texture_facade.length]);
@@ -314,10 +314,9 @@ NVMCClient.drawScene = function (gl) {
     var bbox =  this.game.race.bbox;
 
     var eye = SglVec3.muls(this.sunLightDirection,-0.0);
-    var target = SglVec3.add(eye,	this.sunLightDirection);
+    var target = SglVec3.add(eye, this.sunLightDirection);
 
     var mview = SglMat4.lookAt(eye,target, [0,1,0]);
-
     
     var newbbox = this.findMinimumViewWindow(bbox,mview);
     var proj = SglMat4.ortho([ newbbox[0],newbbox[1],-newbbox[5] ], [ newbbox[3], newbbox[4],-newbbox[2] ] );
@@ -332,16 +331,14 @@ NVMCClient.drawScene = function (gl) {
     var stack  = this.stack;
     gl.clearColor(0.4, 0.6, 0.8, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
 
     this.projectionMatrix = SglMat4.perspective(3.14/4,ratio,0.1,1000);
 
     stack.loadIdentity();
-    var pos  = this.game.state.players.me.dynamicState.position;
-    var orientation  = this.game.state.players.me.dynamicState.orientation;
-    this.cameras[this.currentCamera].setView(this.stack,this.myFrame());
+    var pos = this.game.state.players.me.dynamicState.position;
+    var orientation = this.game.state.players.me.dynamicState.orientation;
+    this.cameras[this.currentCamera].setView(this.stack, this.myFrame());
     
-
     this.viewFrame = SglMat4.inverse(this.stack.matrix);
     this.drawSkyBox(gl);
     
@@ -368,6 +365,5 @@ NVMCClient.drawScene = function (gl) {
     gl.viewport(0, 0, width, height);
     
     this.drawEverything(gl);
-    
 };
 

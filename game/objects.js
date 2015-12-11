@@ -110,3 +110,30 @@ NVMCClient.initializeObjects = function (gl) {
     this.createBuffers(gl);
 };
 
+function Body() {
+
+}
+
+function Primitive(mesh, shader, color, texture) {
+    this.client = NVMCClient;
+
+    this.mesh = mesh;
+    this.shader = shader;
+    this.color = color;
+    this.texture = texture;
+
+    this.draw = function(gl) {
+        gl.useProgram(this.shader);
+
+        if (this.texture) {
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        }
+
+        this.client.drawObject(gl, mesh, shader, color);
+    };
+
+    this.drawDepthOnly = function(gl) {
+        this.client.drawObject(gl, mesh, this.client.shadowMapCreateShader);
+    };
+}
