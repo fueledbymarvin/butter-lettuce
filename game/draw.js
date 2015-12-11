@@ -267,12 +267,10 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
 
     this.drawObject(gl, this.track,this.textureNormalMapShadowShader, [0.9, 0.8, 0.7,1.0]);
 
-    gl.useProgram(this.textureShadowShader);
-
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D,this.texture_ground);
 
-    this.drawObject(gl,this.ground,this.textureShadowShader);
+    this.ground.draw(gl);
 
     gl.activeTexture(gl.TEXTURE0);
 
@@ -285,7 +283,6 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     for (var i in this.buildings){
 	this.drawObject(gl, this.buildings[i].roof,this.textureShadowShader);
     }
-
 
     if( !excludeCar &&  this.currentCamera!=3 ){
  	stack.push();

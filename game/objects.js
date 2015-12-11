@@ -77,7 +77,10 @@ NVMCClient.createObjects = function () {
     var bbox = this.game.race.bbox;
     var quad = [bbox[0], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[5], bbox[0], bbox[1] - 0.01, bbox[5]];
     var text_coords = [-200, -200, 200, -200, 200, 200, -200, 200];
-    this.ground = new TexturedQuadrilateral(quad, text_coords);
+    this.ground = new Primitive({
+        mesh: new TexturedQuadrilateral(quad, text_coords),
+        shader: this.textureShadowShader
+    });
 
     var gameBuildings = this.game.race.buildings;
     this.buildings = new Array(gameBuildings.length);
@@ -97,7 +100,7 @@ NVMCClient.createBuffers = function (gl) {
     this.createObjectBuffers(gl, this.cone, false, true, false);
     
     this.createObjectBuffers(gl, this.track, false, false, true);
-    this.createObjectBuffers(gl, this.ground, false, false, true);
+    this.createObjectBuffers(gl, this.ground.mesh, false, false, true);
 
     for (var i = 0; i < this.buildings.length; ++i) {
         this.createObjectBuffers(gl, this.buildings[i], false, false, true);
@@ -114,26 +117,24 @@ function Body() {
 
 }
 
-function Primitive(mesh, shader, color, texture) {
+function Primitive(options) {
     this.client = NVMCClient;
 
-    this.mesh = mesh;
-    this.shader = shader;
-    this.color = color;
-    this.texture = texture;
+    this.mesh = options.mesh;
+    this.shader = options.shader;
+    this.color = options.color;
+    this.texture = options.texture;
 
     this.draw = function(gl) {
-        gl.useProgram(this.shader);
-
         if (this.texture) {
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
         }
 
-        this.client.drawObject(gl, mesh, shader, color);
+        this.client.drawObject(gl, this.mesh, this.shader, this.color);
     };
 
     this.drawDepthOnly = function(gl) {
-        this.client.drawObject(gl, mesh, this.client.shadowMapCreateShader);
+        this.client.drawObject(gl, this.mesh, this.client.shadowMapCreateShader);
     };
 }

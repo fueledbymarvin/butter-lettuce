@@ -28,9 +28,6 @@ NVMCClient.onInitialize = function () {
     this.projection_matrix 	=  SglMat4.identity();
     enlargeBBox(this.game.race.bbox,0.01);
     /*************************************************************/
-    this.initializeObjects(gl);
-    this.createFullScreenQuad(gl);
-
     this.uniformShader 			= new uniformShader(gl);
     this.perVertexColorShader 		= new perVertexColorShader(gl);
     this.lambertianSingleColorShader 	= new lambertianSingleColorShader(gl);
@@ -48,6 +45,9 @@ NVMCClient.onInitialize = function () {
     this.lambertianSingleColorShadowShader = new lambertianSingleColorPCFShadowShader(gl);
 
     /*************************************************************/
+
+    this.initializeObjects(gl);
+    this.createFullScreenQuad(gl);
 
     this.texture_street = this.createTexture(gl, NVMC.resource_path+'textures/street4.png');
     this.normal_map_street = this.createTexture(gl, NVMC.resource_path+'textures/asphalt_normal_map.jpg');
