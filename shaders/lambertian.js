@@ -1,8 +1,8 @@
 lambertianShader = function (gl) {
 
-var shaderProgram = gl.createProgram();
-//line 4, Listing 6.3{
-shaderProgram.vertex_shader = "\
+    var shaderProgram = gl.createProgram();
+    //line 4, Listing 6.3{
+    shaderProgram.vertex_shader = "\
 precision highp float;                                     \n\
                                                            \n\
 uniform mat4 uProjectionMatrix;                            \n\
@@ -32,8 +32,8 @@ void main()                                                \n\
     position;                                              \n\
 }                                                          \n\
 "; 
-//line 35} line 35, listing 6.4{
-shaderProgram.fragment_shader = "\
+    //line 35} line 35, listing 6.4{
+    shaderProgram.fragment_shader = "\
 precision highp float;                                     \n\
                                                            \n\
 varying vec3 vnormal;                                      \n\
@@ -61,57 +61,57 @@ void main()                                                \n\
 
 
 
-  // create the vertex shader
-  var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-  gl.shaderSource(vertexShader, shaderProgram.vertex_shader);
-  gl.compileShader(vertexShader);
-  
-  // create the fragment shader
-  var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-  gl.shaderSource(fragmentShader, shaderProgram.fragment_shader);
-  gl.compileShader(fragmentShader);
-  
-
-  // Create the shader program
-  gl.attachShader(shaderProgram, vertexShader);
-  gl.attachShader(shaderProgram, fragmentShader);
-  shaderProgram.aPositionIndex = 0;
-  shaderProgram.aColorIndex = 1;
-  shaderProgram.aNormalIndex = 2;  
-  gl.bindAttribLocation(shaderProgram, shaderProgram.aPositionIndex, "aPosition");
-  gl.bindAttribLocation(shaderProgram, shaderProgram.aColorIndex, "aColor");
-  gl.bindAttribLocation(shaderProgram, shaderProgram.aNormalIndex, "aNormal");
-  gl.linkProgram(shaderProgram);
-      
-shaderProgram.vertexShader = vertexShader;
-shaderProgram.fragmentShader = fragmentShader;
+    // create the vertex shader
+    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, shaderProgram.vertex_shader);
+    gl.compileShader(vertexShader);
     
-  // If creating the shader program failed, alert
-  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-    alert("Unable to initialize the shader program.");
-    var str = "";
-    str += "VS:\n" + gl.getShaderInfoLog(vertexShader) + "\n\n";
-    str += "FS:\n" + gl.getShaderInfoLog(fragmentShader) + "\n\n";
-    str += "PROG:\n" + gl.getProgramInfoLog(shaderProgram);
-    alert(str);
-  }
-  
+    // create the fragment shader
+    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragmentShader, shaderProgram.fragment_shader);
+    gl.compileShader(fragmentShader);
+    
 
-  shaderProgram.uProjectionMatrixLocation = gl.getUniformLocation(shaderProgram,"uProjectionMatrix");
-  shaderProgram.uModelViewMatrixLocation = gl.getUniformLocation(shaderProgram,"uModelViewMatrix");
-  shaderProgram.uViewSpaceNormalMatrixLocation = gl.getUniformLocation(shaderProgram,"uViewSpaceNormalMatrix");
-  shaderProgram.uLightPositionLocation = gl.getUniformLocation(shaderProgram,"uLightDirection");
-  shaderProgram.uLightColorLocation = gl.getUniformLocation(shaderProgram,"uLightColor");
-  
-  return shaderProgram;
+    // Create the shader program
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    shaderProgram.aPositionIndex = 0;
+    shaderProgram.aColorIndex = 1;
+    shaderProgram.aNormalIndex = 2;  
+    gl.bindAttribLocation(shaderProgram, shaderProgram.aPositionIndex, "aPosition");
+    gl.bindAttribLocation(shaderProgram, shaderProgram.aColorIndex, "aColor");
+    gl.bindAttribLocation(shaderProgram, shaderProgram.aNormalIndex, "aNormal");
+    gl.linkProgram(shaderProgram);
+    
+    shaderProgram.vertexShader = vertexShader;
+    shaderProgram.fragmentShader = fragmentShader;
+    
+    // If creating the shader program failed, alert
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert("Unable to initialize the shader program.");
+        var str = "";
+        str += "VS:\n" + gl.getShaderInfoLog(vertexShader) + "\n\n";
+        str += "FS:\n" + gl.getShaderInfoLog(fragmentShader) + "\n\n";
+        str += "PROG:\n" + gl.getProgramInfoLog(shaderProgram);
+        alert(str);
+    }
+    
+
+    shaderProgram.uProjectionMatrixLocation = gl.getUniformLocation(shaderProgram,"uProjectionMatrix");
+    shaderProgram.uModelViewMatrixLocation = gl.getUniformLocation(shaderProgram,"uModelViewMatrix");
+    shaderProgram.uViewSpaceNormalMatrixLocation = gl.getUniformLocation(shaderProgram,"uViewSpaceNormalMatrix");
+    shaderProgram.uLightPositionLocation = gl.getUniformLocation(shaderProgram,"uLightDirection");
+    shaderProgram.uLightColorLocation = gl.getUniformLocation(shaderProgram,"uLightColor");
+    
+    return shaderProgram;
 };
 
 
 lambertianSingleColorShader = function (gl) {
 
- var shaderProgram = gl.createProgram();
+    var shaderProgram = gl.createProgram();
     
-shaderProgram.vertex_shader = "\
+    shaderProgram.vertex_shader = "\
 precision highp float;     \n\
    \n\
 uniform mat4 uProjectionMatrix;     \n\
@@ -139,7 +139,7 @@ void main()    \n\
 }  \n\
 "; 
 
-shaderProgram.fragment_shader = "\
+    shaderProgram.fragment_shader = "\
 precision highp float;     \n\
    \n\
 varying vec3 vnormal;\n\
@@ -167,47 +167,47 @@ void main()    \n\
 ";
 
 
-  // create the vertex shader
-  var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-   gl.shaderSource(vertexShader, shaderProgram.vertex_shader);
-  gl.compileShader(vertexShader);
-  
-  // create the fragment shader
-  var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-  gl.shaderSource(fragmentShader, shaderProgram.fragment_shader);
-  gl.compileShader(fragmentShader);
-  
-
-  // Create the shader program
-  gl.attachShader(shaderProgram, vertexShader);
-  gl.attachShader(shaderProgram, fragmentShader);
-  shaderProgram.aPositionIndex = 0;
-  shaderProgram.aNormalIndex = 2;  
-  gl.bindAttribLocation(shaderProgram, shaderProgram.aPositionIndex, "aPosition");
-  gl.bindAttribLocation(shaderProgram, shaderProgram.aNormalIndex, "aNormal");
-  gl.linkProgram(shaderProgram);
-      
-shaderProgram.vertexShader = vertexShader;
-shaderProgram.fragmentShader = fragmentShader;
+    // create the vertex shader
+    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, shaderProgram.vertex_shader);
+    gl.compileShader(vertexShader);
     
-  // If creating the shader program failed, alert
-  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-    alert("Unable to initialize the shader program.");
-    var str = "";
-    str += "VS:\n" + gl.getShaderInfoLog(vertexShader) + "\n\n";
-    str += "FS:\n" + gl.getShaderInfoLog(fragmentShader) + "\n\n";
-    str += "PROG:\n" + gl.getProgramInfoLog(shaderProgram);
-    alert(str);
-  }
-  
+    // create the fragment shader
+    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragmentShader, shaderProgram.fragment_shader);
+    gl.compileShader(fragmentShader);
+    
 
-  shaderProgram.uProjectionMatrixLocation = gl.getUniformLocation(shaderProgram,"uProjectionMatrix");
-  shaderProgram.uModelViewMatrixLocation = gl.getUniformLocation(shaderProgram,"uModelViewMatrix");
-  shaderProgram.uViewSpaceNormalMatrixLocation = gl.getUniformLocation(shaderProgram,"uViewSpaceNormalMatrix");
-  shaderProgram.uLightDirectionLocation = gl.getUniformLocation(shaderProgram,"uLightDirection");
-  shaderProgram.uLightColorLocation = gl.getUniformLocation(shaderProgram,"uLightColor");
-  shaderProgram.uColorLocation = gl.getUniformLocation(shaderProgram,"uColor");
-  
-  return shaderProgram;
+    // Create the shader program
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    shaderProgram.aPositionIndex = 0;
+    shaderProgram.aNormalIndex = 2;  
+    gl.bindAttribLocation(shaderProgram, shaderProgram.aPositionIndex, "aPosition");
+    gl.bindAttribLocation(shaderProgram, shaderProgram.aNormalIndex, "aNormal");
+    gl.linkProgram(shaderProgram);
+    
+    shaderProgram.vertexShader = vertexShader;
+    shaderProgram.fragmentShader = fragmentShader;
+    
+    // If creating the shader program failed, alert
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert("Unable to initialize the shader program.");
+        var str = "";
+        str += "VS:\n" + gl.getShaderInfoLog(vertexShader) + "\n\n";
+        str += "FS:\n" + gl.getShaderInfoLog(fragmentShader) + "\n\n";
+        str += "PROG:\n" + gl.getProgramInfoLog(shaderProgram);
+        alert(str);
+    }
+    
+
+    shaderProgram.uProjectionMatrixLocation = gl.getUniformLocation(shaderProgram,"uProjectionMatrix");
+    shaderProgram.uModelViewMatrixLocation = gl.getUniformLocation(shaderProgram,"uModelViewMatrix");
+    shaderProgram.uViewSpaceNormalMatrixLocation = gl.getUniformLocation(shaderProgram,"uViewSpaceNormalMatrix");
+    shaderProgram.uLightDirectionLocation = gl.getUniformLocation(shaderProgram,"uLightDirection");
+    shaderProgram.uLightColorLocation = gl.getUniformLocation(shaderProgram,"uLightColor");
+    shaderProgram.uColorLocation = gl.getUniformLocation(shaderProgram,"uColor");
+    
+    return shaderProgram;
 };
 

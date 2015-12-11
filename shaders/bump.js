@@ -1,5 +1,5 @@
 textureNormalMapShader = function (gl) {
-	var vertexShaderSource = "\
+    var vertexShaderSource = "\
 		uniform   mat4 uModelViewMatrix;                            \n\
 		uniform   mat4 uProjectionMatrix;                            \n\
 		attribute vec3 aPosition;                                       \n\
@@ -12,7 +12,7 @@ textureNormalMapShader = function (gl) {
 		}                                                               \n\
 	";
 
-	var fragmentShaderSource = "\
+    var fragmentShaderSource = "\
 		precision highp float;						\n\
 		uniform sampler2D texture;				\n\
 		uniform sampler2D normalMap;			\n\
@@ -30,45 +30,45 @@ textureNormalMapShader = function (gl) {
 			vec4 color=texture2D(texture, vTextureCoords);\n\
 		gl_FragColor = vec4(color.xyz*shade,1.0);			\n\
 		}"; 
-	
+    
 
-	// create the vertex shader
-	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	gl.shaderSource(vertexShader, vertexShaderSource);
-	gl.compileShader(vertexShader);
+    // create the vertex shader
+    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, vertexShaderSource);
+    gl.compileShader(vertexShader);
 
-	// create the fragment shader
-	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	gl.shaderSource(fragmentShader, fragmentShaderSource);
-	gl.compileShader(fragmentShader);
+    // create the fragment shader
+    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragmentShader, fragmentShaderSource);
+    gl.compileShader(fragmentShader);
 
-	// Create the shader program
+    // Create the shader program
 
-	var shaderProgram = gl.createProgram();
-	gl.attachShader(shaderProgram, vertexShader);
-	gl.attachShader(shaderProgram, fragmentShader);
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
 
-	shaderProgram.aPositionIndex = 0;
-	shaderProgram.aTextureCoordIndex = 3;
+    shaderProgram.aPositionIndex = 0;
+    shaderProgram.aTextureCoordIndex = 3;
 
-	gl.bindAttribLocation(shaderProgram, shaderProgram.aPositionIndex, "aPosition");
-	gl.bindAttribLocation(shaderProgram, shaderProgram.aTextureCoordIndex, "aTextureCoords");
-	gl.linkProgram(shaderProgram);
+    gl.bindAttribLocation(shaderProgram, shaderProgram.aPositionIndex, "aPosition");
+    gl.bindAttribLocation(shaderProgram, shaderProgram.aTextureCoordIndex, "aTextureCoords");
+    gl.linkProgram(shaderProgram);
 
-	// If creating the shader program failed, alert
-	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-		var str = "Unable to initialize the shader program.\n\n";
-		str += "VS:\n" + gl.getShaderInfoLog(vertexShader) + "\n\n";
-		str += "FS:\n" + gl.getShaderInfoLog(fragmentShader) + "\n\n";
-		str += "PROG:\n" + gl.getProgramInfoLog(shaderProgram);
-		alert(str);
-	}
+    // If creating the shader program failed, alert
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+	var str = "Unable to initialize the shader program.\n\n";
+	str += "VS:\n" + gl.getShaderInfoLog(vertexShader) + "\n\n";
+	str += "FS:\n" + gl.getShaderInfoLog(fragmentShader) + "\n\n";
+	str += "PROG:\n" + gl.getProgramInfoLog(shaderProgram);
+	alert(str);
+    }
 
-	shaderProgram.uModelViewMatrixLocation = gl.getUniformLocation(shaderProgram, "uModelViewMatrix");
-	shaderProgram.uProjectionMatrixLocation = gl.getUniformLocation(shaderProgram, "uProjectionMatrix");
-	shaderProgram.uColorLocation = gl.getUniformLocation(shaderProgram, "uColor");
-	shaderProgram.uNormalMapLocation = gl.getUniformLocation(shaderProgram, "normalMap");
-	shaderProgram.uLightDirectionLocation = gl.getUniformLocation(shaderProgram, "uLightDirection");
+    shaderProgram.uModelViewMatrixLocation = gl.getUniformLocation(shaderProgram, "uModelViewMatrix");
+    shaderProgram.uProjectionMatrixLocation = gl.getUniformLocation(shaderProgram, "uProjectionMatrix");
+    shaderProgram.uColorLocation = gl.getUniformLocation(shaderProgram, "uColor");
+    shaderProgram.uNormalMapLocation = gl.getUniformLocation(shaderProgram, "normalMap");
+    shaderProgram.uLightDirectionLocation = gl.getUniformLocation(shaderProgram, "uLightDirection");
 
-	return shaderProgram;
+    return shaderProgram;
 };
