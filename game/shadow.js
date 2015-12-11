@@ -436,7 +436,6 @@ NVMCClient.drawScene = function (gl) {
     
 
     this.projectionMatrix = SglMat4.perspective(3.14/4,ratio,0.1,1000);
-    this.cameras[2].projectionMatrix = this.projectionMatrix;
 
     stack.loadIdentity();
     var pos  = this.game.state.players.me.dynamicState.position;
@@ -448,26 +447,8 @@ NVMCClient.drawScene = function (gl) {
     this.drawSkyBox(gl);
     
     gl.enable(gl.DEPTH_TEST);
-    
 
-    if( this.currentCamera==3 ){
-	gl.useProgram(this.perVertexColorShader);
-	gl.enable(gl.STENCIL_TEST);
-	gl.clearStencil(0);
-	gl.stencilMask(~0);
-	gl.stencilFunc(gl.ALWAYS,1,0xFF);
-	gl.stencilOp(gl.REPLACE,gl.REPLACE,gl.REPLACE);
-	
-	gl.uniformMatrix4fv(this.perVertexColorShader.uModelViewMatrixLocation, false, SglMat4.identity());
-	gl.uniformMatrix4fv(this.perVertexColorShader.uProjectionMatrixLocation, false, SglMat4.identity());
-	this.drawObject(gl, this.cabin,this.perVertexColorShader, [0.4, 0.8, 0.9,1.0]);
-	
-	gl.stencilFunc(gl.GREATER,1,0xFF);
-	gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
-	gl.stencilMask(0);
-    }else
-	gl.disable(gl.STENCIL_TEST);
-    
+    gl.disable(gl.STENCIL_TEST);
 
     // set view for creating the shadow map
     this.stack.push();
@@ -487,55 +468,7 @@ NVMCClient.drawScene = function (gl) {
     this.stack.pop();
     gl.viewport(0, 0, width, height);
     
-    if(false){
-	gl.disable(gl.DEPTH_TEST);
-	gl.activeTexture(gl.TEXTURE0);
-  	gl.bindTexture(gl.TEXTURE_2D,this.shadowMapTextureTarget.texture);
-	gl.useProgram(this.textureShader);
-	gl.uniformMatrix4fv(this.textureShader.uProjectionMatrixLocation, false, SglMat4.identity());
-	gl.uniformMatrix4fv(this.textureShader.uModelViewMatrixLocation, false,SglMat4.identity());
-	gl.uniform1i(this.textureShader.uTextureLocation, 0);
-	this.drawObject(gl,this.quad ,this.textureShader,[0.3, 0.7, 0.2,1.0], [0, 0, 0,1.0]);
-	gl.enable(gl.DEPTH_TEST);
-        return;
-    }
-    
     this.drawEverything(gl);
-    
-    
-    if( this.currentCamera==3 ){
-	
-	// draw the scene for the back mirror
-	this.stack.loadIdentity();
-	gl.useProgram(this.lambertianSingleColorShader);
-	var invPositionMatrix 	= SglMat4.translation		(SglVec3.neg(SglVec3.add(this.game.state.players.me.dynamicState.position,[0,1.8,0])));
-	var xMatrix 	= SglMat4.rotationAngleAxis	(-0.2, [1, 0, 0]);
-	var invOrientationMatrix 	= SglMat4.rotationAngleAxis	(-this.game.state.players.me.dynamicState.orientation, [0, 1, 0]);
-	var invV = SglMat4.mul(SglMat4.mul(xMatrix,invOrientationMatrix),invPositionMatrix);
-	this.stack.multiply(invV);
-	
-	gl.bindFramebuffer(gl.FRAMEBUFFER, this.rearMirrorTextureTarget.framebuffer);
-	gl.disable(gl.STENCIL_TEST);
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	this.drawEverything(gl);
-	gl.bindFramebuffer(gl.FRAMEBUFFER,  null);
-	
-	
-	gl.useProgram(this.textureShader);
-	gl.bindTexture(gl.TEXTURE_2D,this.rearMirrorTextureTarget.texture);
-	gl.uniformMatrix4fv(this.textureShader.uModelViewMatrixLocation, false, SglMat4.identity());
-	gl.uniformMatrix4fv(this.textureShader.uProjectionMatrixLocation, false, SglMat4.identity());
-	this.drawObject( gl, this.rearMirror, this.textureShader,[1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0]);
-	
-	gl.useProgram(this.perVertexColorShader);
-	gl.enable(gl.BLEND);
-	gl.blendFunc( gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-	gl.useProgram(this.perVertexColorShader);
-	gl.uniformMatrix4fv(this.perVertexColorShader.uModelViewMatrixLocation, false, SglMat4.identity());
-	gl.uniformMatrix4fv(this.perVertexColorShader.uProjectionLocation, false, SglMat4.identity());
-	this.drawObject(gl, this.windshield, this.perVertexColorShader);
-	gl.disable(gl.BLEND);
-    }  
     
 };
 /***********************************************************************/

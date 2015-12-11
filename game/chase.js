@@ -4,81 +4,14 @@
 var NVMCClient = NVMCClient || {};
 /***********************************************************************/
 
-function PhotographerCamera() {//line 7, Listing 4.6
-    this.position = [0, 0, 0];
-    this.orientation = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    this.t_V = [0, 0, 0];
-    this.orienting_view = false;
-    this.lockToCar = false;
-    this.start_x = 0;
-    this.start_y = 0;
-
-    var me = this;
-    this.handleKey = {};
-    this.handleKey["Q"] = function () {me.t_V = [0, 0.1, 0];};
-    this.handleKey["E"] = function () {me.t_V = [0, -0.1, 0];};
-    this.handleKey["L"] = function () {me.lockToCar= true;};
-    this.handleKey["U"] = function () {me.lockToCar= false;};
-
-    this.keyDown = function (keyCode) {
-	if (this.handleKey[keyCode])
-	    this.handleKey[keyCode](true);
-    }
-
-    this.keyUp = function (keyCode) {
-	this.delta = [0, 0, 0];
-    }
-
-    this.mouseMove = function (x,y) {
-	if (!this.orienting_view) return;
-
-	var alpha	= (x - this.start_x)/10.0;
-	var beta	= -(y - this.start_y)/10.0;
-	this.start_x = x;
-	this.start_y = y;
-
-	var R_alpha = SglMat4.rotationAngleAxis(sglDegToRad( alpha  ), [0, 1, 0]);
-	var R_beta = SglMat4.rotationAngleAxis(sglDegToRad (beta  ), [1, 0, 0]);
-	this.orientation = SglMat4.mul(SglMat4.mul(R_alpha, this.orientation), R_beta);
-    };
-
-    this.mouseButtonDown = function (x,y) {
-	if (!this.lock_to_car) {
-	    this.orienting_view = true;
-	    this.start_x = x;
-	    this.start_y = y;
-	}
-    };
-
-    this.mouseButtonUp = function () {
-	this.orienting_view = false;
-    }
-
-    this.updatePosition = function ( t_V ){
-	this.position = SglVec3.add(this.position, SglMat4.mul3(this.orientation,  t_V));
-	if (this.position[1] > 1.8) this.position[1] = 1.8;
-	if (this.position[1] < 0.5) this.position[1] = 0.5;
-    }
-
-    this.setView = function (stack, carFrame) {
-	this.updatePosition (this.t_V )
-	var car_position = SglMat4.col(carFrame,3);
-	if (this.lockToCar)
-	    var invV = SglMat4.lookAt(this.position, car_position, [0, 1, 0]);
-	else
-	    var invV = SglMat4.lookAt(this.position, SglVec3.sub(this.position, SglMat4.col(this.orientation, 2)), SglMat4.col(this.orientation, 1));
-	stack.multiply(invV);
-    };
-};//line 42}
-
 function ChaseCamera() {//line 74, Listnig 4.5{
-    this.position 				= [0.0,0.0,0.0];
-    this.keyDown 					= function (keyCode) {}
-    this.keyUp						= function (keyCode) {}
-    this.mouseMove				= function (event) {};
-    this.mouseButtonDown	= function (event) {};
-    this.mouseButtonUp 		= function () {}
-    this.setView 					= function ( stack, F_0) {
+    this.position = [0.0,0.0,0.0];
+    this.keyDown = function (keyCode) {};
+    this.keyUp = function (keyCode) {};
+    this.mouseMove = function (event) {};
+    this.mouseButtonDown = function (event) {};
+    this.mouseButtonUp = function () {};
+    this.setView = function (stack, F_0) {
 	var Rx = SglMat4.rotationAngleAxis(sglDegToRad(-15), [1.0, 0.0, 0.0]);
 	var T = SglMat4.translation([0.0, 2.5, 4.5]);
 	var Vc_0 = SglMat4.mul(T, Rx);
@@ -87,11 +20,28 @@ function ChaseCamera() {//line 74, Listnig 4.5{
 	var invV = SglMat4.inverse(V_0);
 	stack.multiply(invV);
     };
-};//line 90}
+};
+
+function DriverCamera() {
+    this.position = [];
+    this.keyDown = function (keyCode) {};
+    this.keyUp = function (keyCode) {};
+    this.mouseMove = function (event) {};
+    this.mouseButtonDown = function (event) {};
+    this.mouseButtonUp = function () {};
+
+    this.setView = function (stack, frame) {
+	var driverFrame = SglMat4.dup(frame);
+	var pos = SglMat4.col(driverFrame, 3);
+	SglMat4.col$(driverFrame, 3, SglVec4.add(pos, [0, 1.5, 0, 0]));
+	var invV = SglMat4.inverse(driverFrame);
+	stack.multiply(invV);
+    };
+};
 
 NVMCClient.cameras = [];
 NVMCClient.cameras[0] = new ChaseCamera();
-NVMCClient.cameras[1] = new PhotographerCamera();
+NVMCClient.cameras[1] = new DriverCamera();
 NVMCClient.n_cameras = 2;
 NVMCClient.currentCamera = 0;
 
@@ -106,14 +56,3 @@ NVMCClient.prevCamera = function () {
 
 /***********************************************************************/
 
-NVMCClient.onMouseButtonDown = function (button, x, y, event) {
-    this.cameras[this.currentCamera].mouseButtonDown(x,y);
-};
-
-NVMCClient.onMouseButtonUp = function (button, x, y, event) {
-    this.cameras[this.currentCamera].mouseButtonUp();
-};
-
-NVMCClient.onMouseMove = function (x, y, event) {
-    this.cameras[this.currentCamera].mouseMove(x,y);
-};

@@ -4,33 +4,6 @@
 var NVMCClient = NVMCClient || {};
 /***********************************************************************/
 
-NVMCClient.cabin = null;
-NVMCClient.windshield = null;
-NVMCClient.rearmirror = null;
-
-function DriverCamera() {
-    this.position = [];
-    this.keyDown = function (keyCode) {}
-    this.keyUp = function (keyCode) {}
-
-    this.mouseMove = function (event) {};
-
-    this.mouseButtonDown = function (event) {};
-
-    this.mouseButtonUp = function () {}
-
-    this.setView = function (stack, frame) {
-	var driverFrame = SglMat4.dup(frame);
-	var pos = SglMat4.col(driverFrame, 3);
-	SglMat4.col$(driverFrame, 3, SglVec4.add(pos, [0, 1.5, 0, 0]));
-	var invV = SglMat4.inverse(driverFrame);
-	stack.multiply(invV);
-    };
-};
-
-NVMCClient.cameras[3] = new DriverCamera();
-NVMCClient.n_cameras = 4;
-
 NVMCClient.createColoredObjectBuffers = function (gl, obj) {
     obj.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, obj.vertexBuffer);

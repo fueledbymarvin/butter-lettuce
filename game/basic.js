@@ -71,6 +71,18 @@ NVMCClient.onPlayerLeave = function (playerID) {
     NVMC.log("[Player Leave] : " + playerID);
 };
 
+NVMCClient.onMouseButtonDown = function (button, x, y, event) {
+    this.cameras[this.currentCamera].mouseButtonDown(x,y);
+};
+
+NVMCClient.onMouseButtonUp = function (button, x, y, event) {
+    this.cameras[this.currentCamera].mouseButtonUp();
+};
+
+NVMCClient.onMouseMove = function (x, y, event) {
+    this.cameras[this.currentCamera].mouseMove(x,y);
+};
+
 NVMCClient.onKeyPress = function (keyCode, event) {};
 
 NVMCClient.onMouseWheel = function (delta, x, y, event) {};

@@ -10,9 +10,6 @@ var NVMCClient = NVMCClient || {};
 /***********************************************************************/
 NVMCClient.onInitialize = function () {
     var gl = this.ui.gl;
-    this.cameras[2].width  = this.ui.width;
-    this.cameras[2].height = this.ui.height;
-
 
     /*************************************************************/
     NVMC.log("SpiderGL Version : " + SGL_VERSION_STRING + "\n");
@@ -33,7 +30,6 @@ NVMCClient.onInitialize = function () {
     /*************************************************************/
     this.initializeObjects(gl);
     this.createFullScreenQuad(gl);
-    this.initializeCameras();
 
     this.uniformShader 			= new uniformShader(gl);
     this.perVertexColorShader 		= new perVertexColorShader(gl);
@@ -78,7 +74,6 @@ NVMCClient.onInitialize = function () {
 
     this.createDepthOnlyTechnique(gl);
 
-    this.rearMirrorTextureTarget = this.prepareRenderToTextureFrameBuffer(gl);
     this.shadowMapTextureTarget = this.prepareRenderToTextureFrameBuffer(gl,false,4096,4096);
     this.prepareRenderToCubeMapFrameBuffer(gl);
     this.sunLightDirection = [-2.4,-1,-0,0.0];
