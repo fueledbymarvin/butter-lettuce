@@ -1,4 +1,3 @@
-
 function vec3add( v3,i,rs){
     v3[i*3] 	+= rs[0];
     v3[i*3+1] += rs[1];
@@ -10,6 +9,7 @@ function vec3eq( v3,i,rs){
     v3 [i*3+1]  = rs [1];
     v3 [i*3+2]  = rs [2];
 }
+
 function ComputeNormals(obj) {
     obj.name += "_Normals";
 
