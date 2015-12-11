@@ -5,6 +5,57 @@
 var NVMCClient = NVMCClient || {};
 /***********************************************************************/
 
+NVMCClient.drawObject = function (gl, obj, shader, fillColor, drawWire) {
+    // Draw the primitive
+    gl.useProgram(shader);
+    gl.bindBuffer(gl.ARRAY_BUFFER, obj.vertexBuffer);
+    gl.enableVertexAttribArray(shader.aPositionIndex);
+    gl.vertexAttribPointer(shader.aPositionIndex, 3, gl.FLOAT, false, 0, 0);
+
+
+    if (shader.aColorIndex && obj.colorBuffer) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, obj.colorBuffer);
+        gl.enableVertexAttribArray(shader.aColorIndex);
+        gl.vertexAttribPointer(shader.aColorIndex, 4, gl.FLOAT, false, 0, 0);
+    }
+
+    if (shader.aNormalIndex && obj.normalBuffer) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, obj.normalBuffer);
+        gl.enableVertexAttribArray(shader.aNormalIndex);
+        gl.vertexAttribPointer(shader.aNormalIndex, 3, gl.FLOAT, false, 0, 0);
+    }
+
+    if (shader.aTextureCoordIndex && obj.textureCoordBuffer) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, obj.textureCoordBuffer);
+        gl.enableVertexAttribArray(shader.aTextureCoordIndex);
+        gl.vertexAttribPointer(shader.aTextureCoordIndex, 2, gl.FLOAT, false, 0, 0);
+    }
+
+    if (fillColor && shader.uColorLocation) gl.uniform4fv(shader.uColorLocation, fillColor);
+
+    gl.enable(gl.POLYGON_OFFSET_FILL);
+
+    gl.polygonOffset(1.0, 1.0);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.indexBufferTriangles);
+    gl.drawElements(gl.TRIANGLES, obj.triangleIndices.length, gl.UNSIGNED_SHORT, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+    if (drawWire) {
+        gl.disable(gl.POLYGON_OFFSET_FILL);
+
+        gl.useProgram(this.uniformShader);
+        gl.uniformMatrix4fv(this.uniformShader.uModelViewMatrixMatrixLocation, false, this.stack.matrix);
+
+        gl.uniform4fv(this.uniformShader.uColorLocation, [0, 0, 1, 1]);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.indexBufferEdges);
+        gl.drawElements(gl.LINES, obj.numTriangles * 3 * 2, gl.UNSIGNED_SHORT, 0);
+        gl.useProgram(shader);
+    }
+
+};
+
 NVMCClient.drawTree = function (gl) {
     var stack = this.stack;
 

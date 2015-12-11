@@ -37,9 +37,9 @@ NVMCClient.onInitialize = function () {
     this.phongShader 			= new phongShader(gl);
     this.textureShader 			= new textureShader(gl);
     this.skyBoxShader 			= new skyBoxShader(gl);
-    this.showCubeMapShader			= new showCubeMapShader(gl);
+    this.showCubeMapShader		= new showCubeMapShader(gl);
     this.shadowMapCreateShader		= new shadowMapCreateShader(gl);
-    this.shadowMapShader			= new shadowMapShader(gl);
+    this.shadowMapShader		= new shadowMapShader(gl);
 
     this.textureShadowShader		= new texturePCFShadowShader(gl);
     this.textureNormalMapShadowShader 	= new textureNormalMapShadowShader(gl);
@@ -49,26 +49,25 @@ NVMCClient.onInitialize = function () {
 
     /*************************************************************/
 
-    this.texture_street = this.createTexture(gl, 				NVMC.resource_path+'textures/street4.png');
+    this.texture_street = this.createTexture(gl, NVMC.resource_path+'textures/street4.png');
     this.normal_map_street = this.createTexture(gl, NVMC.resource_path+'textures/asphalt_normal_map.jpg');
-    this.texture_ground = this.createTexture(gl, 				NVMC.resource_path+'textures/grass_tile_003_col.png');
-    NVMCClient.texture_facade.push(this.createTexture(gl,       NVMC.resource_path+'textures/facade1.jpg'));
-    NVMCClient.texture_facade.push(this.createTexture(gl,       NVMC.resource_path+'textures/facade2.jpg'));
-    NVMCClient.texture_facade.push(this.createTexture(gl,       NVMC.resource_path+'textures/facade3.jpg'));
-    NVMCClient.texture_roof = this.createTexture(gl,			NVMC.resource_path+'textures/concreteplane2k.jpg');
-
+    this.texture_ground = this.createTexture(gl, NVMC.resource_path+'textures/grass_tile_003_col.png');
+    this.texture_facade.push(this.createTexture(gl, NVMC.resource_path+'textures/facade1.jpg'));
+    this.texture_facade.push(this.createTexture(gl, NVMC.resource_path+'textures/facade2.jpg'));
+    this.texture_facade.push(this.createTexture(gl, NVMC.resource_path+'textures/facade3.jpg'));
+    this.texture_roof = this.createTexture(gl, NVMC.resource_path+'textures/concreteplane2k.jpg');
 
     this.cubeMap = this.createCubeMap(gl,
-                                      NVMC.resource_path+'textures/cubemap/posx.jpg',
-                                      NVMC.resource_path+'textures/cubemap/negx.jpg',
-                                      NVMC.resource_path+'textures/cubemap/posy.jpg',
-                                      NVMC.resource_path+'textures/cubemap/negy.jpg',
-                                      NVMC.resource_path+'textures/cubemap/posz.jpg',
-                                      NVMC.resource_path+'textures/cubemap/negz.jpg'
+                                      NVMC.resource_path+'textures/cubemap/posx.png',
+                                      NVMC.resource_path+'textures/cubemap/negx.png',
+                                      NVMC.resource_path+'textures/cubemap/posy.png',
+                                      NVMC.resource_path+'textures/cubemap/negy.png',
+                                      NVMC.resource_path+'textures/cubemap/posz.png',
+                                      NVMC.resource_path+'textures/cubemap/negz.png'
                                      );
     this.createReflectionMap(gl);
     
-    this.loadCarModel(gl,NVMC.resource_path+"geometry/cars/eclipse/eclipse-white.obj");
+    this.loadCarModel(gl, NVMC.resource_path+"geometry/cars/eclipse/eclipse-white.obj");
     
     this.createTechniqueShadow(gl);
 

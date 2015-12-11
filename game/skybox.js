@@ -9,11 +9,12 @@ NVMCClient.skyBoxShader = null;
 
 NVMCClient.setCubeFace = function (gl, texture, face, imgdata) {
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-    //
+
     gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgdata);
 
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-}
+};
+
 NVMCClient.loadCubeFace = function (gl, texture, face, path) {
     NVMCClient.n_resources_to_wait_for++;
     var imgdata = new Image();
@@ -22,9 +23,10 @@ NVMCClient.loadCubeFace = function (gl, texture, face, path) {
     imgdata.onload = function () {
 	that.setCubeFace(gl, texture, face, imgdata);
         NVMCClient.n_resources_to_wait_for--;
-    }
+    };
     imgdata.src = path;
-}
+};
+
 NVMCClient.createCubeMap = function (gl, posx, negx, posy, negy, posz, negz) {
     var texture = gl.createTexture();
     this.loadCubeFace(gl, texture, gl.TEXTURE_CUBE_MAP_POSITIVE_X, posx);
@@ -42,7 +44,7 @@ NVMCClient.createCubeMap = function (gl, posx, negx, posy, negy, posz, negz) {
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 
     return texture;
-}
+};
 
 NVMCClient.drawSkyBox = function (gl) {//line 47, Listnig 7.6
     gl.useProgram(this.skyBoxShader);
@@ -61,5 +63,5 @@ NVMCClient.drawSkyBox = function (gl) {//line 47, Listnig 7.6
     gl.enable(gl.DEPTH_TEST);
     gl.depthMask(true);
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-}//line 64}
+};
 
