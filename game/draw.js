@@ -97,8 +97,6 @@ NVMCClient.drawTreeDepthOnly = function (gl) {
     stack.multiply(M_0_sca);
 
     gl.uniformMatrix4fv(this.shadowMapCreateShader.uShadowMatrixLocation, false, stack.matrix);
-    var InvT = SglMat4.inverse(this.stack.matrix);
-    InvT = SglMat4.transpose(InvT);
     this.drawObject(gl, this.cone, this.shadowMapCreateShader);
     stack.pop();
 
