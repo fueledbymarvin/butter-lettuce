@@ -56,60 +56,6 @@ NVMCClient.drawObject = function (gl, obj, shader, fillColor, drawWire) {
 
 };
 
-NVMCClient.drawTree = function (gl) {
-    var stack = this.stack;
-
-    stack.push();
-    var M_0_tra1 = SglMat4.translation([0, 0.8, 0]);
-    stack.multiply(M_0_tra1);
-
-    var M_0_sca = SglMat4.scaling([0.6, 1.65, 0.6]);
-    stack.multiply(M_0_sca);
-
-    gl.uniformMatrix4fv(this.lambertianSingleColorShadowShader.uModelMatrixLocation, false, stack.matrix);
-    var InvT = SglMat4.inverse(SglMat4.mul(this.viewMatrix,this.stack.matrix));
-    InvT = SglMat4.transpose(InvT);
-    gl.uniformMatrix3fv(this.lambertianSingleColorShadowShader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
-    this.drawObject(gl, this.cone, this.lambertianSingleColorShadowShader, [0.2, 0.8, 0.1, 1.0]);
-    stack.pop();
-
-    stack.push();
-    var M_1_sca = SglMat4.scaling([0.25, 0.4, 0.25]);
-    stack.multiply(M_1_sca);
-
-    gl.uniformMatrix4fv(this.lambertianSingleColorShadowShader.uModelMatrixLocation, false, stack.matrix);
-    var InvT = SglMat4.inverse(SglMat4.mul(this.viewMatrix,this.stack.matrix));
-    InvT = SglMat4.transpose(InvT);
-    gl.uniformMatrix3fv(this.lambertianSingleColorShadowShader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
-    this.drawObject(gl, this.cylinder, this.lambertianSingleColorShadowShader, [0.6, 0.23, 0.12, 1.0]);
-    stack.pop();
-};
-
-
-NVMCClient.drawTreeDepthOnly = function (gl) {
-    var stack = this.stack;
-
-    stack.push();
-    var M_0_tra1 = SglMat4.translation([0, 0.8, 0]);
-    stack.multiply(M_0_tra1);
-
-    var M_0_sca = SglMat4.scaling([0.6, 1.65, 0.6]);
-    stack.multiply(M_0_sca);
-
-    gl.uniformMatrix4fv(this.shadowMapCreateShader.uShadowMatrixLocation, false, stack.matrix);
-    this.drawObject(gl, this.cone, this.shadowMapCreateShader);
-    stack.pop();
-
-    stack.push();
-    var M_1_sca = SglMat4.scaling([0.25, 0.4, 0.25]);
-    stack.multiply(M_1_sca);
-
-    gl.uniformMatrix4fv(this.shadowMapCreateShader.uShadowMatrixLocation, false, stack.matrix);
-    this.drawObject(gl, this.cylinder, this.shadowMapCreateShader);
-    stack.pop();
-};
-
-
 NVMCClient.drawCarDepthOnly = function (gl) {
     var fb = new SglFramebuffer(gl, {handle: this.shadowMapTextureTarget.framebuffer,autoViewport:false});
 
@@ -129,8 +75,6 @@ NVMCClient.drawCarDepthOnly = function (gl) {
     this.depthOnlyRenderer.end();
 };
 
-
-
 NVMCClient.drawShadowCastersDepthOnly = function (gl) {
 
     var pos  = this.game.state.players.me.dynamicState.position;	
@@ -139,7 +83,7 @@ NVMCClient.drawShadowCastersDepthOnly = function (gl) {
     for (var i = 0; i < trees.length; i++) {
         trees[i].draw(gl, true);
     }
-    
+
     var M_9 = SglMat4.translation(pos);
     this.stack.multiply(M_9);
 
@@ -233,8 +177,6 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     gl.uniform1i(this.textureNormalMapShadowShader.uTextureLocation,0);
     gl.uniform1i(this.textureNormalMapShadowShader.uShadowMapLocation,1);
     gl.uniform1i(this.textureNormalMapShadowShader.uNormalMapLocation,2);
-
-    gl.useProgram(this.lambertianSingleColorShadowShader);
 
     var trees = this.trees;
     for (var i = 0; i < trees.length; i++) {

@@ -2,6 +2,18 @@
 var NVMCClient = NVMCClient || {};
 /***********************************************************************/
 
+// var animation = {
+//     frames: [
+//         {
+//             root: [translation],
+//             joints: {
+//                 name: [euler angles]
+//             }
+//         }
+//     ],
+//     sequence: [[frame, duration]]
+// };
+
 NVMCClient.createTree = function(options) {
 
     options.graph = new Node({
@@ -45,7 +57,9 @@ function Body(options) {
     this.draw = function(gl, depthOnly) {
         var stack = this.client.stack;
         stack.push();
-        stack.loadIdentity();
+        if (!depthOnly) {
+            stack.loadIdentity();
+        }
         stack.multiply(this.transformation);
 
         this.graph.draw(gl, depthOnly);
@@ -118,22 +132,23 @@ function Primitive(options) {
         combineTransformations(options.transformations) : SglMat4.identity();
 
     this.draw = function(gl, depthOnly) {
-        gl.useProgram(this.shader);
+        var shader = depthOnly ? this.client.shadowMapCreateShader : this.shader;
+        gl.useProgram(shader);
 
         var stack = this.client.stack;
         stack.push();
         stack.multiply(this.transformation);
 
         if (depthOnly) {
-            gl.uniformMatrix4fv(this.shader.uShadowMatrixLocation, false, stack.matrix);
+            gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
         } else {
-            gl.uniformMatrix4fv(this.shader.uModelMatrixLocation, false, stack.matrix);
+            gl.uniformMatrix4fv(shader.uModelMatrixLocation, false, stack.matrix);
             var InvT = SglMat4.transpose(
                 SglMat4.inverse(
                     SglMat4.mul(this.client.viewMatrix, stack.matrix)
                 )
             );
-            gl.uniformMatrix3fv(this.shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
+            gl.uniformMatrix3fv(shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
         }
 
         if (!depthOnly && this.texture) {
@@ -141,11 +156,7 @@ function Primitive(options) {
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
         }
 
-        if (depthOnly) {
-            this.client.drawObject(gl, this.mesh, this.client.shadowMapCreateShader);
-        } else {
-            this.client.drawObject(gl, this.mesh, this.shader, this.color);
-        }
+        this.client.drawObject(gl, this.mesh, shader, this.color);
         stack.pop();
     };
 }
