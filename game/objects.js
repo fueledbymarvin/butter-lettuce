@@ -76,17 +76,18 @@ NVMCClient.createObjects = function () {
 
     var bbox = this.game.race.bbox;
     var quad = [bbox[0], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[5], bbox[0], bbox[1] - 0.01, bbox[5]];
-    var text_coords = [-200, -200, 200, -200, 200, 200, -200, 200];
+    var text_coords = [-10, -10, 10, -10, 10, 10, -10, 10];
     this.ground = new Primitive({
         mesh: new TexturedQuadrilateral(quad, text_coords),
         shader: this.textureShadowShader
     });
 
-    var gameBuildings = this.game.race.buildings;
-    this.buildings = new Array(gameBuildings.length);
-    for (var i = 0; i < gameBuildings.length; ++i) {
-        this.buildings[i] = new TexturedFacades(gameBuildings[i], 1);
-        this.buildings[i].roof = new TexturedRoof(gameBuildings[i], 5);
+    var trees = this.game.race.trees;
+    this.trees = new Array(trees.length);
+    for (var i = 0; i < trees.length; ++i) {
+        this.trees[i] = this.createTree({
+            transformations: [SglMat4.translation(trees[i].position)]
+        });
     }
 };
 
@@ -101,11 +102,6 @@ NVMCClient.createBuffers = function (gl) {
     
     this.createObjectBuffers(gl, this.track, false, false, true);
     this.createObjectBuffers(gl, this.ground.mesh, false, false, true);
-
-    for (var i = 0; i < this.buildings.length; ++i) {
-        this.createObjectBuffers(gl, this.buildings[i], false, false, true);
-        this.createObjectBuffers(gl, this.buildings[i].roof, false, false, true);
-    }
 };
 
 NVMCClient.initializeObjects = function (gl) {

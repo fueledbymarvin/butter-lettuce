@@ -135,20 +135,9 @@ NVMCClient.drawShadowCastersDepthOnly = function (gl) {
 
     var pos  = this.game.state.players.me.dynamicState.position;	
     
-    for (var i in this.buildings){
-	this.drawObject(gl, this.buildings[i],this.shadowMapCreateShader);
-    }	
-    for (var i in this.buildings){
-	this.drawObject(gl, this.buildings[i].roof,this.shadowMapCreateShader);
-    }	
-    
-    var trees = this.game.race.trees;
-    for (var t in trees) {
-	this.stack.push();
-	var M_8 = SglMat4.translation(trees[t].position);
-	this.stack.multiply(M_8);
-	this.drawTreeDepthOnly(gl,this.shadowMapCreateShader);
-	this.stack.pop();
+    var trees = this.trees;
+    for (var i = 0; i < trees.length; i++) {
+        trees[i].draw(gl, true);
     }
     
     var M_9 = SglMat4.translation(pos);
@@ -246,15 +235,10 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     gl.uniform1i(this.textureNormalMapShadowShader.uNormalMapLocation,2);
 
     gl.useProgram(this.lambertianSingleColorShadowShader);
-    var trees = this.game.race.trees;
-    
-    for (var t in trees) {
-	stack.push();
-	stack.loadIdentity();
-	var M_8 = SglMat4.translation(trees[t].position);
-	this.stack.multiply(M_8);
-  	this.drawTree(gl);
-	stack.pop();
+
+    var trees = this.trees;
+    for (var i = 0; i < trees.length; i++) {
+        trees[i].draw(gl);
     }
     
     gl.useProgram(this.textureNormalMapShadowShader);
@@ -269,18 +253,6 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     gl.bindTexture(gl.TEXTURE_2D,this.texture_ground);
 
     this.ground.draw(gl);
-
-    gl.activeTexture(gl.TEXTURE0);
-
-    for (var i in this.buildings) {
- 	gl.bindTexture(gl.TEXTURE_2D, this.texture_facade[i%this.texture_facade.length]);
-	this.drawObject(gl, this.buildings[i], this.textureShadowShader);
-    }
-    
-    gl.bindTexture(gl.TEXTURE_2D,this.texture_roof);
-    for (var i in this.buildings){
-	this.drawObject(gl, this.buildings[i].roof,this.textureShadowShader);
-    }
 
     if( !excludeCar &&  this.currentCamera!=3 ){
  	stack.push();

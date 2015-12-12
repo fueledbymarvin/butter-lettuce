@@ -37,25 +37,25 @@ NVMCClient.createTree = function(options) {
 
 function Body(options) {
     this.client = NVMCClient;
-    this.stack = this.client.stack;
 
     this.graph = options.graph;
     this.transformation = options.transformations ?
         combineTransformations(options.transformations) : SglMat4.identity();
     
     this.draw = function(gl, depthOnly) {
-        this.stack.push();
-        this.stack.multiply(this.transformation);
+        var stack = this.client.stack;
+        stack.push();
+        stack.loadIdentity();
+        stack.multiply(this.transformation);
 
         this.graph.draw(gl, depthOnly);
 
-        this.stack.pop();
+        stack.pop();
     };
 }
 
 function Node(options) {
     this.client = NVMCClient;
-    this.stack = this.client.stack;
 
     this.name = options.name;
     this.primitives = options.primitives ? options.primitives : [];
@@ -64,37 +64,51 @@ function Node(options) {
         combineTransformations(options.transformations) : SglMat4.identity();
 
     this.draw = function(gl, depthOnly) {
-        this.stack.push();
-        this.stack.multiply(this.transformation);
-
-        for (var i = 0; i < this.primitives.length; i++) {
-            this.primitives[i].draw(gl, depthOnly);
-        }
+        var stack = this.client.stack;
+        stack.push();
+        stack.multiply(this.transformation);
 
         for (var i = 0; i < this.joints.length; i++) {
             this.joints[i].draw(gl, depthOnly);
         }
 
-        this.stack.pop();
+        for (var i = 0; i < this.primitives.length; i++) {
+            this.primitives[i].draw(gl, depthOnly);
+        }
+
+        stack.pop();
     };
 }
 
 function Joint(options) {
+    this.client = NVMCClient;
+
     this.name = options.name;
     this.theta = 0; // heading/yaw (around y-axis)
     this.phi = 0; // attitude/pitch (around x-axis)
     this.psi = 0; // bank/roll (around z-axis)
 
-    this.child = options.node;
+    this.child = options.child;
 
     this.draw = function(gl, depthOnly) {
+        var stack = this.client.stack;
+        stack.push();
+        stack.multiply(this.constructTransformation());
+
         this.child.draw(gl, depthOnly);
+        stack.pop();
+    };
+
+    this.constructTransformation = function() {
+        var rotY = SglMat4.rotationAngleAxis(this.theta, [0, 1, 0]);
+        var rotX = SglMat4.rotationAngleAxis(this.phi, [1, 0, 0]);
+        var rotZ = SglMat4.rotationAngleAxis(this.psi, [0, 0, 1]);
+        return combineTransformations([rotY, rotX, rotZ]);
     };
 }
 
 function Primitive(options) {
     this.client = NVMCClient;
-    this.stack = this.client.stack;
 
     this.mesh = options.mesh;
     this.shader = options.shader;
@@ -104,18 +118,19 @@ function Primitive(options) {
         combineTransformations(options.transformations) : SglMat4.identity();
 
     this.draw = function(gl, depthOnly) {
-        var viewMatrix = this.stack.matrix;
+        gl.useProgram(this.shader);
 
-        this.stack.push();
-        this.stack.multiply(this.transformation);
+        var stack = this.client.stack;
+        stack.push();
+        stack.multiply(this.transformation);
 
         if (depthOnly) {
-            gl.uniformMatrix4fv(this.shader.uShadowMatrixLocation, false, this.stack.matrix);
+            gl.uniformMatrix4fv(this.shader.uShadowMatrixLocation, false, stack.matrix);
         } else {
-            gl.uniformMatrix4fv(this.shader.uModelMatrixLocation, false, this.stack.matrix);
+            gl.uniformMatrix4fv(this.shader.uModelMatrixLocation, false, stack.matrix);
             var InvT = SglMat4.transpose(
                 SglMat4.inverse(
-                    SglMat4.mul(viewMatrix, this.stack.matrix)
+                    SglMat4.mul(this.client.viewMatrix, stack.matrix)
                 )
             );
             gl.uniformMatrix3fv(this.shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
@@ -131,7 +146,7 @@ function Primitive(options) {
         } else {
             this.client.drawObject(gl, this.mesh, this.shader, this.color);
         }
-        this.stack.pop();
+        stack.pop();
     };
 }
 
@@ -139,7 +154,7 @@ function combineTransformations(transformations) {
 
     var res = SglMat4.identity();
     for (var i = 0; i < transformations.length; i++) {
-        SglMat4.mul(transformations[i], res);
+        res = SglMat4.mul(transformations[i], res);
     }
     return res;
 }
