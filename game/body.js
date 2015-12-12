@@ -5,7 +5,10 @@ var NVMCClient = NVMCClient || {};
 // var animation = {
 //     frames: [
 //         {
-//             root: [translation],
+//             root: {
+//                 translation: [translation],
+//                 rotation: []
+//             },
 //             joints: {
 //                 name: [euler angles]
 //             }
@@ -44,6 +47,34 @@ NVMCClient.createTree = function(options) {
             })
         ]
     });
+
+    options.animations = {
+        test: {
+            frames: [
+                {
+                    root: {
+                        translation: [0, 1, 0]
+                    }
+                },
+                {
+                    root: {
+                        translation: [0, 2, 0]
+                    }
+                },
+                {
+                    root: {
+                        translation: [0, 0, 0]
+                    }
+                }
+            ],
+            sequence: [
+                [0, 1000],
+                [1, 1000],
+                [0, 1000],
+                [2, 1000]
+            ]
+        }
+    };
     return new Body(options);
 };
 
@@ -53,14 +84,130 @@ function Body(options) {
     this.graph = options.graph;
     this.transformation = options.transformations ?
         combineTransformations(options.transformations) : SglMat4.identity();
+
+    this.translation = [0, 0, 0];
+    this.rotation = [0, 0, 0];
+    this.animations = options.animations ? options.animations : [];
+    this.animations.transition = {
+        frames: [{}, {}],
+        sequence: [[0, 100], [1, 100]]
+    };
+    this.animations.reset = {
+        frames: [{}, {}],
+        sequence: [[0, 100], [1, 100]]
+    };
+    this.currentAnimation = options.currentAnimation ? options.currentAnimation : null;
+    this.currentFrame = 0;
+    this.lastTime = 0;
+    this.loop = false;
+    this.callback = null;
+
+    this.animate = function(animation, loop, transition, callback, context) {
+        // if (transition) {
+        //     this.animations.transition.frames[0] = this.getCurrentFrame();
+        //     var frameNum = this.animations[animation].sequence[0][0];
+        //     this.animations.transition.frames[1] = this.animations[animation].frames[frameNum];
+        //     this.animate("transition", false, false,
+        //                  function() {
+        //                      this.animate(animation, loop, false, callback, context);
+        //                  }, this);
+        // } else {
+        this.currentAnimation = animation;
+        this.loop = loop;
+        this.lastTime = new Date().getTime();
+        if (callback) {
+            this.callback = callback.bind(context);
+        }
+        // }
+    };
     
+    this.stopAnimation = function() {
+        this.currentAnimation = null;
+        // this.animations.reset.frames[0] = this.getCurrentFrame();
+        // var resetJoints = {};
+        // for (var joint in this.animations.reset.frames[0].joints) {
+        //     resetJoints[joint] = [0, 0, 0];
+        // }
+        // this.animations.reset.frames[1] = {
+        //     root: {
+        //         translation: [0, 0, 0],
+        //         rotation: [0, 0, 0]
+        //     },
+        //     joints: resetJoints
+        // };
+        // this.animate("reset", false, false);
+    };
+    
+    this.checkAnimation = function() {
+        var animation = this.animations[this.currentAnimation];
+
+        var frameDuration = animation.sequence[this.currentFrame];
+        var duration = frameDuration[1];
+        var time = new Date().getTime();
+        if (time - this.lastTime >= duration) {
+            this.lastTime = time;
+            var nFrames = animation.sequence.length;
+            this.currentFrame = (this.currentFrame + 1) % nFrames;
+            console.log(this.currentFrame);
+            // if (this.currentFrame == nFrames - 1 && !this.loop) {
+            //     this.callback();
+            //     this.stopAnimation();
+            // }
+        }
+    };
+
+    this.getCurrentFrame = function() {
+        var frame = {
+            root: {
+                translation: this.translation,
+                rotation: this.rotation
+            },
+            joints: {}
+        };
+
+        var toVisit = [this.graph];
+        while (toVisit.length > 0) {
+            var visiting = toVisit.pop();
+            for (var i = 0; i < visiting.joints.length; i++) {
+                var joint = visiting.joints[i];
+                frame.joints[joint.name] = joint.rotation;
+                toVisit.push(joint.child);
+            }
+        }
+        return frame;
+    };
+
+    this.processAnimation = function() {
+
+        var animation = this.animations[this.currentAnimation];
+        var nFrames = animation.sequence.length;
+        var fdStart = animation.sequence[this.currentFrame];
+        var fStartIndex = fdStart[0];
+        var fdEnd = animation.sequence[(this.currentFrame+1)%nFrames];
+        var fEndIndex = fdEnd[0];
+        var time = new Date().getTime();
+
+        var fStart = animation.frames[fStartIndex];
+        var fEnd = animation.frames[fEndIndex];
+        var duration = fdStart[1];
+        var u = (time - this.lastTime) / duration;
+        this.translation = linearInterpolation(u, fStart.root.translation, fEnd.root.translation);
+    };
+
     this.draw = function(gl, depthOnly) {
+        if (this.currentAnimation && depthOnly) {
+            this.checkAnimation();
+            this.processAnimation();
+        }
+
         var stack = this.client.stack;
         stack.push();
         if (!depthOnly) {
             stack.loadIdentity();
         }
         stack.multiply(this.transformation);
+        stack.multiply(SglMat4.translation(this.translation));
+        stack.multiply(eulerToRot(this.rotation));
 
         this.graph.draw(gl, depthOnly);
 
@@ -98,26 +245,20 @@ function Joint(options) {
     this.client = NVMCClient;
 
     this.name = options.name;
-    this.theta = 0; // heading/yaw (around y-axis)
-    this.phi = 0; // attitude/pitch (around x-axis)
-    this.psi = 0; // bank/roll (around z-axis)
+    this.rotation = [0, 0, 0];
+    // heading/yaw (around y-axis)
+    // attitude/pitch (around x-axis)
+    // bank/roll (around z-axis)
 
     this.child = options.child;
 
     this.draw = function(gl, depthOnly) {
         var stack = this.client.stack;
         stack.push();
-        stack.multiply(this.constructTransformation());
+        stack.multiply(eulerToRot(this.rotation));
 
         this.child.draw(gl, depthOnly);
         stack.pop();
-    };
-
-    this.constructTransformation = function() {
-        var rotY = SglMat4.rotationAngleAxis(this.theta, [0, 1, 0]);
-        var rotX = SglMat4.rotationAngleAxis(this.phi, [1, 0, 0]);
-        var rotZ = SglMat4.rotationAngleAxis(this.psi, [0, 0, 1]);
-        return combineTransformations([rotY, rotX, rotZ]);
     };
 }
 
@@ -166,6 +307,23 @@ function combineTransformations(transformations) {
     var res = SglMat4.identity();
     for (var i = 0; i < transformations.length; i++) {
         res = SglMat4.mul(transformations[i], res);
+    }
+    return res;
+}
+
+function eulerToRot(rot) {
+
+    var rotY = SglMat4.rotationAngleAxis(rot[1], [0, 1, 0]);
+    var rotX = SglMat4.rotationAngleAxis(rot[0], [1, 0, 0]);
+    var rotZ = SglMat4.rotationAngleAxis(rot[2], [0, 0, 1]);
+    return combineTransformations([rotY, rotX, rotZ]);
+}
+
+function linearInterpolation(u, start, end) {
+
+    var res = new Array(start.length);
+    for (var i = 0; i < start.length; i++) {
+        res[i] = start[i]*(1-u) + end[i]*(u);
     }
     return res;
 }

@@ -88,6 +88,7 @@ NVMCClient.createObjects = function () {
         this.trees[i] = this.createTree({
             transformations: [SglMat4.translation(trees[i].position)]
         });
+        this.trees[i].animate("test", true, true);
     }
 };
 
