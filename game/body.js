@@ -148,7 +148,6 @@ function Body(options) {
             this.lastTime = time;
             var nFrames = animation.sequence.length;
             this.currentFrame = (this.currentFrame + 1) % nFrames;
-            console.log(this.currentFrame);
             // if (this.currentFrame == nFrames - 1 && !this.loop) {
             //     this.callback();
             //     this.stopAnimation();
@@ -192,6 +191,7 @@ function Body(options) {
         var duration = fdStart[1];
         var u = (time - this.lastTime) / duration;
         this.translation = linearInterpolation(u, fStart.root.translation, fEnd.root.translation);
+        // this.rotation = slerp(u, fStart.root.rotation, fEnd.root.rotation);
     };
 
     this.draw = function(gl, depthOnly) {
@@ -326,4 +326,52 @@ function linearInterpolation(u, start, end) {
         res[i] = start[i]*(1-u) + end[i]*(u);
     }
     return res;
+}
+
+function slerp(u, start, end) {
+}
+
+function eulerToQuaternion(euler) {
+
+    var attitude = euler[0];
+    var heading = euler[1];
+    var bank = euler[2];
+    var c1 = Math.cos( heading / 2 );
+    var c2 = Math.cos( attitude / 2 );
+    var c3 = Math.cos( bank / 2 );
+    var s1 = Math.sin( heading / 2 );
+    var s2 = Math.sin( attitude / 2 );
+    var s3 = Math.sin( bank / 2 );
+ 
+    var x = s1 * s2 * c3 + c1 * c2 * s3;
+    var y = s1 * c2 * c3 + c1 * s2 * s3;
+    var z = c1 * s2 * c3 - s1 * c2 * s3;
+    var w = c1 * c2 * c3 - s1 * s2 * s3;
+ 
+    return [x, y, z, w];
+}
+
+function quaternionToEuler(quaternion) {
+    var x = quaternion[0];
+    var y = quaternion[1];
+    var z = quaternion[2];
+    var w = quaternion[3];
+
+    var heading, attitude, bank;
+    var test = x*y + z*w;
+    if (test > 0.499) { // singularity at north pole
+        heading = 2 * Math.atan2(x,w);
+        attitude = Math.PI/2;
+        bank = 0;
+    } else if (test < -0.499) { // singularity at south pole
+        heading = -2 * Math.atan2(x,w);
+        attitude = -Math.PI/2;
+        bank = 0;
+    } else {
+        heading = Math.atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z); // Heading
+        attitude = Math.asin(2*test); // attitude
+        bank = Math.atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z); // bank
+    }
+
+    return [attitude, heading, bank];
 }
