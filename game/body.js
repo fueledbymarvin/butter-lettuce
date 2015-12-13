@@ -34,7 +34,10 @@ NVMCClient.createTree = function(options) {
                 name: "branch",
                 child: new Node({
                     name: "top",
-                    transformations: [SglMat4.translation([0, 0.8, 0])],
+                    transformations: [
+                        SglMat4.rotationAngleAxis(Math.PI/6, [0, 0, 1]),
+                        SglMat4.translation([0, 0.8, 0])
+                    ],
                     primitives: [
                         new Primitive({
                             mesh: this.cone,
@@ -51,30 +54,58 @@ NVMCClient.createTree = function(options) {
     options.animations = {
         test: {
             frames: [
-                {
+                { // 0
                     root: {
                         translation: [0, 1, 0],
                         rotation: [0, 0, 0]
+                    },
+                    joints: {
+                        branch: [0, 0, 0]
                     }
                 },
-                {
+                { // 1
                     root: {
                         translation: [0, 2, 0],
-                        rotation: [Math.PI/4, 0, -Math.PI/6]
+                        rotation: [0, 0, 0]
+                    },
+                    joints: {
+                        branch: [0, 1/2*Math.PI, 0]
                     }
                 },
-                {
+                { // 2
+                    root: {
+                        translation: [0, 1, 0],
+                        rotation: [0, 0, 0]
+                    },
+                    joints: {
+                        branch: [0, Math.PI, 0]
+                    }
+                },
+                { // 3
                     root: {
                         translation: [0, 0, 0],
-                        rotation: [-Math.PI/4, 0, Math.PI/6]
+                        rotation: [0, 0, 0]
+                    },
+                    joints: {
+                        branch: [0, 3/2*Math.PI, 0]
+                    }
+                },
+                { // 4
+                    root: {
+                        translation: [0, 1, 0],
+                        rotation: [0, 0, 0]
+                    },
+                    joints: {
+                        branch: [0, 2*Math.PI, 0]
                     }
                 }
             ],
             sequence: [
                 [0, 1000],
                 [1, 1000],
-                [0, 1000],
-                [2, 1000]
+                [2, 1000],
+                [3, 1000],
+                [4, 0]
             ]
         }
     };
@@ -195,6 +226,16 @@ function Body(options) {
         var u = (time - this.lastTime) / duration;
         this.translation = linearInterpolation(u, fStart.root.translation, fEnd.root.translation);
         this.rotation = slerp(u, fStart.root.rotation, fEnd.root.rotation);
+
+        var toVisit = [this.graph];
+        while (toVisit.length > 0) {
+            var visiting = toVisit.pop();
+            for (var i = 0; i < visiting.joints.length; i++) {
+                var joint = visiting.joints[i];
+                joint.rotation = slerp(u, fStart.joints[joint.name], fEnd.joints[joint.name]);
+                toVisit.push(joint.child);
+            }
+        }
     };
 
     this.draw = function(gl, depthOnly) {
