@@ -53,17 +53,20 @@ NVMCClient.createTree = function(options) {
             frames: [
                 {
                     root: {
-                        translation: [0, 1, 0]
+                        translation: [0, 1, 0],
+                        rotation: [0, 0, 0]
                     }
                 },
                 {
                     root: {
-                        translation: [0, 2, 0]
+                        translation: [0, 2, 0],
+                        rotation: [Math.PI/4, 0, -Math.PI/6]
                     }
                 },
                 {
                     root: {
-                        translation: [0, 0, 0]
+                        translation: [0, 0, 0],
+                        rotation: [-Math.PI/4, 0, Math.PI/6]
                     }
                 }
             ],
@@ -191,7 +194,7 @@ function Body(options) {
         var duration = fdStart[1];
         var u = (time - this.lastTime) / duration;
         this.translation = linearInterpolation(u, fStart.root.translation, fEnd.root.translation);
-        // this.rotation = slerp(u, fStart.root.rotation, fEnd.root.rotation);
+        this.rotation = slerp(u, fStart.root.rotation, fEnd.root.rotation);
     };
 
     this.draw = function(gl, depthOnly) {
@@ -329,6 +332,46 @@ function linearInterpolation(u, start, end) {
 }
 
 function slerp(u, start, end) {
+    var qa = eulerToQuaternion(start);
+    var qax = qa[0];
+    var qay = qa[1];
+    var qaz = qa[2];
+    var qaw = qa[3];
+
+    var qb = eulerToQuaternion(end);
+    var qbx = qb[0];
+    var qby = qb[1];
+    var qbz = qb[2];
+    var qbw = qb[3];
+
+    // Calculate angle between them.
+    var cosTheta = qax * qbx + qay * qby + qaz * qbz + qaw * qbw;
+    // if qa=qb or qa=-qb then theta = 0 and we can return qa
+    if (Math.abs(cosTheta) >= 1.0){
+	return start;
+    }
+    // Calculate temporary values.
+    var theta = Math.acos(cosTheta);
+    var sinTheta = Math.sqrt(1.0 - cosTheta*cosTheta);
+    // if theta = 180 degrees then result is not fully defined
+    // we could rotate around any axis normal to qa or qb
+    var x, y, z, w;
+    if (Math.abs(sinTheta) < 0.001) {
+        // what to do here???
+	x = qax * (1-u) + qbx * u;
+	y = qay * (1-u) + qby * u;
+	z = qaz * (1-u) + qbz * u;
+	w = qaw * (1-u) + qbw * u;
+    } else {
+        var ratioA = Math.sin((1 - u) * theta) / sinTheta;
+        var ratioB = Math.sin(u * theta) / sinTheta; 
+        // calculate Quaternion.
+        w = qaw * ratioA + qbw * ratioB;
+        x = qax * ratioA + qbx * ratioB;
+        y = qay * ratioA + qby * ratioB;
+        z = qaz * ratioA + qbz * ratioB;
+    }
+    return quaternionToEuler([x, y, z, w]);
 }
 
 function eulerToQuaternion(euler) {
