@@ -17,6 +17,94 @@ var NVMCClient = NVMCClient || {};
 //     sequence: [[frame, duration]]
 // };
 
+NVMCClient.createCatbug = function(options) {
+    options.graph = new Node({
+        name: "body",
+        primitives: [
+            new Primitive({
+                mesh: this.sphere,
+                shader: this.lambertianSingleColorShadowShader,
+                color: [0.67, 0.81, 0.93, 1.0],
+                transformations: [SglMat4.scaling([0.6, 0.7, 0.5])]
+            }),
+            new Primitive({ // left cover
+                mesh: this.sphere,
+                shader: this.lambertianSingleColorShadowShader,
+                color: [0.89, 0.17, 0.31, 1.0],
+                transformations: [
+                    SglMat4.scaling([0.4, 0.7, 0.08]),
+                    SglMat4.rotationAngleAxis(-Math.PI/6, [0, 1, 0]),
+                    SglMat4.rotationAngleAxis(Math.PI/6, [0, 0, 1]),
+                    SglMat4.rotationAngleAxis(-3*Math.PI/8, [1, 0, 0]),
+                    SglMat4.translation([-0.6, 0.7, -0.6])
+                ]
+            }),
+            new Primitive({ // right cover
+                mesh: this.sphere,
+                shader: this.lambertianSingleColorShadowShader,
+                color: [0.89, 0.17, 0.31, 1.0],
+                transformations: [
+                    SglMat4.scaling([0.4, 0.7, 0.08]),
+                    SglMat4.rotationAngleAxis(Math.PI/6, [0, 1, 0]),
+                    SglMat4.rotationAngleAxis(-Math.PI/6, [0, 0, 1]),
+                    SglMat4.rotationAngleAxis(-3*Math.PI/8, [1, 0, 0]),
+                    SglMat4.translation([0.6, 0.7, -0.6])
+                ]
+            }),
+            new Primitive({ // left leg
+                mesh: this.sphere,
+                shader: this.lambertianSingleColorShadowShader,
+                color: [0.67, 0.81, 0.93, 1.0],
+                transformations: [
+                    SglMat4.scaling([0.1, 0.2, 0.1]),
+                    SglMat4.rotationAngleAxis(-Math.PI/6, [1, 0, 0]),
+                    SglMat4.translation([-0.3, -0.6, 0.2])
+                ]
+            }),
+            new Primitive({ // right leg
+                mesh: this.sphere,
+                shader: this.lambertianSingleColorShadowShader,
+                color: [0.67, 0.81, 0.93, 1.0],
+                transformations: [
+                    SglMat4.scaling([0.1, 0.2, 0.1]),
+                    SglMat4.rotationAngleAxis(-Math.PI/6, [1, 0, 0]),
+                    SglMat4.translation([0.3, -0.6, 0.2])
+                ]
+            }),
+            new Primitive({ // left arm
+                mesh: this.sphere,
+                shader: this.lambertianSingleColorShadowShader,
+                color: [0.67, 0.81, 0.93, 1.0],
+                transformations: [
+                    SglMat4.scaling([0.1, 0.2, 0.1]),
+                    SglMat4.rotationAngleAxis(-Math.PI/6, [0, 0, 1]),
+                    SglMat4.rotationAngleAxis(-Math.PI/4, [1, 0, 0]),
+                    SglMat4.translation([-0.4, 0.4, 0.25])
+                ]
+            }),
+            new Primitive({ // right arm
+                mesh: this.sphere,
+                shader: this.lambertianSingleColorShadowShader,
+                color: [0.67, 0.81, 0.93, 1.0],
+                transformations: [
+                    SglMat4.scaling([0.1, 0.2, 0.1]),
+                    SglMat4.rotationAngleAxis(Math.PI/6, [0, 0, 1]),
+                    SglMat4.rotationAngleAxis(-Math.PI/4, [1, 0, 0]),
+                    SglMat4.translation([0.4, 0.4, 0.25])
+                ]
+            })
+            // color: [0.93, 0.96, 0.97, 1.0],
+        ]
+        // joints: {
+        //     leftWing: new Joint({
+                
+        //     })
+        // }
+    });
+
+    return new Body(options);
+};
+
 NVMCClient.createTree = function(options) {
 
     options.graph = new Node({
@@ -29,9 +117,8 @@ NVMCClient.createTree = function(options) {
                 transformations: [SglMat4.scaling([0.25, 0.4, 0.25])]
             })
         ],
-        joints: [
-            new Joint({
-                name: "branch",
+        joints: {
+            branch: new Joint({
                 child: new Node({
                     name: "top",
                     transformations: [
@@ -48,7 +135,7 @@ NVMCClient.createTree = function(options) {
                     ]
                 })
             })
-        ]
+        }
     });
 
     options.animations = {
@@ -201,9 +288,9 @@ function Body(options) {
         var toVisit = [this.graph];
         while (toVisit.length > 0) {
             var visiting = toVisit.pop();
-            for (var i = 0; i < visiting.joints.length; i++) {
-                var joint = visiting.joints[i];
-                frame.joints[joint.name] = joint.rotation;
+            for (var j in visiting.joints) {
+                var joint = visiting.joints[j];
+                frame.joints[j] = joint.rotation;
                 toVisit.push(joint.child);
             }
         }
@@ -230,9 +317,9 @@ function Body(options) {
         var toVisit = [this.graph];
         while (toVisit.length > 0) {
             var visiting = toVisit.pop();
-            for (var i = 0; i < visiting.joints.length; i++) {
-                var joint = visiting.joints[i];
-                joint.rotation = slerp(u, fStart.joints[joint.name], fEnd.joints[joint.name]);
+            for (var j in visiting.joints) {
+                var joint = visiting.joints[j];
+                joint.rotation = slerp(u, fStart.joints[j], fEnd.joints[j]);
                 toVisit.push(joint.child);
             }
         }
@@ -264,7 +351,7 @@ function Node(options) {
 
     this.name = options.name;
     this.primitives = options.primitives ? options.primitives : [];
-    this.joints = options.joints ? options.joints : [];
+    this.joints = options.joints ? options.joints : {};
     this.transformation = options.transformations ?
         combineTransformations(options.transformations) : SglMat4.identity();
 
@@ -273,8 +360,8 @@ function Node(options) {
         stack.push();
         stack.multiply(this.transformation);
 
-        for (var i = 0; i < this.joints.length; i++) {
-            this.joints[i].draw(gl, depthOnly);
+        for (var joint in this.joints) {
+            this.joints[joint].draw(gl, depthOnly);
         }
 
         for (var i = 0; i < this.primitives.length; i++) {

@@ -71,6 +71,7 @@ NVMCClient.createObjects = function () {
     this.cube = new Cube(10);
     this.cylinder = new Cylinder(10);
     this.cone = new Cone(10);
+    this.sphere = new Sphere(10, 10);
 
     this.track = new TexturedTrack(this.game.race.track, 0.2);
 
@@ -90,6 +91,10 @@ NVMCClient.createObjects = function () {
         });
         this.trees[i].animate("test", true, true);
     }
+
+    this.catbug = this.createCatbug({
+        transformations: [SglMat4.rotationAngleAxis(70*Math.PI/180, [0, 1, 0]), SglMat4.translation([4, 2, 62])]
+    });
 };
 
 NVMCClient.createBuffers = function (gl) {
@@ -100,6 +105,9 @@ NVMCClient.createBuffers = function (gl) {
     
     ComputeNormals(this.cone);
     this.createObjectBuffers(gl, this.cone, false, true, false);
+
+    ComputeNormals(this.sphere);
+    this.createObjectBuffers(gl, this.sphere, false, true, false);
     
     this.createObjectBuffers(gl, this.track, false, false, true);
     this.createObjectBuffers(gl, this.ground.mesh, false, false, true);

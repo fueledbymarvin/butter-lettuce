@@ -84,6 +84,8 @@ NVMCClient.drawShadowCastersDepthOnly = function (gl) {
         trees[i].draw(gl, true);
     }
 
+    this.catbug.draw(gl, true);
+
     var M_9 = SglMat4.translation(pos);
     this.stack.multiply(M_9);
 
@@ -182,6 +184,7 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     for (var i = 0; i < trees.length; i++) {
         trees[i].draw(gl);
     }
+    this.catbug.draw(gl);
     
     gl.useProgram(this.textureNormalMapShadowShader);
     gl.activeTexture(gl.TEXTURE0);
