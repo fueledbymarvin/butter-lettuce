@@ -183,7 +183,7 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     for (var i = 0; i < this.hills.length; i++) {
         this.hills[i].draw(gl);
     }
-    
+
     this.ground.draw(gl);
 
     // if( !excludeCar &&  this.currentCamera!=3 ){
