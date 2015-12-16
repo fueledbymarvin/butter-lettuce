@@ -10,7 +10,7 @@ NVMCClient.createCatbug = function(options) {
                 mesh: this.sphere,
                 shader: this.lambertianSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
-                scaling: [0.6, 0.7, 0.5]
+                scaling: [0.55, 0.6, 0.5]
             }),
             new Primitive({ // left cover
                 mesh: this.sphere,
@@ -33,7 +33,7 @@ NVMCClient.createCatbug = function(options) {
                 shader: this.lambertianSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
                 scaling: [0.1, 0.2, 0.1],
-                translation: [-0.3, -0.6, 0.2],
+                translation: [-0.3, -0.45, 0.2],
                 rotation: [-Math.PI/6, 0, 0]
             }),
             new Primitive({ // right leg
@@ -41,7 +41,7 @@ NVMCClient.createCatbug = function(options) {
                 shader: this.lambertianSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
                 scaling: [0.1, 0.2, 0.1],
-                translation: [0.3, -0.6, 0.2],
+                translation: [0.3, -0.45, 0.2],
                 rotation: [-Math.PI/6, 0, 0]
             }),
             new Primitive({ // left arm
@@ -49,7 +49,7 @@ NVMCClient.createCatbug = function(options) {
                 shader: this.lambertianSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
                 scaling: [0.1, 0.2, 0.1],
-                translation: [-0.4, 0.2, 0.3],
+                translation: [-0.3, 0.2, 0.3],
                 rotation: [-Math.PI/4, 0, -Math.PI/6]
             }),
             new Primitive({ // right arm
@@ -57,7 +57,7 @@ NVMCClient.createCatbug = function(options) {
                 shader: this.lambertianSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
                 scaling: [0.1, 0.2, 0.1],
-                translation: [0.4, 0.2, 0.3],
+                translation: [0.3, 0.2, 0.3],
                 rotation: [-Math.PI/4, 0, Math.PI/6]
             }),
         ],
@@ -88,6 +88,53 @@ NVMCClient.createCatbug = function(options) {
                             color: [0.93, 0.96, 0.97, 1.0],
                             scaling: [0.6, 0.3, 0.1],
                             rotation: [Math.PI/6, Math.PI/6, 0]
+                        })
+                    ]
+                })
+            }),
+            head: new Joint({
+                translation: [0, 0.3, 0.2],
+                child: new Node({
+                    translation: [0, 0.4, 0],
+                    name: "head",
+                    primitives: [
+                        new Primitive({
+                            mesh: this.sphere,
+                            shader: this.lambertianSingleColorShadowShader,
+                            color: [0.67, 0.81, 0.93, 1.0],
+                            scaling: [0.5, 0.4, 0.5]
+                        }),
+                        new Primitive({ // left ear
+                            mesh: this.cone,
+                            shader: this.lambertianSingleColorShadowShader,
+                            color: [0.67, 0.81, 0.93, 1.0],
+                            scaling: [0.15, 0.15, 0.15],
+                            rotation: [0, 0, Math.PI/8],
+                            translation: [-0.25, 0.25, 0.05]
+                        }),
+                        new Primitive({ // right ear
+                            mesh: this.cone,
+                            shader: this.lambertianSingleColorShadowShader,
+                            color: [0.67, 0.81, 0.93, 1.0],
+                            scaling: [0.15, 0.15, 0.15],
+                            rotation: [0, 0, -Math.PI/8],
+                            translation: [0.25, 0.25, 0.05]
+                        }),
+                        new Primitive({ // left eye
+                            mesh: this.sphere,
+                            shader: this.lambertianSingleColorShadowShader,
+                            color: [0.93, 0.96, 0.97, 1.0],
+                            scaling: [0.05, 0.06, 0.03],
+                            rotation: [-Math.PI/12, 0, 0],
+                            translation: [-0.18, 0.1, 0.45]
+                        }),
+                        new Primitive({ // right eye
+                            mesh: this.sphere,
+                            shader: this.lambertianSingleColorShadowShader,
+                            color: [0.93, 0.96, 0.97, 1.0],
+                            scaling: [0.05, 0.06, 0.03],
+                            rotation: [-Math.PI/12, 0, 0],
+                            translation: [0.18, 0.1, 0.45]
                         })
                     ]
                 })
