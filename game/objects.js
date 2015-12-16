@@ -72,21 +72,26 @@ NVMCClient.createObjects = function () {
     this.cylinder = new Cylinder(10);
     this.cone = new Cone(10);
     this.sphere = new Sphere(10, 10);
-
-    this.track = new TexturedTrack(this.game.race.track, 0.2);
+    this.texturedSphere = new TexturedSphere(10, 10);
 
     var bbox = this.game.race.bbox;
     var quad = [bbox[0], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[5], bbox[0], bbox[1] - 0.01, bbox[5]];
     var text_coords = [-10, -10, 10, -10, 10, 10, -10, 10];
     this.ground = new Primitive({
         mesh: new TexturedQuadrilateral(quad, text_coords),
-        shader: this.textureShadowShader
+        shader: this.textureShadowShader,
+        texture: this.texture_ground
     });
 
     this.catbug = new Catbug({
         transformations: [SglMat4.rotationAngleAxis(70*Math.PI/180, [0, 1, 0]), SglMat4.translation([4, 2, 62])]
     });
     this.catbug.body.animate("fly", true);
+
+    this.hills = new Array(8);
+    for (var i = 0; i < this.hills.length; i++) {
+        this.hills[i] = new Hill({});
+    }
 };
 
 NVMCClient.createBuffers = function (gl) {
@@ -100,8 +105,10 @@ NVMCClient.createBuffers = function (gl) {
 
     ComputeNormals(this.sphere);
     this.createObjectBuffers(gl, this.sphere, false, true, false);
+
+    ComputeNormals(this.texturedSphere);
+    this.createObjectBuffers(gl, this.texturedSphere, false, true, true);
     
-    this.createObjectBuffers(gl, this.track, false, false, true);
     this.createObjectBuffers(gl, this.ground.mesh, false, false, true);
 };
 

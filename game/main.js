@@ -46,9 +46,6 @@ NVMCClient.onInitialize = function () {
 
     /*************************************************************/
 
-    this.initializeObjects(gl);
-    this.createFullScreenQuad(gl);
-
     this.texture_street = this.createTexture(gl, NVMC.resource_path+'textures/street4.png');
     this.normal_map_street = this.createTexture(gl, NVMC.resource_path+'textures/asphalt_normal_map.jpg');
     this.texture_ground = this.createTexture(gl, NVMC.resource_path+'textures/grass_tile_003_col.png');
@@ -56,6 +53,9 @@ NVMCClient.onInitialize = function () {
     this.texture_facade.push(this.createTexture(gl, NVMC.resource_path+'textures/facade2.jpg'));
     this.texture_facade.push(this.createTexture(gl, NVMC.resource_path+'textures/facade3.jpg'));
     this.texture_roof = this.createTexture(gl, NVMC.resource_path+'textures/concreteplane2k.jpg');
+
+    this.initializeObjects(gl);
+    this.createFullScreenQuad(gl);
 
     this.cubeMap = this.createCubeMap(gl,
                                       NVMC.resource_path+'textures/cubemap/posx.png',

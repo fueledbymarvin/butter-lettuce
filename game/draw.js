@@ -80,6 +80,9 @@ NVMCClient.drawShadowCastersDepthOnly = function (gl) {
     var pos  = this.game.state.players.me.dynamicState.position;	
     
     this.catbug.draw(gl, true);
+    for (var i = 0; i < this.hills.length; i++) {
+        this.hills[i].draw(gl, true);
+    }
 
     var M_9 = SglMat4.translation(pos);
     this.stack.multiply(M_9);
@@ -176,18 +179,11 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     gl.uniform1i(this.textureNormalMapShadowShader.uNormalMapLocation,2);
 
     this.catbug.draw(gl);
+
+    for (var i = 0; i < this.hills.length; i++) {
+        this.hills[i].draw(gl);
+    }
     
-    gl.useProgram(this.textureNormalMapShadowShader);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D,this.texture_street);
-    gl.activeTexture(gl.TEXTURE2);
-    gl.bindTexture(gl.TEXTURE_2D,this.normal_map_street);
-
-    this.drawObject(gl, this.track,this.textureNormalMapShadowShader, [0.9, 0.8, 0.7,1.0]);
-
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D,this.texture_ground);
-
     this.ground.draw(gl);
 
     if( !excludeCar &&  this.currentCamera!=3 ){

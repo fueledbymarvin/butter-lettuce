@@ -222,6 +222,11 @@ function Primitive(options) {
         var shader = depthOnly ? this.client.shadowMapCreateShader : this.shader;
         gl.useProgram(shader);
 
+        if (!depthOnly && this.texture) {
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        }
+
         var stack = this.client.stack;
         stack.push();
         stack.multiply(SglMat4.translation(this.translation));
@@ -238,11 +243,6 @@ function Primitive(options) {
                 )
             );
             gl.uniformMatrix3fv(shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
-        }
-
-        if (!depthOnly && this.texture) {
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, this.texture);
         }
 
         this.client.drawObject(gl, this.mesh, shader, this.color);
