@@ -49,6 +49,9 @@ NVMCClient.onInitialize = function () {
     this.texture_street = this.createTexture(gl, NVMC.resource_path+'textures/street4.png');
     this.normal_ground = this.createTexture(gl, NVMC.resource_path+'textures/rocky_normal.jpg');
     this.texture_ground = this.createTexture(gl, NVMC.resource_path+'textures/rocky.jpg');
+    this.rockTextures = [this.texture_ground];
+    this.rockTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/turquoise_rock.jpg'));
+    this.rockTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/emerald_rock.jpg'));
     this.texture_facade.push(this.createTexture(gl, NVMC.resource_path+'textures/facade1.jpg'));
     this.texture_facade.push(this.createTexture(gl, NVMC.resource_path+'textures/facade2.jpg'));
     this.texture_facade.push(this.createTexture(gl, NVMC.resource_path+'textures/facade3.jpg'));

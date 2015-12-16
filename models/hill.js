@@ -17,7 +17,7 @@ function Hill(options) {
             // color: [1, 1, 1, 1],
             mesh: this.client.texturedSphere,
             shader: this.client.textureShadowShader,
-            texture: this.client.texture_ground,
+            texture: this.client.rockTextures[Math.floor(Math.random()*3)],
             scaling: [Math.random()*8+2, Math.random()*8+2, Math.random()*8+2],
             rotation: [Math.PI/4*Math.random(), 0, Math.PI/4*Math.random()],
             translation: [Math.random()*8-4, Math.random()*2-1, Math.random()*8-4]
