@@ -79,11 +79,6 @@ NVMCClient.drawShadowCastersDepthOnly = function (gl) {
 
     var pos  = this.game.state.players.me.dynamicState.position;	
     
-    var trees = this.trees;
-    for (var i = 0; i < trees.length; i++) {
-        trees[i].draw(gl, true);
-    }
-
     this.catbug.draw(gl, true);
 
     var M_9 = SglMat4.translation(pos);
@@ -180,10 +175,6 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     gl.uniform1i(this.textureNormalMapShadowShader.uShadowMapLocation,1);
     gl.uniform1i(this.textureNormalMapShadowShader.uNormalMapLocation,2);
 
-    var trees = this.trees;
-    for (var i = 0; i < trees.length; i++) {
-        trees[i].draw(gl);
-    }
     this.catbug.draw(gl);
     
     gl.useProgram(this.textureNormalMapShadowShader);

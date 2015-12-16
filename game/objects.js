@@ -83,15 +83,6 @@ NVMCClient.createObjects = function () {
         shader: this.textureShadowShader
     });
 
-    var trees = this.game.race.trees;
-    this.trees = new Array(trees.length);
-    for (var i = 0; i < trees.length; ++i) {
-        this.trees[i] = this.createTree({
-            transformations: [SglMat4.translation(trees[i].position)]
-        });
-        this.trees[i].animate("test", true, true);
-    }
-
     this.catbug = this.createCatbug({
         transformations: [SglMat4.rotationAngleAxis(70*Math.PI/180, [0, 1, 0]), SglMat4.translation([4, 2, 62])]
     });
