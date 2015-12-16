@@ -26,7 +26,7 @@ function Body(options) {
 
     this.translation = [0, 0, 0];
     this.rotation = [0, 0, 0];
-    this.animations = options.animations ? options.animations : [];
+    this.animations = options.animations ? options.animations : {};
     this.animations.transition = {
         frames: [{}, {}],
         sequence: [[0, 100], [1, 100]]

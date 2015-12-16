@@ -5,6 +5,7 @@ var NVMCClient = NVMCClient || {};
 NVMCClient.createCatbug = function(options) {
     options.graph = new Node({
         name: "body",
+        rotation: [Math.PI/5, 0, 0],
         primitives: [
             new Primitive({
                 mesh: this.sphere,
@@ -17,16 +18,16 @@ NVMCClient.createCatbug = function(options) {
                 shader: this.lambertianSingleColorShadowShader,
                 color: [0.89, 0.17, 0.31, 1.0],
                 scaling: [0.4, 0.7, 0.08],
-                rotation: [-Math.PI/6, Math.PI/6, Math.PI/4],
-                translation: [-0.7, 0.9, -0.4]
+                rotation: [-Math.PI/4, Math.PI/6, Math.PI/4],
+                translation: [-0.6, 0.7, -0.5]
             }),
             new Primitive({ // right cover
                 mesh: this.sphere,
                 shader: this.lambertianSingleColorShadowShader,
                 color: [0.89, 0.17, 0.31, 1.0],
                 scaling: [0.4, 0.7, 0.08],
-                rotation: [-Math.PI/6, -Math.PI/6, -Math.PI/4],
-                translation: [0.7, 0.9, -0.4]
+                rotation: [-Math.PI/4, -Math.PI/6, -Math.PI/4],
+                translation: [0.6, 0.7, -0.5]
             }),
             new Primitive({ // left leg
                 mesh: this.sphere,
@@ -63,31 +64,31 @@ NVMCClient.createCatbug = function(options) {
         ],
         joints: {
             leftWing: new Joint({
-                translation: [-0.3, 0.3, -0.4],
+                translation: [-0.2, 0.3, -0.3],
                 child: new Node({
-                    translation: [-0.45, 0.15, -0.15],
+                    translation: [-0.45, 0, -0.3],
                     primitives: [
                         new Primitive({
                             mesh: this.sphere,
                             shader: this.lambertianSingleColorShadowShader,
                             color: [0.93, 0.96, 0.97, 1.0],
                             scaling: [0.6, 0.3, 0.1],
-                            rotation: [Math.PI/6, -Math.PI/6, 0]
+                            rotation: [Math.PI/6, -Math.PI/4, Math.PI/6]
                         })
                     ]
                 })
             }),
             rightWing: new Joint({
-                translation: [0.3, 0.3, -0.4],
+                translation: [0.2, 0.3, -0.3],
                 child: new Node({
-                    translation: [0.45, 0.15, -0.15],
+                    translation: [0.45, 0, -0.3],
                     primitives: [
                         new Primitive({
                             mesh: this.sphere,
                             shader: this.lambertianSingleColorShadowShader,
                             color: [0.93, 0.96, 0.97, 1.0],
                             scaling: [0.6, 0.3, 0.1],
-                            rotation: [Math.PI/6, Math.PI/6, 0]
+                            rotation: [Math.PI/6, Math.PI/4, -Math.PI/6]
                         })
                     ]
                 })
@@ -95,8 +96,9 @@ NVMCClient.createCatbug = function(options) {
             head: new Joint({
                 translation: [0, 0.3, 0.2],
                 child: new Node({
-                    translation: [0, 0.4, 0],
                     name: "head",
+                    translation: [0, 0.4, 0],
+                    rotation: [-Math.PI/6, 0, 0],
                     primitives: [
                         new Primitive({
                             mesh: this.sphere,
@@ -141,6 +143,39 @@ NVMCClient.createCatbug = function(options) {
             })
         }
     });
+
+    options.animations = {
+        fly: {
+            frames: [
+                {
+                    root: {
+                        translation: [0, 0, 0],
+                        rotation: [0, 0, 0]
+                    },
+                    joints: {
+                        leftWing: [0, 0, 0],
+                        rightWing: [0, 0, 0],
+                        head: [0, 0, 0]
+                    }
+                },
+                {
+                    root: {
+                        translation: [0, 0, 0],
+                        rotation: [0, 0, 0]
+                    },
+                    joints: {
+                        leftWing: [0, Math.PI/6, Math.PI/3],
+                        rightWing: [0, -Math.PI/6, -Math.PI/3],
+                        head: [0, 0, 0]
+                    }
+                }
+            ],
+            sequence: [
+                [0, 100],
+                [1, 200]
+            ]
+        }
+    };
 
     return new Body(options);
 };

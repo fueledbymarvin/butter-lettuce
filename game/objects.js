@@ -86,6 +86,7 @@ NVMCClient.createObjects = function () {
     this.catbug = this.createCatbug({
         transformations: [SglMat4.rotationAngleAxis(70*Math.PI/180, [0, 1, 0]), SglMat4.translation([4, 2, 62])]
     });
+    this.catbug.animate("fly", true);
 };
 
 NVMCClient.createBuffers = function (gl) {
