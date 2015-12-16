@@ -2,21 +2,6 @@
 var NVMCClient = NVMCClient || {};
 /***********************************************************************/
 
-// var animation = {
-//     frames: [
-//         {
-//             root: {
-//                 translation: [translation],
-//                 rotation: []
-//             },
-//             joints: {
-//                 name: [euler angles]
-//             }
-//         }
-//     ],
-//     sequence: [[frame, duration]]
-// };
-
 function Body(options) {
     this.client = NVMCClient;
 
@@ -216,7 +201,7 @@ function Joint(options) {
         stack.multiply(SglMat4.translation(this.translation));
         stack.multiply(eulerToRot(this.rotation));
 
-        this.marker.draw(gl, depthOnly);
+        // this.marker.draw(gl, depthOnly);
         this.child.draw(gl, depthOnly);
         stack.pop();
     };

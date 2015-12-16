@@ -83,10 +83,10 @@ NVMCClient.createObjects = function () {
         shader: this.textureShadowShader
     });
 
-    this.catbug = this.createCatbug({
+    this.catbug = new Catbug({
         transformations: [SglMat4.rotationAngleAxis(70*Math.PI/180, [0, 1, 0]), SglMat4.translation([4, 2, 62])]
     });
-    this.catbug.animate("fly", true);
+    this.catbug.body.animate("fly", true);
 };
 
 NVMCClient.createBuffers = function (gl) {
