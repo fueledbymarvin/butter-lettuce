@@ -92,13 +92,23 @@ NVMCClient.createObjects = function () {
     });
 
     this.catbug = new Catbug({
-        transformations: [SglMat4.rotationAngleAxis(70*Math.PI/180, [0, 1, 0]), SglMat4.translation([4, 2, 62])]
+        transformations: [SglMat4.translation([0, 2, 0])]
     });
     this.catbug.body.animate("fly", true);
 
     this.hills = new Array(8);
     for (var i = 0; i < this.hills.length; i++) {
-        this.hills[i] = new Hill({});
+        this.hills[i] = new Hill({
+            transformations: [SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
+        });
+    }
+
+    this.floaters = new Array(8);
+    for (var i = 0; i < this.floaters.length; i++) {
+        this.floaters[i] = new Floater({
+            transformations: [SglMat4.translation([Math.random()*200-100, 1+Math.random()*4, Math.random()*200-100])]
+        });
+        this.floaters[i].body.animate("spin", true);
     }
 };
 

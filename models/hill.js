@@ -12,9 +12,6 @@ function Hill(options) {
     var primitives = new Array(Math.floor(Math.random()*3+1));
     for (var i = 0; i < primitives.length; i++) {
         primitives[i] = new Primitive({
-            // mesh: this.client.sphere,
-            // shader: this.client.lambertianSingleColorShadowShader,
-            // color: [1, 1, 1, 1],
             mesh: this.client.texturedSphere,
             shader: this.client.textureShadowShader,
             texture: this.client.rockTextures[Math.floor(Math.random()*3)],
@@ -27,8 +24,6 @@ function Hill(options) {
     options.graph = new Node({
         primitives: primitives
     });
-
-    options.transformations = [SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])];
 
     this.body = new Body(options);
 }

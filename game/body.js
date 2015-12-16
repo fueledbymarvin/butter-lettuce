@@ -158,6 +158,7 @@ function Node(options) {
     this.scaling = options.scaling ? options.scaling : [1, 1, 1];
     this.rotation = options.rotation ? options.rotation : [0, 0, 0];
     this.translation = options.translation ? options.translation : [0, 0, 0];
+    this.flipOrder = options.flipOrder;
 
     this.draw = function(gl, depthOnly) {
         var stack = this.client.stack;
@@ -201,7 +202,7 @@ function Joint(options) {
         stack.multiply(SglMat4.translation(this.translation));
         stack.multiply(eulerToRot(this.rotation));
 
-        // this.marker.draw(gl, depthOnly);
+        this.marker.draw(gl, depthOnly);
         this.child.draw(gl, depthOnly);
         stack.pop();
     };
@@ -264,7 +265,7 @@ function eulerToRot(rot) {
     var rotY = SglMat4.rotationAngleAxis(rot[1], [0, 1, 0]);
     var rotX = SglMat4.rotationAngleAxis(rot[0], [1, 0, 0]);
     var rotZ = SglMat4.rotationAngleAxis(rot[2], [0, 0, 1]);
-    return combineTransformations([rotY, rotX, rotZ]);
+    return combineTransformations([rotZ, rotX, rotY]);
 }
 
 function linearInterpolation(u, start, end) {

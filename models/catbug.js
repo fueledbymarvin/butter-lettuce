@@ -11,7 +11,7 @@ function Catbug(options) {
 
     options.graph = new Node({
         name: "body",
-        rotation: [Math.PI/5, 0, 0],
+        rotation: [Math.PI/4, 0, 0],
         primitives: [
             new Primitive({
                 mesh: this.client.sphere,
@@ -24,16 +24,16 @@ function Catbug(options) {
                 shader: this.client.lambertianSingleColorShadowShader,
                 color: [0.89, 0.17, 0.31, 1.0],
                 scaling: [0.4, 0.7, 0.08],
-                rotation: [-Math.PI/4, Math.PI/6, Math.PI/4],
-                translation: [-0.6, 0.7, -0.5]
+                rotation: [-Math.PI/4, -Math.PI/4, Math.PI/3],
+                translation: [-0.4, 0.6, -0.8]
             }),
             new Primitive({ // right cover
                 mesh: this.client.sphere,
                 shader: this.client.lambertianSingleColorShadowShader,
                 color: [0.89, 0.17, 0.31, 1.0],
                 scaling: [0.4, 0.7, 0.08],
-                rotation: [-Math.PI/4, -Math.PI/6, -Math.PI/4],
-                translation: [0.6, 0.7, -0.5]
+                rotation: [-Math.PI/4, Math.PI/4, -Math.PI/3],
+                translation: [0.4, 0.6, -0.8]
             }),
             new Primitive({ // left leg
                 mesh: this.client.sphere,
@@ -70,31 +70,31 @@ function Catbug(options) {
         ],
         joints: {
             leftWing: new Joint({
-                translation: [-0.2, 0.3, -0.3],
+                translation: [-0.15, 0.2, -0.35],
                 child: new Node({
-                    translation: [-0.45, 0, -0.3],
+                    translation: [-0.05, 0.05, -0.6],
                     primitives: [
                         new Primitive({
                             mesh: this.client.sphere,
                             shader: this.client.lambertianSingleColorShadowShader,
                             color: [0.93, 0.96, 0.97, 1.0],
                             scaling: [0.6, 0.3, 0.1],
-                            rotation: [Math.PI/6, -Math.PI/4, Math.PI/6]
+                            rotation: [Math.PI/4, -Math.PI/2, 0]
                         })
                     ]
                 })
             }),
             rightWing: new Joint({
-                translation: [0.2, 0.3, -0.3],
+                translation: [0.15, 0.2, -0.35],
                 child: new Node({
-                    translation: [0.45, 0, -0.3],
+                    translation: [0.05, 0.05, -0.6],
                     primitives: [
                         new Primitive({
                             mesh: this.client.sphere,
                             shader: this.client.lambertianSingleColorShadowShader,
                             color: [0.93, 0.96, 0.97, 1.0],
                             scaling: [0.6, 0.3, 0.1],
-                            rotation: [Math.PI/6, Math.PI/4, -Math.PI/6]
+                            rotation: [Math.PI/4, Math.PI/2, 0]
                         })
                     ]
                 })
@@ -170,8 +170,8 @@ function Catbug(options) {
                         rotation: [0, 0, 0]
                     },
                     joints: {
-                        leftWing: [0, Math.PI/6, Math.PI/3],
-                        rightWing: [0, -Math.PI/6, -Math.PI/3],
+                        leftWing: [-Math.PI/6, Math.PI/3, Math.PI/3],
+                        rightWing: [-Math.PI/6, -Math.PI/3, -Math.PI/3],
                         head: [Math.PI/36, 0, 0]
                     }
                 },
@@ -192,8 +192,8 @@ function Catbug(options) {
                         rotation: [0, 0, 0]
                     },
                     joints: {
-                        leftWing: [0, Math.PI/6, Math.PI/3],
-                        rightWing: [0, -Math.PI/6, -Math.PI/3],
+                        leftWing: [-Math.PI/6, Math.PI/3, Math.PI/3],
+                        rightWing: [-Math.PI/6, -Math.PI/3, -Math.PI/3],
                         head: [0, 0, 0]
                     }
                 }

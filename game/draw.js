@@ -83,6 +83,9 @@ NVMCClient.drawShadowCastersDepthOnly = function (gl) {
     for (var i = 0; i < this.hills.length; i++) {
         this.hills[i].draw(gl, true);
     }
+    for (var i = 0; i < this.floaters.length; i++) {
+        this.floaters[i].draw(gl, true);
+    }
 
     var M_9 = SglMat4.translation(pos);
     this.stack.multiply(M_9);
@@ -179,7 +182,9 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     gl.uniform1i(this.textureNormalMapShadowShader.uNormalMapLocation,2);
 
     this.catbug.draw(gl);
-
+    for (var i = 0; i < this.floaters.length; i++) {
+        this.floaters[i].draw(gl);
+    }
     for (var i = 0; i < this.hills.length; i++) {
         this.hills[i].draw(gl);
     }
