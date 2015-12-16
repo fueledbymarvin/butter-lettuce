@@ -202,7 +202,7 @@ function Joint(options) {
         stack.multiply(SglMat4.translation(this.translation));
         stack.multiply(eulerToRot(this.rotation));
 
-        this.marker.draw(gl, depthOnly);
+        // this.marker.draw(gl, depthOnly);
         this.child.draw(gl, depthOnly);
         stack.pop();
     };
@@ -238,11 +238,8 @@ function Primitive(options) {
             gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
         } else {
             gl.uniformMatrix4fv(shader.uModelMatrixLocation, false, stack.matrix);
-            var InvT = SglMat4.transpose(
-                SglMat4.inverse(
-                    SglMat4.mul(this.client.viewMatrix, stack.matrix)
-                )
-            );
+            var InvT = SglMat4.inverse(SglMat4.mul(this.client.viewMatrix, stack.matrix));
+            InvT = SglMat4.transpose(InvT);
             gl.uniformMatrix3fv(shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
         }
 

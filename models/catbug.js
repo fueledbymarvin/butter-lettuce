@@ -207,6 +207,8 @@ function Catbug(options) {
         }
     };
 
+    options.transformations = [SglMat4.translation([0, 2, 60])];
+
     this.body = new Body(options);
 };
 
