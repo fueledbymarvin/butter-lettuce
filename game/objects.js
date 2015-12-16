@@ -77,10 +77,18 @@ NVMCClient.createObjects = function () {
     var bbox = this.game.race.bbox;
     var quad = [bbox[0], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[5], bbox[0], bbox[1] - 0.01, bbox[5]];
     var text_coords = [-10, -10, 10, -10, 10, 10, -10, 10];
-    this.ground = new Primitive({
-        mesh: new TexturedQuadrilateral(quad, text_coords),
-        shader: this.textureShadowShader,
-        texture: this.texture_ground
+    this.texturedQuad = new TexturedQuadrilateral(quad, text_coords);
+
+    this.ground = new Body({
+        graph: new Node({
+            primitives: [
+                new Primitive({
+                    mesh: this.texturedQuad,
+                    shader: this.textureShadowShader,
+                    texture: this.texture_ground
+                })
+            ]
+        })
     });
 
     this.catbug = new Catbug({
@@ -109,7 +117,7 @@ NVMCClient.createBuffers = function (gl) {
     ComputeNormals(this.texturedSphere);
     this.createObjectBuffers(gl, this.texturedSphere, false, true, true);
     
-    this.createObjectBuffers(gl, this.ground.mesh, false, false, true);
+    this.createObjectBuffers(gl, this.texturedQuad, false, false, true);
 };
 
 NVMCClient.initializeObjects = function (gl) {

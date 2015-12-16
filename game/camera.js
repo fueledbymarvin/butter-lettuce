@@ -40,8 +40,8 @@ function DriverCamera() {
 };
 
 NVMCClient.cameras = [];
-NVMCClient.cameras[0] = new ChaseCamera();
-NVMCClient.cameras[1] = new DriverCamera();
+NVMCClient.cameras[0] = new DriverCamera();
+NVMCClient.cameras[1] = new ChaseCamera();
 NVMCClient.n_cameras = 2;
 NVMCClient.currentCamera = 0;
 

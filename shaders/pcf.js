@@ -168,6 +168,7 @@ shadowMapCreateShader = function (gl){
 texturePCFShadowShader = function (gl) {
     var vertex_shader = "\
 		uniform   mat4 uModelViewMatrix;                            \n\
+		uniform   mat4 uModelMatrix;                            \n\
 		uniform   mat4 uProjectionMatrix;                            \n\
 		uniform   mat4 uShadowMatrix;\n\
 		attribute vec3 aPosition;                                       \n\
@@ -179,8 +180,8 @@ texturePCFShadowShader = function (gl) {
 			vTextureCoords = aTextureCoords; \n\
 			vec4 position   = vec4(aPosition, 1.0);\n\
 			// transform vertex to shadow map clip space\n\
-			vShadowPosition = uShadowMatrix    * position;\n\
-			gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);  \n\
+			vShadowPosition = uShadowMatrix * uModelMatrix * position;\n\
+			gl_Position = uProjectionMatrix * uModelViewMatrix * uModelMatrix * position;  \n\
 		}                                                               \n\
 	";
     
@@ -249,7 +250,7 @@ void main(void)                                                 \n\
     shaderProgram.vertex_shader = vertex_shader;
     shaderProgram.fragment_shader = fragment_shader;
     
-    gl.bindAttribLocation(shaderProgram,shaderProgram. aPositionIndex, "aPosition");
+    gl.bindAttribLocation(shaderProgram, shaderProgram.aPositionIndex, "aPosition");
     gl.bindAttribLocation(shaderProgram, shaderProgram.aTextureCoordIndex, "aTextureCoords");
     gl.linkProgram(shaderProgram);
     
@@ -262,7 +263,8 @@ void main(void)                                                 \n\
 	alert(str);
     }
     
-    shaderProgram.uModelViewMatrixLocation 	= gl.getUniformLocation(shaderProgram, "uModelViewMatrix");
+    shaderProgram.uModelViewMatrixLocation  = gl.getUniformLocation(shaderProgram, "uModelViewMatrix");
+    shaderProgram.uModelMatrixLocation      = gl.getUniformLocation(shaderProgram, "uModelMatrix");
     shaderProgram.uProjectionMatrixLocation = gl.getUniformLocation(shaderProgram, "uProjectionMatrix");
     shaderProgram.uShadowMatrixLocation     = gl.getUniformLocation(shaderProgram, "uShadowMatrix");
     shaderProgram.uTextureLocation          = gl.getUniformLocation(shaderProgram, "uTexture");

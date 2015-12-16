@@ -11,7 +11,7 @@ function TexturedSphere(n, m) {
     var texture = [];
     var vertices = [];
     for (var i = 0; i <= n; i++) {
-        for (var j = 0; j < m; j++) {
+        for (var j = 0; j <= m; j++) {
             var polar = Math.PI / n * i;
             var azimuth = 2 * Math.PI / m * j;
             vertices.push(
@@ -19,7 +19,7 @@ function TexturedSphere(n, m) {
                 Math.cos(polar),
                 Math.sin(polar) * Math.sin(azimuth)
             );
-            texture.push(i/n, i/(m-1));
+            texture.push(i/n, j/m);
         }
     }
     this.textureCoord = this.textureCoord = new Float32Array(texture);

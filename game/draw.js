@@ -90,7 +90,7 @@ NVMCClient.drawShadowCastersDepthOnly = function (gl) {
     var M_9bis = SglMat4.rotationAngleAxis(this.game.state.players.me.dynamicState.orientation, [0, 1, 0]);
     this.stack.multiply(M_9bis);
 
-    this.drawCarDepthOnly(gl);
+    // this.drawCarDepthOnly(gl);
 };
 
 
@@ -186,20 +186,20 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     
     this.ground.draw(gl);
 
-    if( !excludeCar &&  this.currentCamera!=3 ){
- 	stack.push();
-	var M_9 = SglMat4.translation(pos);
-	stack.multiply(M_9);
+    // if( !excludeCar &&  this.currentCamera!=3 ){
+    //     stack.push();
+    //     var M_9 = SglMat4.translation(pos);
+    //     stack.multiply(M_9);
 
-	var M_9bis = SglMat4.rotationAngleAxis(this.game.state.players.me.dynamicState.orientation, [0, 1, 0]);
-	stack.multiply(M_9bis);
+    //     var M_9bis = SglMat4.rotationAngleAxis(this.game.state.players.me.dynamicState.orientation, [0, 1, 0]);
+    //     stack.multiply(M_9bis);
 
-	var toWordMatrix = SglMat4.mul(M_9, M_9bis);
+    //     var toWordMatrix = SglMat4.mul(M_9, M_9bis);
 
-	this.drawCar(gl,toWordMatrix);
-	stack.pop();
+    //     this.drawCar(gl,toWordMatrix);
+    //     stack.pop();
 	
-    }
+    // }
 };
 
 
