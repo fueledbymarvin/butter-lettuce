@@ -8,24 +8,24 @@ function Catbug(options) {
     this.translation = options.translation ? options.translation : [0, 2, 0];
     this.rotation = [0, 0, 0];
     this.lastTime = new Date().getTime();
-    this.velocity = 12;
+    this.dist = 8;
+    this.period = 1000;
     this.angle = Math.PI/2;
-    var p0 = getRandomPoint(this.translation, [0, 0, 1], Math.PI, this.velocity);
+    var p0 = getRandomPoint(this.translation, [0, 0, 1], Math.PI, this.dist);
     var p1 = this.translation;
-    var p2 = getRandomPoint(p1, SglVec3.sub(p1, p0), this.angle, this.velocity);
-    var p3 = getRandomPoint(p2, SglVec3.sub(p2, p1), this.angle, this.velocity);
+    var p2 = getRandomPoint(p1, SglVec3.sub(p1, p0), this.angle, this.dist);
+    var p3 = getRandomPoint(p2, SglVec3.sub(p2, p1), this.angle, this.dist);
     this.spline = [p0, p1, p2, p3];
-    console.log(this.spline);
     this.draw = function(gl, depthOnly) {
         var time = new Date().getTime();
-        var t = (time - this.lastTime)/1000;
+        var t = (time - this.lastTime)/this.period;
         if (t > 1) {
-            t = t - 1;
-            this.lastTime += 1000;
+            t -= 1;
+            this.lastTime += this.period;
             var nextPoint = getRandomPoint(
                 this.spline[3],
                 SglVec3.sub(this.spline[3], this.spline[2]),
-                this.angle, this.velocity
+                this.angle, this.dist
             );
             this.spline.shift();
             this.spline.push(nextPoint);
@@ -264,7 +264,14 @@ function getRandomPoint(p, v, maxAngle, dist) {
     dir.push(0);
     var angle = Math.random()*2*maxAngle - maxAngle;
     var newDir = SglMat4.mul4(SglMat4.rotationAngleAxis(angle, [0, 1, 0]), dir);
-    return SglVec3.add(p, SglVec3.muls(newDir, dist));
+    var res = SglVec3.add(p, SglVec3.muls(newDir, dist));
+    while (res[0] > 100 || res[0] < -100 || res[2] > 100 || res[2] < -100) {
+        maxAngle += Math.PI/8;
+        angle = Math.random()*2*maxAngle - maxAngle;
+        newDir = SglMat4.mul4(SglMat4.rotationAngleAxis(angle, [0, 1, 0]), dir);
+        res = SglVec3.add(p, SglVec3.muls(newDir, dist));
+    }
+    return res;
 }
 
 function calcHeading(v) {
