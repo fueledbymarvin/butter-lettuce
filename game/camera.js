@@ -16,11 +16,12 @@ function ChaseCamera() {//line 74, Listnig 4.5{
                 0;
 
         var tilt = this.rotation[0] - movementY*Math.PI/720;
-        var lim = Math.PI/4;
-        if (tilt > lim) {
-            this.rotation[0] = lim;
-        } else if (tilt < -lim) {
-            this.rotation[0] = -lim;
+        var upper = Math.PI/8;
+        var lower = -Math.PI/4;
+        if (tilt > upper) {
+            this.rotation[0] = upper;
+        } else if (tilt < lower) {
+            this.rotation[0] = lower;
         } else {
             this.rotation[0] = tilt;
         }

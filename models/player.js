@@ -26,7 +26,7 @@ function Player() {
     this.getFrame = function() {
         var y = [0, 1, 0];
 	var z = SglMat4.mul4(SglMat4.rotationAngleAxis(this.rotation[1], y), [0, 0, 1, 0]);
-	var x = SpiderGL.Math.Vec3.cross(y, z);
+	var x = SglVec3.cross(y, z);
         var p = this.translation;
         return [
             x[0], x[1], x[2], 0,
@@ -43,30 +43,30 @@ function Player() {
 
         var y = [0, 1, 0];
 	var z = SglMat4.mul4(SglMat4.rotationAngleAxis(this.rotation[1], y), [0, 0, 1, 0]);
-	var x = SpiderGL.Math.Vec3.cross(y, z);
+	var x = SglVec3.cross(y, z);
 
         if (this.forward) {
-            this.translation = SpiderGL.Math.Vec3.add(
+            this.translation = SglVec3.add(
                 this.translation,
-                SpiderGL.Math.Vec3.muls(z, this.velocity*elapsed)
+                SglVec3.muls(z, this.velocity*elapsed)
             );
         }
         if (this.back) {
-            this.translation = SpiderGL.Math.Vec3.sub(
+            this.translation = SglVec3.sub(
                 this.translation,
-                SpiderGL.Math.Vec3.muls(z, this.velocity*elapsed)
+                SglVec3.muls(z, this.velocity*elapsed)
             );
         }
         if (this.left) {
-            this.translation = SpiderGL.Math.Vec3.sub(
+            this.translation = SglVec3.sub(
                 this.translation,
-                SpiderGL.Math.Vec3.muls(x, this.velocity*elapsed)
+                SglVec3.muls(x, this.velocity*elapsed)
             );
         }
         if (this.right) {
-            this.translation = SpiderGL.Math.Vec3.add(
+            this.translation = SglVec3.add(
                 this.translation,
-                SpiderGL.Math.Vec3.muls(x, this.velocity*elapsed)
+                SglVec3.muls(x, this.velocity*elapsed)
             );
         }
     };

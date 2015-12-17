@@ -5,7 +5,38 @@ var NVMCClient = NVMCClient || {};
 function Catbug(options) {
     this.client = NVMCClient;
 
+    this.translation = options.translation ? options.translation : [0, 2, 0];
+    this.rotation = [0, 0, 0];
+    this.lastTime = new Date().getTime();
+    this.velocity = 12;
+    this.angle = Math.PI/2;
+    var p0 = getRandomPoint(this.translation, [0, 0, 1], Math.PI, this.velocity);
+    var p1 = this.translation;
+    var p2 = getRandomPoint(p1, SglVec3.sub(p1, p0), this.angle, this.velocity);
+    var p3 = getRandomPoint(p2, SglVec3.sub(p2, p1), this.angle, this.velocity);
+    this.spline = [p0, p1, p2, p3];
+    console.log(this.spline);
     this.draw = function(gl, depthOnly) {
+        var time = new Date().getTime();
+        var t = (time - this.lastTime)/1000;
+        if (t > 1) {
+            t = t - 1;
+            this.lastTime += 1000;
+            var nextPoint = getRandomPoint(
+                this.spline[3],
+                SglVec3.sub(this.spline[3], this.spline[2]),
+                this.angle, this.velocity
+            );
+            this.spline.shift();
+            this.spline.push(nextPoint);
+        }
+        var prev = this.translation;
+        this.translation = catmullRom(this.spline, t);
+        this.rotation[1] = calcHeading(SglVec3.sub(this.translation, prev));        
+        this.body.transformation = SglMat4.mul(
+            SglMat4.translation(this.translation),
+            SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
+        );
         this.body.draw(gl, depthOnly);
     };
 
@@ -225,4 +256,24 @@ function catmullRom(p, t) {
     var z = p[0][2]*w0 + p[1][2]*w1 + p[2][2]*w2 + p[3][2]*w3;
 
     return [x, y, z];
+}
+
+function getRandomPoint(p, v, maxAngle, dist) {
+
+    var dir = SglVec3.normalize(v);
+    dir.push(0);
+    var angle = Math.random()*2*maxAngle - maxAngle;
+    var newDir = SglMat4.mul4(SglMat4.rotationAngleAxis(angle, [0, 1, 0]), dir);
+    return SglVec3.add(p, SglVec3.muls(newDir, dist));
+}
+
+function calcHeading(v) {
+    
+    v = SglVec3.normalize(v);
+    var angle = Math.acos(SglVec3.dot(v, [0, 0, 1]));
+    if (SglVec3.cross(v, [0, 0, 1])[1] > 0) {
+        return -angle;
+    } else {
+        return angle;
+    }
 }
