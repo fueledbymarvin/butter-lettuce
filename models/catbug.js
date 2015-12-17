@@ -5,7 +5,7 @@ var NVMCClient = NVMCClient || {};
 function Catbug(options) {
     this.client = NVMCClient;
 
-    this.translation = options.translation ? options.translation : [0, 2, 0];
+    this.translation = options.translation ? options.translation : [0, 3, 0];
     this.rotation = [0, 0, 0];
     this.lastTime = new Date().getTime();
     this.dist = 8;
@@ -261,6 +261,7 @@ function catmullRom(p, t) {
 function getRandomPoint(p, v, maxAngle, dist) {
 
     var dir = SglVec3.normalize(v);
+    dir[1] = 0; // only want heading
     dir.push(0);
     var angle = Math.random()*2*maxAngle - maxAngle;
     var newDir = SglMat4.mul4(SglMat4.rotationAngleAxis(angle, [0, 1, 0]), dir);
@@ -271,6 +272,11 @@ function getRandomPoint(p, v, maxAngle, dist) {
         newDir = SglMat4.mul4(SglMat4.rotationAngleAxis(angle, [0, 1, 0]), dir);
         res = SglVec3.add(p, SglVec3.muls(newDir, dist));
     }
+    var dAlt = Math.random()*2 - 1; // alter altitude
+    while (res[1]+dAlt > 5 || res[1]+dAlt < 1) {
+        dAlt += Math.random()*2 - 1; // alter altitude
+    }
+    res[1] += dAlt;
     return res;
 }
 
