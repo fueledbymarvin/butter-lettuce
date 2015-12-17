@@ -4,38 +4,6 @@
 var NVMCClient = NVMCClient || {};
 /***********************************************************************/
 
-NVMCClient.myPos = function () {
-    return this.game.state.players.me.dynamicState.position;
-};
-NVMCClient.myOri = function () {
-    return this.game.state.players.me.dynamicState.orientation;
-};
-
-NVMCClient.myFrame = function () {
-    return this.game.state.players.me.dynamicState.frame;
-};
-
-/***********************************************************************/
-
-NVMCClient.initMotionKeyHandlers = function () {
-    var game = this.game;
-
-    var carMotionKey = {};
-    carMotionKey["W"] = function (on) {
-	game.playerAccelerate = on;
-    };
-    carMotionKey["S"] = function (on) {
-	game.playerBrake = on;
-    };
-    carMotionKey["A"] = function (on) {
-	game.playerSteerLeft = on;
-    };
-    carMotionKey["D"] = function (on) {
-	game.playerSteerRight = on;
-    };
-    this.carMotionKey = carMotionKey;
-};
-
 NVMCClient.onTerminate = function () {};
 
 NVMCClient.onConnectionOpen = function () {
@@ -80,13 +48,13 @@ NVMCClient.onMouseButtonUp = function (button, x, y, event) {
 };
 
 NVMCClient.onMouseMove = function (x, y, event) {
-    this.cameras[this.currentCamera].mouseMove(x,y);
+    this.player.mouseMove(event);
+    this.cameras[this.currentCamera].mouseMove(event);
 };
 
 NVMCClient.onKeyDown = function (keyCode, event) {
 
-    if (this.currentCamera != 2)
-	(this.carMotionKey[keyCode]) && (this.carMotionKey[keyCode])(true);
+    this.player.keyDown(keyCode);
     
     this.cameras[this.currentCamera].keyDown(keyCode);
 };
@@ -98,7 +66,7 @@ NVMCClient.onKeyUp = function (keyCode, event) {
 	return;
     }
     
-    (this.carMotionKey[keyCode]) && (this.carMotionKey[keyCode])(false);
+    this.player.keyUp(keyCode);
     
     this.cameras[this.currentCamera].keyUp(keyCode);
 };

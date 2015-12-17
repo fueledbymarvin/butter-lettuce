@@ -81,6 +81,9 @@ NVMCClient.createObjects = function () {
 
     this.objects = [];
 
+    this.player = new Player();
+    this.objects.push(this.player);
+    
     this.ground = new Body({
         graph: new Node({
             primitives: [

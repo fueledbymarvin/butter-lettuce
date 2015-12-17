@@ -77,52 +77,16 @@ NVMCClient.drawCarDepthOnly = function (gl) {
 
 NVMCClient.drawShadowCastersDepthOnly = function (gl) {
 
-    var pos  = this.game.state.players.me.dynamicState.position;	
-    
     for (var i = 0; i < this.objects.length; i++) {
         this.objects[i].draw(gl, true);
     }
-
-    var M_9 = SglMat4.translation(pos);
-    this.stack.multiply(M_9);
-
-    var M_9bis = SglMat4.rotationAngleAxis(this.game.state.players.me.dynamicState.orientation, [0, 1, 0]);
-    this.stack.multiply(M_9bis);
-
-    // this.drawCarDepthOnly(gl);
 };
 
-
-NVMCClient.drawCar = function (gl,toWordMatrix){
-    this.sgl_renderer.begin();
-    this.sgl_renderer.setTechnique(this.sgl_technique);
-    
-    
-    this.sgl_renderer.setGlobals({
-   	"PROJECTION_MATRIX":this.projectionMatrix,
-	"WORLD_VIEW_MATRIX":this.stack.matrix,
-	"SHADOW_MATRIX": SglMat4.mul(this.shadowMatrix ,toWordMatrix),
-	"VIEW_SPACE_NORMAL_MATRIX"     : SglMat4.to33(this.stack.matrix) ,
-	"CUBE_MAP"            : 2,
-	"SHADOW_MAP"            : 3,
-	"VIEW_TO_WORLD_MATRIX": this.viewFrame,
-	"LIGHTS_GEOMETRY":		this.sunLightDirectionViewSpace,
-	"LIGHT_COLOR":	[0.9,0.9,0.9]	});
-    
-    this.sgl_renderer.setPrimitiveMode("FILL");
-    
-    this.sgl_renderer.setModel(this.sgl_car_model);
-    this.sgl_renderer.setTexture(2,new SglTextureCubeMap(gl,this.reflectionMap));
-    this.sgl_renderer.setTexture(3,new SglTexture2D(gl,this.shadowMapTextureTarget.texture));
-    this.sgl_renderer.renderModel();
-    this.sgl_renderer.end();
-};		
 
 NVMCClient.drawEverything = function (gl,excludeCar) {
     var stack  = this.stack;
     this.viewMatrix = this.stack.matrix;
     this.sunLightDirectionViewSpace = SglMat4.mul4(this.stack.matrix,this.sunLightDirection);
-    var pos  = this.game.state.players.me.dynamicState.position;	
 
     // set shadow map texture
     gl.activeTexture(gl.TEXTURE1);
@@ -180,21 +144,6 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     for (var i = 0; i < this.objects.length; i++) {
         this.objects[i].draw(gl);
     }
-
-    // if( !excludeCar &&  this.currentCamera!=3 ){
-    //     stack.push();
-    //     var M_9 = SglMat4.translation(pos);
-    //     stack.multiply(M_9);
-
-    //     var M_9bis = SglMat4.rotationAngleAxis(this.game.state.players.me.dynamicState.orientation, [0, 1, 0]);
-    //     stack.multiply(M_9bis);
-
-    //     var toWordMatrix = SglMat4.mul(M_9, M_9bis);
-
-    //     this.drawCar(gl,toWordMatrix);
-    //     stack.pop();
-	
-    // }
 };
 
 
@@ -217,8 +166,6 @@ NVMCClient.drawScene = function (gl) {
 
     this.shadowMatrix = SglMat4.mul(proj,mview);
 
-    this.drawOnReflectionMap(gl,SglVec3.add(this.game.state.players.me.dynamicState.position,[0.0,1.5,0.0]));
-    
     gl.viewport(0, 0, width, height);
 
     // Clear the framebuffer
@@ -229,9 +176,8 @@ NVMCClient.drawScene = function (gl) {
     this.projectionMatrix = SglMat4.perspective(3.14/4,ratio,0.1,1000);
 
     stack.loadIdentity();
-    var pos = this.game.state.players.me.dynamicState.position;
-    var orientation = this.game.state.players.me.dynamicState.orientation;
-    this.cameras[this.currentCamera].setView(this.stack, this.myFrame());
+    this.player.update();
+    this.cameras[this.currentCamera].setView(this.stack, this.player.getFrame());
     
     this.viewFrame = SglMat4.inverse(this.stack.matrix);
     this.drawSkyBox(gl);

@@ -16,14 +16,6 @@ NVMCClient.onInitialize = function () {
     /*************************************************************/
 
     /*************************************************************/
-    this.game.player.color = [ 1.0, 0.0, 0.0, 1.0 ];
-    /*************************************************************/
-
-    /*************************************************************/
-    this.initMotionKeyHandlers();
-    /*************************************************************/
-    
-    /*************************************************************/
     this.stack 			= new SglMatrixStack();
     this.projection_matrix 	=  SglMat4.identity();
     enlargeBBox(this.game.race.bbox,0.01);
@@ -69,8 +61,6 @@ NVMCClient.onInitialize = function () {
                                       NVMC.resource_path+'textures/cubemap/negz.png'
                                      );
     this.createReflectionMap(gl);
-    
-    this.loadCarModel(gl, NVMC.resource_path+"geometry/cars/eclipse/eclipse-white.obj");
     
     this.createTechniqueShadow(gl);
 
