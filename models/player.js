@@ -17,9 +17,6 @@ function Player() {
     this.velocity = 16;
 
     this.draw = function(gl, depthOnly) {
-
-        this.body.translation = this.translation;
-        this.body.rotation = this.rotation;
         this.body.draw(gl, depthOnly);
     };
 
@@ -69,6 +66,10 @@ function Player() {
                 SglVec3.muls(x, this.velocity*elapsed)
             );
         }
+        this.body.translation = this.translation;
+        this.body.rotation = this.rotation;
+
+        this.body.update();
     };
 
     this.keyDown = function(k) {

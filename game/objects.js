@@ -115,7 +115,27 @@ NVMCClient.createObjects = function () {
     var quad = [bbox[0], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[5], bbox[0], bbox[1] - 0.01, bbox[5]];
     var text_coords = [-10, -10, 10, -10, 10, 10, -10, 10];
     this.texturedQuad = new TexturedQuadrilateral(quad, text_coords);
+};
 
+NVMCClient.createBuffers = function (gl) {
+    this.createObjectBuffers(gl, this.cube, false, false, false);
+
+    ComputeNormals(this.cylinder);
+    this.createObjectBuffers(gl, this.cylinder, false, true, false);
+    
+    ComputeNormals(this.cone);
+    this.createObjectBuffers(gl, this.cone, false, true, false);
+
+    ComputeNormals(this.sphere);
+    this.createObjectBuffers(gl, this.sphere, false, true, false);
+
+    ComputeNormals(this.texturedSphere);
+    this.createObjectBuffers(gl, this.texturedSphere, false, true, true);
+    
+    this.createObjectBuffers(gl, this.texturedQuad, false, false, true);
+};
+
+NVMCClient.createEntities = function() {
     this.drawables = [];
     this.shadowables = [];
     this.colliders = [];
@@ -182,26 +202,9 @@ NVMCClient.createObjects = function () {
     // this.collideables = this.collideables.concat(this.spinners);
 };
 
-NVMCClient.createBuffers = function (gl) {
-    this.createObjectBuffers(gl, this.cube, false, false, false);
-
-    ComputeNormals(this.cylinder);
-    this.createObjectBuffers(gl, this.cylinder, false, true, false);
-    
-    ComputeNormals(this.cone);
-    this.createObjectBuffers(gl, this.cone, false, true, false);
-
-    ComputeNormals(this.sphere);
-    this.createObjectBuffers(gl, this.sphere, false, true, false);
-
-    ComputeNormals(this.texturedSphere);
-    this.createObjectBuffers(gl, this.texturedSphere, false, true, true);
-    
-    this.createObjectBuffers(gl, this.texturedQuad, false, false, true);
-};
-
 NVMCClient.initializeObjects = function (gl) {
     this.createObjects();
     this.createBuffers(gl);
+    this.createEntities();
 };
 

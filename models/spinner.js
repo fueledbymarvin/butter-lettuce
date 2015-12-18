@@ -5,6 +5,10 @@ var NVMCClient = NVMCClient || {};
 function Spinner(options) {
     this.client = NVMCClient;
 
+    this.update = function() {
+        this.body.update();
+    };
+
     this.draw = function(gl, depthOnly) {
         this.body.draw(gl, depthOnly);
     };

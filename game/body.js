@@ -143,12 +143,17 @@ function Body(options) {
         stack.pop();
     };
 
-    this.draw = function(gl, depthOnly) {
-        if (this.currentAnimation && depthOnly) {
-            this.checkAnimation();
-            this.processAnimation();
-        }
+    this.update = function() {
+        this.wrap((function() {
+            if (this.currentAnimation) {
+                this.checkAnimation();
+                this.processAnimation();
+            }
+            this.graph.update();
+        }).bind(this));
+    };
 
+    this.draw = function(gl, depthOnly) {
         this.wrap((function(gl, depthOnly) {
             this.graph.draw(gl, depthOnly);
         }).bind(this), gl, depthOnly);
@@ -175,6 +180,18 @@ function Node(options) {
 
         f(gl, depthOnly);
         stack.pop();
+    };
+
+    this.update = function() {
+        this.wrap((function() {
+            for (var joint in this.joints) {
+                this.joints[joint].update();
+            }
+
+            for (var i = 0; i < this.primitives.length; i++) {
+                this.primitives[i].update();
+            }
+        }).bind(this));
     };
 
     this.draw = function(gl, depthOnly) {
@@ -217,6 +234,12 @@ function Joint(options) {
         stack.pop();
     };
 
+    this.update = function() {
+        this.wrap((function() {
+            this.child.update();
+        }).bind(this));
+    };
+
     this.draw = function(gl, depthOnly) {
         this.wrap((function(gl, depthOnly) {
             // this.marker.draw(gl, depthOnly);
@@ -248,6 +271,17 @@ function Primitive(options) {
         stack.pop();
     };
 
+    this.update = function() {
+        this.wrap((function() {
+            var stack = this.client.stack;
+            var transformed = new Array(this.mesh.aabbVertices.length);
+            for (var i = 0; i < transformed.length; i++) {
+                transformed[i] = SglMat4.mul4(stack.matrix, this.mesh.aabbVertices[i]);
+            }
+            this.aabb = this.client.findAABB(transformed);
+        }).bind(this));
+    };
+
     this.draw = function(gl, depthOnly) {
         this.wrap((function(gl, depthOnly) {
             var stack = this.client.stack;
@@ -258,17 +292,13 @@ function Primitive(options) {
             if (depthOnly) {
                 gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
             } else {
+                if (this.mesh != this.client.texturedQuad) {
+                    this.drawAABB(gl);
+                }
                 if (this.texture) {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, this.texture);
                 }
-
-                var transformed = new Array(this.mesh.aabbVertices.length);
-                for (var i = 0; i < transformed.length; i++) {
-                    transformed[i] = SglMat4.mul4(stack.matrix, this.mesh.aabbVertices[i]);
-                }
-                this.aabb = this.client.findAABB(transformed);
-                this.drawAABB(gl);
 
                 gl.uniformMatrix4fv(shader.uModelMatrixLocation, false, stack.matrix);
                 var InvT = SglMat4.inverse(SglMat4.mul(this.client.viewMatrix, stack.matrix));

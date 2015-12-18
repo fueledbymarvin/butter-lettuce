@@ -160,7 +160,12 @@ NVMCClient.drawScene = function (gl) {
     this.projectionMatrix = SglMat4.perspective(3.14/4,ratio,0.1,1000);
 
     stack.loadIdentity();
-    this.player.update();
+    for (var i = 0; i < this.colliders.length; i++) {
+        this.colliders[i].update();
+    }
+    for (var i = 0; i < this.collideables.length; i++) {
+        this.collideables[i].update();
+    }
     this.cameras[this.currentCamera].setView(this.stack, this.player.getFrame());
     
     this.viewFrame = SglMat4.inverse(this.stack.matrix);
@@ -169,13 +174,6 @@ NVMCClient.drawScene = function (gl) {
     gl.enable(gl.DEPTH_TEST);
 
     this.setupShaders(gl);
-
-    // for (var i = 0; i < this.colliders.length; i++) {
-    //     this.colliders[i].update();
-    // }
-    // for (var i = 0; i < this.collideables.length; i++) {
-    //     this.collideables[i].update();
-    // }
 
     gl.disable(gl.STENCIL_TEST);
 
