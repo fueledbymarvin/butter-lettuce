@@ -67,13 +67,14 @@ NVMCClient.createObjectBuffers = function (gl, obj, createColorBuffer, createNor
 
     var vertices = new Array(obj.numVertices);
     for (var i = 0; i < obj.numVertices; i++) {
-        vertices[i] = [obj.vertices[i*3], obj.vertices[i*3+1], obj.vertices[i*3+2]];
+        vertices[i] = [obj.vertices[i*3], obj.vertices[i*3+1], obj.vertices[i*3+2], 1];
     }
     var triangles = new Array(obj.numTriangles);
     for (var i = 0; i < obj.numTriangles; ++i) {
         triangles[i] = [obj.triangleIndices[i*3], obj.triangleIndices[i*3+1], obj.triangleIndices[i*3+2]];
     }
-    obj.bvh = this.buildBVH(vertices, triangles, this.bvhDepth);
+    obj.vertices = vertices;
+    obj.triangles = triangles;
 };
 
 NVMCClient.buildBVH = function(vertices, triangles, depth) {
@@ -123,18 +124,17 @@ NVMCClient.buildBVH = function(vertices, triangles, depth) {
                 nRight++;
             }
         }
-        if (nRight == 0) {
+        if (nRight <= 1) {
             left.push(triangles[i]);
-        } else if (nRight == vs.length) {
-            right.push(triangles[i]);
         } else {
-            left.push(triangles[i]);
             right.push(triangles[i]);
         }
     }
 
     return {
-        vertices: this.findAABBVertices(min, max),
+        min: min,
+        max: max,
+        // vertices: this.findAABBVertices(min, max),
         left: this.buildBVH(vertices, left, depth-1),
         right: this.buildBVH(vertices, right, depth-1)
     };

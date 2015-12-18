@@ -291,20 +291,22 @@ function Primitive(options) {
         this.wrap((function() {
             var mat = this.client.stack.matrix;
             
+            var transformed = new Array(this.mesh.vertices.length);
+            for (var i = 0; i < transformed.length; i++) {
+                transformed[i] = SglMat4.mul4(mat, this.mesh.vertices[i]);
+            }
+            var bvh = this.client.buildBVH(transformed, this.mesh.triangles, this.client.bvhDepth);
+
             this.aabbs = [];
-            var toVisit = [this.mesh.bvh];
+            var toVisit = [bvh];
             while (toVisit.length > 0) {
                 var visiting = toVisit.pop();
                 
                 if (visiting.left == null && visiting.right == null) {
-                    var transformed = new Array(visiting.vertices.length);
-                    for (var i = 0; i < transformed.length; i++) {
-                        transformed[i] = SglMat4.mul4(mat, visiting.vertices[i]);
-                    }
-                    this.aabbs.push(this.client.findAABB(transformed));
+                    this.aabbs.push(visiting);
                 } else {
-                    toVisit.push(visiting.left);
-                    toVisit.push(visiting.right);
+                    if (visiting.left) { toVisit.push(visiting.left); }
+                    if (visiting.right) { toVisit.push(visiting.right); }
                 }
             }
         }).bind(this));
