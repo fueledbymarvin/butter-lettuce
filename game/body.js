@@ -218,6 +218,7 @@ function Primitive(options) {
     this.scaling = options.scaling ? options.scaling : [1, 1, 1];
     this.rotation = options.rotation ? options.rotation : [0, 0, 0];
     this.translation = options.translation ? options.translation : [0, 0, 0];
+    this.aabb = this.mesh.aabb;
 
     this.draw = function(gl, depthOnly) {
         var shader = depthOnly ? this.client.shadowMapCreateShader : this.shader;
@@ -237,6 +238,13 @@ function Primitive(options) {
         if (depthOnly) {
             gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
         } else {
+            var transformed = new Array(this.mesh.aabbVertices.length);
+            for (var i = 0; i < transformed.length; i++) {
+                transformed[i] = SglMat4.mul4(stack.matrix, this.mesh.aabbVertices[i]);
+            }
+            this.aabb = this.client.findAABB(transformed);
+            this.drawAABB(gl);
+
             gl.uniformMatrix4fv(shader.uModelMatrixLocation, false, stack.matrix);
             var InvT = SglMat4.inverse(SglMat4.mul(this.client.viewMatrix, stack.matrix));
             InvT = SglMat4.transpose(InvT);
@@ -244,6 +252,34 @@ function Primitive(options) {
         }
 
         this.client.drawObject(gl, this.mesh, shader, this.color);
+        stack.pop();
+    };
+
+    this.drawAABB = function(gl) {
+        var translation = [
+            (this.aabb.max[0]+this.aabb.min[0])/2,
+            (this.aabb.max[1]+this.aabb.min[1])/2,
+            (this.aabb.max[2]+this.aabb.min[2])/2
+        ];
+        var scaling = [
+            (this.aabb.max[0]-this.aabb.min[0])/2,
+            (this.aabb.max[1]-this.aabb.min[1])/2,
+            (this.aabb.max[2]-this.aabb.min[2])/2
+        ];
+        var shader = this.client.lambertianSingleColorShadowShader;
+
+        var stack = this.client.stack;
+        stack.push();
+        stack.loadIdentity();
+        stack.multiply(SglMat4.translation(translation));
+        stack.multiply(SglMat4.scaling(scaling));
+        gl.useProgram(shader);
+        gl.uniformMatrix4fv(shader.uModelMatrixLocation, false, stack.matrix);
+        var InvT = SglMat4.inverse(SglMat4.mul(this.client.viewMatrix, stack.matrix));
+        InvT = SglMat4.transpose(InvT);
+        gl.uniformMatrix3fv(shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
+        this.client.drawObject(gl, this.client.cube, shader, [1, 1, 1, 1]);
+        gl.useProgram(this.shader);
         stack.pop();
     };
 }
@@ -361,3 +397,4 @@ function quaternionToEuler(quaternion) {
 
     return [attitude, heading, bank];
 }
+

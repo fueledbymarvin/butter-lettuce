@@ -65,6 +65,43 @@ NVMCClient.createObjectBuffers = function (gl, obj, createColorBuffer, createNor
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, edges, gl.STATIC_DRAW);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
+    var vertices = new Array(obj.numVertices);
+    for (var i = 0; i < obj.numVertices; i++) {
+        vertices[i] = [obj.vertices[i*3], obj.vertices[i*3+1], obj.vertices[i*3+2]];
+    }
+    obj.aabb = this.findAABB(vertices);
+    obj.aabbVertices = new Array(8);
+    obj.aabbVertices[0] = [obj.aabb.min[0], obj.aabb.min[1], obj.aabb.min[2], 1];
+    obj.aabbVertices[1] = [obj.aabb.min[0], obj.aabb.min[1], obj.aabb.max[2], 1];
+    obj.aabbVertices[2] = [obj.aabb.min[0], obj.aabb.max[1], obj.aabb.min[2], 1];
+    obj.aabbVertices[3] = [obj.aabb.min[0], obj.aabb.max[1], obj.aabb.max[2], 1];
+    obj.aabbVertices[4] = [obj.aabb.max[0], obj.aabb.min[1], obj.aabb.min[2], 1];
+    obj.aabbVertices[5] = [obj.aabb.max[0], obj.aabb.min[1], obj.aabb.max[2], 1];
+    obj.aabbVertices[6] = [obj.aabb.max[0], obj.aabb.max[1], obj.aabb.min[2], 1];
+    obj.aabbVertices[7] = [obj.aabb.max[0], obj.aabb.max[1], obj.aabb.max[2], 1];
+};
+
+NVMCClient.findAABB = function(vertices) {
+    var min = [vertices[0][0], vertices[0][1], vertices[0][2]];
+    var max = [vertices[0][0], vertices[0][1], vertices[0][2]];
+    for (var i = 1; i < vertices.length; i++) {
+        if (vertices[i][0] < min[0]) {
+            min[0] = vertices[i][0];
+        } else if (vertices[i][0] > max[0]) {
+            max[0] = vertices[i][0];
+        }
+        if (vertices[i][1] < min[1]) {
+            min[1] = vertices[i][1];
+        } else if (vertices[i][1] > max[1]) {
+            max[1] = vertices[i][1];
+        }
+        if (vertices[i][2] < min[2]) {
+            min[2] = vertices[i][2];
+        } else if (vertices[i][2] > max[2]) {
+            max[2] = vertices[i][2];
+        }
+    }
+    return {min: min, max: max};
 };
 
 NVMCClient.createObjects = function () {
