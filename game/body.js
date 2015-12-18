@@ -128,24 +128,30 @@ function Body(options) {
         }
     };
 
+    this.wrap = function(f, gl, depthOnly) {
+        var stack = this.client.stack;
+        stack.push();
+        if (!depthOnly) {
+            stack.loadIdentity();
+        }
+
+        stack.multiply(this.transformation);
+        stack.multiply(SglMat4.translation(this.translation));
+        stack.multiply(eulerToRot(this.rotation));
+
+        f(gl, depthOnly);
+        stack.pop();
+    };
+
     this.draw = function(gl, depthOnly) {
         if (this.currentAnimation && depthOnly) {
             this.checkAnimation();
             this.processAnimation();
         }
 
-        var stack = this.client.stack;
-        stack.push();
-        if (!depthOnly) {
-            stack.loadIdentity();
-        }
-        stack.multiply(this.transformation);
-        stack.multiply(SglMat4.translation(this.translation));
-        stack.multiply(eulerToRot(this.rotation));
-
-        this.graph.draw(gl, depthOnly);
-
-        stack.pop();
+        this.wrap((function(gl, depthOnly) {
+            this.graph.draw(gl, depthOnly);
+        }).bind(this), gl, depthOnly);
     };
 }
 
@@ -160,22 +166,27 @@ function Node(options) {
     this.translation = options.translation ? options.translation : [0, 0, 0];
     this.flipOrder = options.flipOrder;
 
-    this.draw = function(gl, depthOnly) {
+    this.wrap = function(f, gl, depthOnly) {
         var stack = this.client.stack;
         stack.push();
         stack.multiply(SglMat4.translation(this.translation));
         stack.multiply(eulerToRot(this.rotation));
         stack.multiply(SglMat4.scaling(this.scaling));
 
-        for (var joint in this.joints) {
-            this.joints[joint].draw(gl, depthOnly);
-        }
-
-        for (var i = 0; i < this.primitives.length; i++) {
-            this.primitives[i].draw(gl, depthOnly);
-        }
-
+        f(gl, depthOnly);
         stack.pop();
+    };
+
+    this.draw = function(gl, depthOnly) {
+        this.wrap((function(gl, depthOnly) {
+            for (var joint in this.joints) {
+                this.joints[joint].draw(gl, depthOnly);
+            }
+
+            for (var i = 0; i < this.primitives.length; i++) {
+                this.primitives[i].draw(gl, depthOnly);
+            }
+        }).bind(this), gl, depthOnly);
     };
 }
 
@@ -196,15 +207,21 @@ function Joint(options) {
     });
     this.child = options.child;
 
-    this.draw = function(gl, depthOnly) {
+    this.wrap = function(f, gl, depthOnly) {
         var stack = this.client.stack;
         stack.push();
         stack.multiply(SglMat4.translation(this.translation));
         stack.multiply(eulerToRot(this.rotation));
 
-        // this.marker.draw(gl, depthOnly);
-        this.child.draw(gl, depthOnly);
+        f(gl, depthOnly);
         stack.pop();
+    };
+
+    this.draw = function(gl, depthOnly) {
+        this.wrap((function(gl, depthOnly) {
+            // this.marker.draw(gl, depthOnly);
+            this.child.draw(gl, depthOnly);
+        }).bind(this), gl, depthOnly);
     };
 }
 
@@ -220,39 +237,47 @@ function Primitive(options) {
     this.translation = options.translation ? options.translation : [0, 0, 0];
     this.aabb = this.mesh.aabb;
 
-    this.draw = function(gl, depthOnly) {
-        var shader = depthOnly ? this.client.shadowMapCreateShader : this.shader;
-        gl.useProgram(shader);
-
-        if (!depthOnly && this.texture) {
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, this.texture);
-        }
-
+    this.wrap = function(f, gl, depthOnly) {
         var stack = this.client.stack;
         stack.push();
         stack.multiply(SglMat4.translation(this.translation));
         stack.multiply(eulerToRot(this.rotation));
         stack.multiply(SglMat4.scaling(this.scaling));
 
-        if (depthOnly) {
-            gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
-        } else {
-            var transformed = new Array(this.mesh.aabbVertices.length);
-            for (var i = 0; i < transformed.length; i++) {
-                transformed[i] = SglMat4.mul4(stack.matrix, this.mesh.aabbVertices[i]);
-            }
-            this.aabb = this.client.findAABB(transformed);
-            this.drawAABB(gl);
-
-            gl.uniformMatrix4fv(shader.uModelMatrixLocation, false, stack.matrix);
-            var InvT = SglMat4.inverse(SglMat4.mul(this.client.viewMatrix, stack.matrix));
-            InvT = SglMat4.transpose(InvT);
-            gl.uniformMatrix3fv(shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
-        }
-
-        this.client.drawObject(gl, this.mesh, shader, this.color);
+        f(gl, depthOnly);
         stack.pop();
+    };
+
+    this.draw = function(gl, depthOnly) {
+        this.wrap((function(gl, depthOnly) {
+            var stack = this.client.stack;
+
+            var shader = depthOnly ? this.client.shadowMapCreateShader : this.shader;
+            gl.useProgram(shader);
+
+            if (depthOnly) {
+                gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
+            } else {
+                if (this.texture) {
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+                }
+
+                var transformed = new Array(this.mesh.aabbVertices.length);
+                for (var i = 0; i < transformed.length; i++) {
+                    transformed[i] = SglMat4.mul4(stack.matrix, this.mesh.aabbVertices[i]);
+                }
+                this.aabb = this.client.findAABB(transformed);
+                this.drawAABB(gl);
+
+                gl.uniformMatrix4fv(shader.uModelMatrixLocation, false, stack.matrix);
+                var InvT = SglMat4.inverse(SglMat4.mul(this.client.viewMatrix, stack.matrix));
+                InvT = SglMat4.transpose(InvT);
+                gl.uniformMatrix3fv(shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
+            }
+
+            this.client.drawObject(gl, this.mesh, shader, this.color);
+        }).bind(this), gl, depthOnly);
     };
 
     this.drawAABB = function(gl) {

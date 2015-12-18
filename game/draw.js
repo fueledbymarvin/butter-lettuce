@@ -56,34 +56,23 @@ NVMCClient.drawObject = function (gl, obj, shader, fillColor, drawWire) {
 
 };
 
-NVMCClient.drawCarDepthOnly = function (gl) {
-    var fb = new SglFramebuffer(gl, {handle: this.shadowMapTextureTarget.framebuffer,autoViewport:false});
-
-    this.depthOnlyRenderer.begin();
-    this.depthOnlyRenderer.setFramebuffer(fb);
-
-    this.depthOnlyRenderer.setTechnique(this.depthOnlyTechnique);
-
-    this.depthOnlyRenderer.setGlobals({
-	"SHADOW_MATRIX": this.stack.matrix
-    });
-
-    this.depthOnlyRenderer.setPrimitiveMode("FILL");
-
-    this.depthOnlyRenderer.setModel(this.sgl_car_model);
-    this.depthOnlyRenderer.renderModel();
-    this.depthOnlyRenderer.end();
-};
-
 NVMCClient.drawShadowCastersDepthOnly = function (gl) {
 
-    for (var i = 0; i < this.objects.length; i++) {
-        this.objects[i].draw(gl, true);
+    for (var i = 0; i < this.shadowables.length; i++) {
+        this.shadowables[i].draw(gl, true);
     }
 };
 
 
 NVMCClient.drawEverything = function (gl,excludeCar) {
+
+    for (var i = 0; i < this.drawables.length; i++) {
+        this.drawables[i].draw(gl);
+    }
+};
+
+NVMCClient.setupShaders = function(gl) {
+
     var stack  = this.stack;
     this.viewMatrix = this.stack.matrix;
     this.sunLightDirectionViewSpace = SglMat4.mul4(this.stack.matrix,this.sunLightDirection);
@@ -140,12 +129,7 @@ NVMCClient.drawEverything = function (gl,excludeCar) {
     gl.uniform1i(this.textureNormalMapShadowShader.uTextureLocation,0);
     gl.uniform1i(this.textureNormalMapShadowShader.uShadowMapLocation,1);
     gl.uniform1i(this.textureNormalMapShadowShader.uNormalMapLocation,2);
-
-    for (var i = 0; i < this.objects.length; i++) {
-        this.objects[i].draw(gl);
-    }
 };
-
 
 NVMCClient.drawScene = function (gl) {
     if(NVMCClient.n_resources_to_wait_for>0)return;
@@ -183,6 +167,15 @@ NVMCClient.drawScene = function (gl) {
     this.drawSkyBox(gl);
     
     gl.enable(gl.DEPTH_TEST);
+
+    this.setupShaders(gl);
+
+    // for (var i = 0; i < this.colliders.length; i++) {
+    //     this.colliders[i].update();
+    // }
+    // for (var i = 0; i < this.collideables.length; i++) {
+    //     this.collideables[i].update();
+    // }
 
     gl.disable(gl.STENCIL_TEST);
 

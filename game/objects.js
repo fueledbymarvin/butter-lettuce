@@ -116,10 +116,15 @@ NVMCClient.createObjects = function () {
     var text_coords = [-10, -10, 10, -10, 10, 10, -10, 10];
     this.texturedQuad = new TexturedQuadrilateral(quad, text_coords);
 
-    this.objects = [];
+    this.drawables = [];
+    this.shadowables = [];
+    this.colliders = [];
+    this.collideables = [];
 
     this.player = new Player();
-    this.objects.push(this.player);
+    this.drawables.push(this.player);
+    this.shadowables.push(this.player);
+    this.colliders.push(this.player);
     
     this.ground = new Body({
         graph: new Node({
@@ -132,41 +137,49 @@ NVMCClient.createObjects = function () {
             ]
         })
     });
-    this.objects.push(this.ground);
+    this.drawables.push(this.ground);
 
     this.catbug = new Catbug({
         transformations: [SglMat4.translation([0, 2, 0])]
     });
     this.catbug.body.animate("fly", true);
-    this.objects.push(this.catbug);
+    this.drawables.push(this.catbug);
+    this.shadowables.push(this.catbug);
+    this.colliders.push(this.catbug);
 
-    this.hills = new Array(8);
-    for (var i = 0; i < this.hills.length; i++) {
-        this.hills[i] = new Hill({
-            transformations: [SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
-        });
-    }
-    this.objects = this.objects.concat(this.hills);
+    // this.hills = new Array(8);
+    // for (var i = 0; i < this.hills.length; i++) {
+    //     this.hills[i] = new Hill({
+    //         transformations: [SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
+    //     });
+    // }
+    // this.drawables = this.drawables.concat(this.hills);
+    // this.shadowables = this.shadowables.concat(this.hills);
+    // this.collideables = this.collideables.concat(this.hills);
 
-    this.floaters = new Array(8);
-    for (var i = 0; i < this.floaters.length; i++) {
-        var scale = 0.3+Math.random();
-        this.floaters[i] = new Floater({
-            transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 1+Math.random()*4, Math.random()*200-100])]
-        });
-        this.floaters[i].body.animate("spin", true);
-    }
-    this.objects = this.objects.concat(this.floaters);
+    // this.floaters = new Array(8);
+    // for (var i = 0; i < this.floaters.length; i++) {
+    //     var scale = 0.3+Math.random();
+    //     this.floaters[i] = new Floater({
+    //         transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 1+Math.random()*4, Math.random()*200-100])]
+    //     });
+    //     this.floaters[i].body.animate("spin", true);
+    // }
+    // this.drawables = this.drawables.concat(this.floaters);
+    // this.shadowables = this.shadowables.concat(this.floaters);
+    // this.collideables = this.collideables.concat(this.floaters);
 
-    this.spinners = new Array(8);
-    for (var i = 0; i < this.spinners.length; i++) {
-        var scale = 0.3+Math.random();
-        this.spinners[i] = new Spinner({
-            transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
-        });
-        this.spinners[i].body.animate("spin", true);
-    }
-    this.objects = this.objects.concat(this.spinners);
+    // this.spinners = new Array(8);
+    // for (var i = 0; i < this.spinners.length; i++) {
+    //     var scale = 0.3+Math.random();
+    //     this.spinners[i] = new Spinner({
+    //         transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
+    //     });
+    //     this.spinners[i].body.animate("spin", true);
+    // }
+    // this.drawables = this.drawables.concat(this.spinners);
+    // this.shadowables = this.shadowables.concat(this.spinners);
+    // this.collideables = this.collideables.concat(this.spinners);
 };
 
 NVMCClient.createBuffers = function (gl) {

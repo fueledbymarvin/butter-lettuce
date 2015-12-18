@@ -17,26 +17,28 @@ function Catbug(options) {
     var p3 = getRandomPoint(p2, SglVec3.sub(p2, p1), this.angle, this.dist);
     this.spline = [p0, p1, p2, p3];
     this.draw = function(gl, depthOnly) {
-        var time = new Date().getTime();
-        var t = (time - this.lastTime)/this.period;
-        if (t > 1) {
-            t -= 1;
-            this.lastTime += this.period;
-            var nextPoint = getRandomPoint(
-                this.spline[3],
-                SglVec3.sub(this.spline[3], this.spline[2]),
-                this.angle, this.dist
+        if (depthOnly) {
+            var time = new Date().getTime();
+            var t = (time - this.lastTime)/this.period;
+            if (t > 1) {
+                t -= 1;
+                this.lastTime += this.period;
+                var nextPoint = getRandomPoint(
+                    this.spline[3],
+                    SglVec3.sub(this.spline[3], this.spline[2]),
+                    this.angle, this.dist
+                );
+                this.spline.shift();
+                this.spline.push(nextPoint);
+            }
+            var prev = this.translation;
+            this.translation = catmullRom(this.spline, t);
+            this.rotation[1] = calcHeading(SglVec3.sub(this.translation, prev));        
+            this.body.transformation = SglMat4.mul(
+                SglMat4.translation(this.translation),
+                SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
             );
-            this.spline.shift();
-            this.spline.push(nextPoint);
         }
-        var prev = this.translation;
-        this.translation = catmullRom(this.spline, t);
-        this.rotation[1] = calcHeading(SglVec3.sub(this.translation, prev));        
-        this.body.transformation = SglMat4.mul(
-            SglMat4.translation(this.translation),
-            SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
-        );
         this.body.draw(gl, depthOnly);
     };
 
