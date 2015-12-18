@@ -62,7 +62,8 @@ NVMCClient.onKeyDown = function (keyCode, event) {
 NVMCClient.onKeyUp = function (keyCode, event) {
 
     if (keyCode == "Z") {
-        this.toggleCamera();
+        this.aabbs = !this.aabbs;
+        // this.toggleCamera();
 	return;
     }
     

@@ -69,47 +69,126 @@ NVMCClient.createObjectBuffers = function (gl, obj, createColorBuffer, createNor
     for (var i = 0; i < obj.numVertices; i++) {
         vertices[i] = [obj.vertices[i*3], obj.vertices[i*3+1], obj.vertices[i*3+2]];
     }
-    obj.aabb = this.findAABB(vertices);
-    obj.aabbVertices = new Array(8);
-    obj.aabbVertices[0] = [obj.aabb.min[0], obj.aabb.min[1], obj.aabb.min[2], 1];
-    obj.aabbVertices[1] = [obj.aabb.min[0], obj.aabb.min[1], obj.aabb.max[2], 1];
-    obj.aabbVertices[2] = [obj.aabb.min[0], obj.aabb.max[1], obj.aabb.min[2], 1];
-    obj.aabbVertices[3] = [obj.aabb.min[0], obj.aabb.max[1], obj.aabb.max[2], 1];
-    obj.aabbVertices[4] = [obj.aabb.max[0], obj.aabb.min[1], obj.aabb.min[2], 1];
-    obj.aabbVertices[5] = [obj.aabb.max[0], obj.aabb.min[1], obj.aabb.max[2], 1];
-    obj.aabbVertices[6] = [obj.aabb.max[0], obj.aabb.max[1], obj.aabb.min[2], 1];
-    obj.aabbVertices[7] = [obj.aabb.max[0], obj.aabb.max[1], obj.aabb.max[2], 1];
+    var triangles = new Array(obj.numTriangles);
+    for (var i = 0; i < obj.numTriangles; ++i) {
+        triangles[i] = [obj.triangleIndices[i*3], obj.triangleIndices[i*3+1], obj.triangleIndices[i*3+2]];
+    }
+    obj.bvh = this.buildBVH(vertices, triangles, this.bvhDepth);
+};
+
+NVMCClient.buildBVH = function(vertices, triangles, depth) {
+    if (depth < 0 || triangles.length <= 1) { return null; }
+
+    // find min and max points of aabb
+    var firstV = vertices[triangles[0][0]];
+    var min = [firstV[0], firstV[1], firstV[2]];
+    var max = [firstV[0], firstV[1], firstV[2]];
+    for (var i = 0; i < triangles.length; i++) {
+        var vs = [
+            vertices[triangles[i][0]],
+            vertices[triangles[i][1]],
+            vertices[triangles[i][2]],
+        ];
+        
+        for (var j = 0; j < vs.length; j++) {
+            this.updateMinMax(vs[j], min, max);
+        }
+    }
+
+    // find split
+    var diff = [max[0]-min[0], max[1]-min[1], max[2]-min[2]];
+    var axis;
+    if (diff[0] > diff[1] && diff[0] > diff[2]) {
+        axis = 0;
+    } else if (diff[1] > diff[2]) {
+        axis = 1;
+    } else {
+        axis = 2;
+    }
+    var split = (min[axis]+max[axis])/2;
+
+    // split triangles
+    var left = [];
+    var right = [];
+    for (var i = 0; i < triangles.length; i++) {
+        var vs = [
+            vertices[triangles[i][0]],
+            vertices[triangles[i][1]],
+            vertices[triangles[i][2]],
+        ];
+        
+        var nRight = 0;
+        for (var j = 0; j < vs.length; j++) {
+            if (vs[j][axis] > split) {
+                nRight++;
+            }
+        }
+        if (nRight == 0) {
+            left.push(triangles[i]);
+        } else if (nRight == vs.length) {
+            right.push(triangles[i]);
+        } else {
+            left.push(triangles[i]);
+            right.push(triangles[i]);
+        }
+    }
+
+    return {
+        vertices: this.findAABBVertices(min, max),
+        left: this.buildBVH(vertices, left, depth-1),
+        right: this.buildBVH(vertices, right, depth-1)
+    };
+};
+
+NVMCClient.updateMinMax = function(vertex, min, max) {
+
+    if (vertex[0] < min[0]) {
+        min[0] = vertex[0];
+    } else if (vertex[0] > max[0]) {
+        max[0] = vertex[0];
+    }
+    if (vertex[1] < min[1]) {
+        min[1] = vertex[1];
+    } else if (vertex[1] > max[1]) {
+        max[1] = vertex[1];
+    }
+    if (vertex[2] < min[2]) {
+        min[2] = vertex[2];
+    } else if (vertex[2] > max[2]) {
+        max[2] = vertex[2];
+    }
 };
 
 NVMCClient.findAABB = function(vertices) {
+
     var min = [vertices[0][0], vertices[0][1], vertices[0][2]];
     var max = [vertices[0][0], vertices[0][1], vertices[0][2]];
     for (var i = 1; i < vertices.length; i++) {
-        if (vertices[i][0] < min[0]) {
-            min[0] = vertices[i][0];
-        } else if (vertices[i][0] > max[0]) {
-            max[0] = vertices[i][0];
-        }
-        if (vertices[i][1] < min[1]) {
-            min[1] = vertices[i][1];
-        } else if (vertices[i][1] > max[1]) {
-            max[1] = vertices[i][1];
-        }
-        if (vertices[i][2] < min[2]) {
-            min[2] = vertices[i][2];
-        } else if (vertices[i][2] > max[2]) {
-            max[2] = vertices[i][2];
-        }
+        this.updateMinMax(vertices[i], min, max);
     }
     return {min: min, max: max};
 };
 
+NVMCClient.findAABBVertices = function(min, max) {
+
+    var vertices = new Array(8);
+    vertices[0] = [min[0], min[1], min[2], 1];
+    vertices[1] = [min[0], min[1], max[2], 1];
+    vertices[2] = [min[0], max[1], min[2], 1];
+    vertices[3] = [min[0], max[1], max[2], 1];
+    vertices[4] = [max[0], min[1], min[2], 1];
+    vertices[5] = [max[0], min[1], max[2], 1];
+    vertices[6] = [max[0], max[1], min[2], 1];
+    vertices[7] = [max[0], max[1], max[2], 1];
+    return vertices;
+};
+
 NVMCClient.createObjects = function () {
-    this.cube = new Cube(10);
-    this.cylinder = new Cylinder(10);
-    this.cone = new Cone(10);
-    this.sphere = new Sphere(10, 10);
-    this.texturedSphere = new TexturedSphere(10, 10);
+    this.cube = new Cube(16);
+    this.cylinder = new Cylinder(16);
+    this.cone = new Cone(16);
+    this.sphere = new Sphere(16, 16);
+    this.texturedSphere = new TexturedSphere(16, 16);
 
     var bbox = this.game.race.bbox;
     var quad = [bbox[0], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[5], bbox[0], bbox[1] - 0.01, bbox[5]];
@@ -177,29 +256,29 @@ NVMCClient.createEntities = function() {
     this.shadowables = this.shadowables.concat(this.hills);
     this.collideables = this.collideables.concat(this.hills);
 
-    this.floaters = new Array(8);
-    for (var i = 0; i < this.floaters.length; i++) {
-        var scale = 0.3+Math.random();
-        this.floaters[i] = new Floater({
-            transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 1+Math.random()*4, Math.random()*200-100])]
-        });
-        this.floaters[i].body.animate("spin", true);
-    }
-    this.drawables = this.drawables.concat(this.floaters);
-    this.shadowables = this.shadowables.concat(this.floaters);
-    this.collideables = this.collideables.concat(this.floaters);
+    // this.floaters = new Array(8);
+    // for (var i = 0; i < this.floaters.length; i++) {
+    //     var scale = 0.3+Math.random();
+    //     this.floaters[i] = new Floater({
+    //         transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 1+Math.random()*4, Math.random()*200-100])]
+    //     });
+    //     this.floaters[i].body.animate("spin", true);
+    // }
+    // this.drawables = this.drawables.concat(this.floaters);
+    // this.shadowables = this.shadowables.concat(this.floaters);
+    // this.collideables = this.collideables.concat(this.floaters);
 
-    this.spinners = new Array(8);
-    for (var i = 0; i < this.spinners.length; i++) {
-        var scale = 0.3+Math.random();
-        this.spinners[i] = new Spinner({
-            transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
-        });
-        this.spinners[i].body.animate("spin", true);
-    }
-    this.drawables = this.drawables.concat(this.spinners);
-    this.shadowables = this.shadowables.concat(this.spinners);
-    this.collideables = this.collideables.concat(this.spinners);
+    // this.spinners = new Array(8);
+    // for (var i = 0; i < this.spinners.length; i++) {
+    //     var scale = 0.3+Math.random();
+    //     this.spinners[i] = new Spinner({
+    //         transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
+    //     });
+    //     this.spinners[i].body.animate("spin", true);
+    // }
+    // this.drawables = this.drawables.concat(this.spinners);
+    // this.shadowables = this.shadowables.concat(this.spinners);
+    // this.collideables = this.collideables.concat(this.spinners);
 };
 
 NVMCClient.initializeObjects = function (gl) {

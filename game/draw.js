@@ -166,15 +166,15 @@ NVMCClient.drawScene = function (gl) {
     for (var i = 0; i < this.collideables.length; i++) {
         this.collideables[i].update();
     }
-    for (var i = 0; i < this.colliders.length; i++) {
-        this.colliders[i].collision = false;
-        for (var j = 0; j < this.collideables.length; j++) {
-            this.checkCollision(this.colliders[i], this.collideables[j]);
-        }
-        for (var k = i+1; k < this.colliders.length; k++) {
-            this.checkCollision(this.colliders[i], this.colliders[k]);
-        }
-    }
+    // for (var i = 0; i < this.colliders.length; i++) {
+    //     this.colliders[i].collision = false;
+    //     for (var j = 0; j < this.collideables.length; j++) {
+    //         this.checkCollision(this.colliders[i], this.collideables[j]);
+    //     }
+    //     for (var k = i+1; k < this.colliders.length; k++) {
+    //         this.checkCollision(this.colliders[i], this.colliders[k]);
+    //     }
+    // }
     this.cameras[this.currentCamera].setView(this.stack, this.player.getFrame());
     
     this.viewFrame = SglMat4.inverse(this.stack.matrix);
