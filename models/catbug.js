@@ -51,17 +51,17 @@ function Catbug(options) {
                 scaling: [0.55, 0.6, 0.5]
             }),
             new Primitive({ // left cover
-                mesh: this.client.sphere,
-                shader: this.client.lambertianSingleColorShadowShader,
-                color: [0.89, 0.17, 0.31, 1.0],
+                mesh: this.client.texturedSphere,
+                shader: this.client.textureShadowShader,
+                texture: this.client.dotsTexture,
                 scaling: [0.4, 0.7, 0.08],
                 rotation: [-Math.PI/4, -Math.PI/4, Math.PI/3],
                 translation: [-0.4, 0.6, -0.8]
             }),
             new Primitive({ // right cover
-                mesh: this.client.sphere,
-                shader: this.client.lambertianSingleColorShadowShader,
-                color: [0.89, 0.17, 0.31, 1.0],
+                mesh: this.client.texturedSphere,
+                shader: this.client.textureShadowShader,
+                texture: this.client.dotsTexture,
                 scaling: [0.4, 0.7, 0.08],
                 rotation: [-Math.PI/4, Math.PI/4, -Math.PI/3],
                 translation: [0.4, 0.6, -0.8]

@@ -48,7 +48,7 @@ NVMCClient.drawObject = function (gl, obj, shader, fillColor, drawWire) {
         gl.useProgram(this.uniformShader);
         gl.uniformMatrix4fv(this.uniformShader.uModelViewMatrixMatrixLocation, false, this.stack.matrix);
 
-        gl.uniform4fv(this.uniformShader.uColorLocation, [0, 0, 1, 1]);
+        gl.uniform4fv(this.uniformShader.uColorLocation, [1, 1, 1, 1]);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.indexBufferEdges);
         gl.drawElements(gl.LINES, obj.numTriangles * 3 * 2, gl.UNSIGNED_SHORT, 0);
         gl.useProgram(shader);
