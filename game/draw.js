@@ -166,6 +166,15 @@ NVMCClient.drawScene = function (gl) {
     for (var i = 0; i < this.collideables.length; i++) {
         this.collideables[i].update();
     }
+    for (var i = 0; i < this.colliders.length; i++) {
+        this.colliders[i].collision = false;
+        for (var j = 0; j < this.collideables.length; j++) {
+            this.checkCollision(this.colliders[i], this.collideables[j]);
+        }
+        for (var k = i+1; k < this.colliders.length; k++) {
+            this.checkCollision(this.colliders[i], this.colliders[k]);
+        }
+    }
     this.cameras[this.currentCamera].setView(this.stack, this.player.getFrame());
     
     this.viewFrame = SglMat4.inverse(this.stack.matrix);
@@ -198,3 +207,24 @@ NVMCClient.drawScene = function (gl) {
     this.drawEverything(gl);
 };
 
+NVMCClient.checkCollision = function(a, b) {
+    var as = a.body.getAABBs();
+    var bs = b.body.getAABBs();
+
+    for (var i = 0; i < as.length; i++) {
+        for (var j = 0; j < bs.length; j++) {
+            if (this.intersectAABBs(as[i], bs[j])) {
+                a.collision = true;
+            }
+        }
+    }
+};
+
+NVMCClient.intersectAABBs = function(a, b) {
+    return a.max[0] > b.min[0] && 
+           a.min[0] < b.max[0] &&
+           a.max[1] > b.min[1] &&
+           a.min[1] < b.max[1] &&
+           a.max[2] > b.min[2] &&
+           a.min[2] < b.max[2];
+};

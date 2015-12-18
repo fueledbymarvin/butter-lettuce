@@ -158,6 +158,22 @@ function Body(options) {
             this.graph.draw(gl, depthOnly);
         }).bind(this), gl, depthOnly);
     };
+
+    this.getAABBs = function() {
+
+        var aabbs = [];
+        var toVisit = [this.graph];
+        while (toVisit.length > 0) {
+            var visiting = toVisit.pop();
+            for (var i = 0; i < visiting.primitives.length; i++) {
+                aabbs.push(visiting.primitives[i].aabb);
+            }
+            for (var j in visiting.joints) {
+                toVisit.push(visiting.joints[j].child);
+            }
+        }
+        return aabbs;
+    };
 }
 
 function Node(options) {
@@ -293,7 +309,7 @@ function Primitive(options) {
                 gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
             } else {
                 if (this.mesh != this.client.texturedQuad) {
-                    this.drawAABB(gl);
+                    // this.drawAABB(gl);
                 }
                 if (this.texture) {
                     gl.activeTexture(gl.TEXTURE0);
