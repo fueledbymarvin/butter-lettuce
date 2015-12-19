@@ -289,6 +289,7 @@ function Primitive(options) {
     this.shader = options.shader;
     this.color = options.color;
     this.texture = options.texture;
+    this.phong = options.phong ? options.phong : [0.4, 0.8, 0.2, 1];
     this.scaling = options.scaling ? options.scaling : [1, 1, 1];
     this.rotation = options.rotation ? options.rotation : [0, 0, 0];
     this.translation = options.translation ? options.translation : [0, 0, 0];
@@ -341,6 +342,11 @@ function Primitive(options) {
             if (depthOnly) {
                 gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
             } else {
+                gl.uniform1f(shader.uKaLocation, this.phong[0]);
+                gl.uniform1f(shader.uKdLocation, this.phong[1]);
+                gl.uniform1f(shader.uKsLocation, this.phong[2]);
+                gl.uniform1f(shader.uShininessLocation, this.phong[3]);
+
                 if (this.client.aabbs && this.mesh != this.client.texturedQuad) {
                     this.drawBVH(gl);
                 }

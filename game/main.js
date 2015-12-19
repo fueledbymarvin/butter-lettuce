@@ -73,7 +73,7 @@ NVMCClient.onInitialize = function () {
 
     this.shadowMapTextureTarget = this.prepareRenderToTextureFrameBuffer(gl,false,4096,4096);
     this.prepareRenderToCubeMapFrameBuffer(gl);
-    this.sunLightDirection = [-2.4,-1,-0,0.0];
+    this.sunLightDirection = [-1,-1,-1,0.0];
 };
 
 

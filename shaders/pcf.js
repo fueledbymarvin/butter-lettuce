@@ -170,15 +170,22 @@ texturePCFShadowShader = function (gl) {
 		uniform   mat4 uModelViewMatrix;                            \n\
 		uniform   mat4 uModelMatrix;                            \n\
 		uniform   mat4 uProjectionMatrix;                            \n\
+                uniform mat3 uViewSpaceNormalMatrix;                                 \n\
 		uniform   mat4 uShadowMatrix;\n\
 		attribute vec3 aPosition;                                       \n\
+                attribute vec3 aNormal;                                              \n\
 		attribute vec2 aTextureCoords;				\n\
 		varying vec2 vTextureCoords;			\n\
 		varying   vec4 vShadowPosition;\n\
+                varying vec3 vpos;                                                   \n\
+                varying vec3 vnormal;                                                \n\
 		void main(void)                                                 \n\
 		{                                                               \n\
+                        // vertex normal (in view space)                                   \n\
+                        vnormal = normalize(uViewSpaceNormalMatrix * aNormal);             \n\
 			vTextureCoords = aTextureCoords; \n\
 			vec4 position   = vec4(aPosition, 1.0);\n\
+                        vpos = vec3(uModelViewMatrix * position);                          \n\
 			// transform vertex to shadow map clip space\n\
 			vShadowPosition = uShadowMatrix * uModelMatrix * position;\n\
 			gl_Position = uProjectionMatrix * uModelViewMatrix * uModelMatrix * position;  \n\
@@ -191,40 +198,84 @@ texturePCFShadowShader = function (gl) {
 		uniform sampler2D uShadowMap;\n\
 		varying vec2 vTextureCoords;			\n\
 		varying vec4 vShadowPosition;\n\
+                varying vec3 vnormal;                                                \n\
+                varying vec3 vpos;                                                   \n\
+                uniform vec4 uLightDirection;                                                \n\
+                uniform vec3 uLightColor;                                                \n\
+                // shininess exponent                                                \n\
+                uniform float uShininess;                                            \n\
+                // amount of ambient component                                       \n\
+                uniform float uKa;                                                   \n\
+                // amount of diffuse component                                       \n\
+                uniform float uKd;                                                   \n\
+                // amount of specular component                                      \n\
+                uniform float uKs;                                                   \n\
+                                                                \n\
 		float Unpack(vec4 v){\n\
 			return v.x   + v.y / (256.0) + v.z/(256.0*256.0)+v.w/ (256.0*256.0*256.0);\n\
 		}\n\
-float IsInShadow(){\n\
-	// perspective division:\n\
-	// from clip space to normalized space [-1..+1]^3\n\
-	vec3  normShadowPos = vShadowPosition.xyz / vShadowPosition.w;\n\
-	\n\
-	// from [-1..+1] to [0..+1] (for texture coordinates and stored depth)\n\
-	vec3  shadowPos     = normShadowPos * 0.5 + vec3(0.5);\n\
-	float Fz = shadowPos.z;\n\
-	\n\
-	float dx = 1.0/4096.0;\n\
-	float dy = 1.0/4096.0;\n\
-	float n_shadow = 0.0;\n\
-	float Sz = Unpack(texture2D(uShadowMap, shadowPos.xy+vec2(-dx/2.0,-dy/2.0)));\n\
-	if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
-	Sz = Unpack(texture2D(uShadowMap,  shadowPos.xy+vec2( dx/2.0,-dy/2.0)));\n\
-	if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
-	Sz = Unpack(texture2D(uShadowMap, shadowPos.xy +vec2( dx/2.0,dy/2.0) ));\n\
-	if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
-	Sz = Unpack(texture2D(uShadowMap, shadowPos.xy+vec2(-dx/2.0, dy/2.0)));\n\
-	if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
-	\n\
-	return n_shadow/4.0;\n\
-}\n\
-void main(void)                                                 \n\
+                                                                 \n\
+                float IsInShadow(){\n\
+                    // perspective division:\n\
+                    // from clip space to normalized space [-1..+1]^3\n\
+                    vec3  normShadowPos = vShadowPosition.xyz / vShadowPosition.w;\n\
+                    \n\
+                    // from [-1..+1] to [0..+1] (for texture coordinates and stored depth)\n\
+                    vec3  shadowPos     = normShadowPos * 0.5 + vec3(0.5);\n\
+                    float Fz = shadowPos.z;\n\
+                    \n\
+                    float dx = 1.0/4096.0;\n\
+                    float dy = 1.0/4096.0;\n\
+                    float n_shadow = 0.0;\n\
+                    float Sz = Unpack(texture2D(uShadowMap, shadowPos.xy+vec2(-dx/2.0,-dy/2.0)));\n\
+                    if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
+                    Sz = Unpack(texture2D(uShadowMap,  shadowPos.xy+vec2( dx/2.0,-dy/2.0)));\n\
+                    if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
+                    Sz = Unpack(texture2D(uShadowMap, shadowPos.xy +vec2( dx/2.0,dy/2.0) ));\n\
+                    if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
+                    Sz = Unpack(texture2D(uShadowMap, shadowPos.xy+vec2(-dx/2.0, dy/2.0)));\n\
+                    if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
+                    \n\
+                    return n_shadow/4.0;\n\
+                }\n\
+                 \n\
+        void main(void)                                                 \n\
 	{  \n\
+                // normalize interpolated normal                                   \n\
+                vec3 N = normalize(vnormal);	                                     \n\
+                                                                     \n\
+                // light vector (positional light)                                 \n\
+                vec3 L =	normalize(-uLightDirection.xyz);                         \n\
+                                                                     \n\
+                // vertex-to-eye (view vector)                                     \n\
+                vec3 V = normalize(-vpos);                                         \n\
+                                                                     \n\
 		vec4 color = texture2D(uTexture,vTextureCoords);\n\
+                // material propertise                                             \n\
+                vec3 mat_ambient = color.xyz;                            \n\
+                vec3 mat_diffuse = color.xyz;                            \n\
+                vec3 mat_specular= color.xyz;                            \n\
+                                                                     \n\
+                // ambient component (ambient light is assumed white)              \n\
+                vec3 ambient = mat_ambient;                                        \n\
+                                                                                   \n\
+                // diffuse component                                               \n\
+                float NdotL = max(0.0, dot(N, L));                                 \n\
+                vec3 diffuse = (mat_diffuse * uLightColor) * NdotL;                \n\
+                                                                                   \n\
+                // specular component                                              \n\
+                vec3 R = (2.0 * NdotL * N) - L;                                    \n\
+                float RdotV = max(0.0, dot(R, V));                                 \n\
+                float spec = max(0.0, pow(RdotV, uShininess));                     \n\
+                vec3 specular = (mat_specular * uLightColor) * spec;               \n\
+              	                                                                 \n\
+                vec3 finalcolor = uKa*ambient + uKd*diffuse +uKs*specular;  \n\
+              	                                                                 \n\
 		float shadow = 0.6 + 0.4*(1.0-IsInShadow());\n\
-		color.x*=shadow;\n\
-		color.y*=shadow;\n\
-		color.z*=shadow;\n\
-		gl_FragColor = color;\n\
+		finalcolor.x*=shadow;\n\
+		finalcolor.y*=shadow;\n\
+		finalcolor.z*=shadow;\n\
+		gl_FragColor = vec4(finalcolor, 1.0);\n\
 	}\n\
 	";
 
@@ -245,12 +296,14 @@ void main(void)                                                 \n\
     gl.attachShader(shaderProgram, fragmentShader);
     
     shaderProgram.aPositionIndex = 0;
-    shaderProgram.aTextureCoordIndex = 3;
+    shaderProgram.aNormalIndex = 1;  
+    shaderProgram.aTextureCoordIndex = 2;
     
     shaderProgram.vertex_shader = vertex_shader;
     shaderProgram.fragment_shader = fragment_shader;
     
     gl.bindAttribLocation(shaderProgram, shaderProgram.aPositionIndex, "aPosition");
+    gl.bindAttribLocation(shaderProgram, shaderProgram.aNormalIndex, "aNormal");
     gl.bindAttribLocation(shaderProgram, shaderProgram.aTextureCoordIndex, "aTextureCoords");
     gl.linkProgram(shaderProgram);
     
@@ -269,6 +322,13 @@ void main(void)                                                 \n\
     shaderProgram.uShadowMatrixLocation     = gl.getUniformLocation(shaderProgram, "uShadowMatrix");
     shaderProgram.uTextureLocation          = gl.getUniformLocation(shaderProgram, "uTexture");
     shaderProgram.uShadowMapLocation        = gl.getUniformLocation(shaderProgram, "uShadowMap");
+    shaderProgram.uViewSpaceNormalMatrixLocation = gl.getUniformLocation(shaderProgram,"uViewSpaceNormalMatrix");
+    shaderProgram.uLightDirectionLocation = gl.getUniformLocation(shaderProgram,"uLightDirection");
+    shaderProgram.uLightColorLocation = gl.getUniformLocation(shaderProgram,"uLightColor");
+    shaderProgram.uKaLocation = gl.getUniformLocation(shaderProgram,"uKa");
+    shaderProgram.uKdLocation = gl.getUniformLocation(shaderProgram,"uKd");
+    shaderProgram.uKsLocation = gl.getUniformLocation(shaderProgram,"uKs");
+    shaderProgram.uShininessLocation = gl.getUniformLocation(shaderProgram,"uShininess");
     
     
     return shaderProgram;

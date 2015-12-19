@@ -116,6 +116,8 @@ NVMCClient.setupShaders = function(gl) {
     gl.uniformMatrix4fv(this.textureShadowShader.uProjectionMatrixLocation, false, this.projectionMatrix);
     gl.uniformMatrix4fv(this.textureShadowShader.uModelViewMatrixLocation, false, this.stack.matrix);
     gl.uniformMatrix4fv(this.textureShadowShader.uShadowMatrixLocation, false, this.shadowMatrix);
+    gl.uniform4fv(this.textureShadowShader.uLightDirectionLocation, this.sunLightDirectionViewSpace);
+    gl.uniform3fv(this.textureShadowShader.uLightColorLocation,[0.9,0.9,0.9]);
     gl.uniform1i(this.textureShadowShader.uTextureLocation, 0);
     gl.uniform1i(this.textureShadowShader.uShadowMapLocation, 1);
 

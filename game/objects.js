@@ -127,7 +127,8 @@ NVMCClient.createEntities = function() {
                 new Primitive({
                     mesh: this.texturedQuad,
                     shader: this.textureShadowShader,
-                    texture: this.texture_ground
+                    texture: this.texture_ground,
+                    phong: [0.8, 0.2, 0, 0]
                 })
             ]
         })
