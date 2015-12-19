@@ -14,13 +14,12 @@ function Player() {
     this.translation = [0, 2, 0];
     this.rotation = [0, 0, 0];
     this.lastTime = new Date().getTime();
-    this.velocity = 16;
-    this.collision = false;
-    this.last = [0, 2, 0];
+    this.velocity = 12;
+    this.collision = null;
 
     this.draw = function(gl, depthOnly) {
         if (this.collision && depthOnly) {
-            this.translation = this.last;
+            this.translation = SglVec3.add(this.translation, this.collision);
             this.body.translation = this.translation;
         }
 
@@ -44,7 +43,6 @@ function Player() {
         var time = new Date().getTime();
         var elapsed = (time - this.lastTime)/1000;
         this.lastTime = time;
-        this.last = this.translation;
 
         var y = [0, 1, 0];
 	var z = SglMat4.mul4(SglMat4.rotationAngleAxis(this.rotation[1], y), [0, 0, 1, 0]);

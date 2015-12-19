@@ -513,7 +513,7 @@ function quaternionToEuler(quaternion) {
         attitude = -Math.PI/2;
         bank = 0;
     } else {
-        heading = Math.atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z); // Heading
+        heading = Math.atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z); // heading
         attitude = Math.asin(2*test); // attitude
         bank = Math.atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z); // bank
     }

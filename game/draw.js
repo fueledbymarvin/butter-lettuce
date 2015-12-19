@@ -167,12 +167,12 @@ NVMCClient.drawScene = function (gl) {
         this.collideables[i].update();
     }
     for (var i = 0; i < this.colliders.length; i++) {
-        this.colliders[i].collision = false;
+        this.colliders[i].collision = null;
         for (var j = 0; j < this.collideables.length; j++) {
-            this.checkCollision(this.colliders[i], this.collideables[j]);
+            this.checkCollision(this.colliders[i], this.collideables[j], false);
         }
         for (var k = i+1; k < this.colliders.length; k++) {
-            this.checkCollision(this.colliders[i], this.colliders[k]);
+            this.checkCollision(this.colliders[i], this.colliders[k], true);
         }
     }
     this.cameras[this.currentCamera].setView(this.stack, this.player.getFrame());
@@ -207,7 +207,7 @@ NVMCClient.drawScene = function (gl) {
     this.drawEverything(gl);
 };
 
-NVMCClient.checkCollision = function(a, b) {
+NVMCClient.checkCollision = function(a, b, colliders) {
 
     if (this.intersectAABBs(a.body.aabb, b.body.aabb)) {
         var toTest = [];
@@ -246,6 +246,14 @@ NVMCClient.checkCollision = function(a, b) {
                             if (this.intersectAABBs(aAABB, bAABB)) {
                                 // if bvh at the leaf level, then count as intersection
                                 if (bAABB.left == null && bAABB.right == null) {
+                                    var slide = this.calcSlide(aAABB, bAABB);
+                                    if (colliders) {
+                                        // both colliders so both slide
+                                        a.collision = SglVec3.muls(slide, -0.51);
+                                        b.collision = SglVec3.muls(slide, 0.51);
+                                    } else {
+                                        a.collision = SglVec3.muls(slide, -1.01);
+                                    }
                                     foundIntersection = true;
                                     break;
                                 }
@@ -267,8 +275,6 @@ NVMCClient.checkCollision = function(a, b) {
                     }
                 }
                 if (foundIntersection) {
-                    a.collision = true;
-                    b.collision = true;
                     break;
                 }
             }
@@ -278,9 +284,31 @@ NVMCClient.checkCollision = function(a, b) {
 
 NVMCClient.intersectAABBs = function(a, b) {
     return a.max[0] > b.min[0] && 
-           a.min[0] < b.max[0] &&
            a.max[1] > b.min[1] &&
-           a.min[1] < b.max[1] &&
            a.max[2] > b.min[2] &&
+           a.min[0] < b.max[0] &&
+           a.min[1] < b.max[1] &&
            a.min[2] < b.max[2];
+};
+
+NVMCClient.calcSlide = function(a, b) {
+    var diffs = new Array(6);
+    for (var i = 0; i < 3; i++) {
+        diffs[i] = a.max[i] - b.min[i];
+        diffs[i+3] = a.min[i] - b.max[i];
+    }
+
+    var index = 0;
+    var min = diffs[0];
+    for (var i = 1; i < diffs.length; i++) {
+        if (Math.abs(diffs[i]) < Math.abs(min) && i % 3 != 1) { // don't want to slide in y
+            index = i;
+            min = diffs[i];
+        }
+    }
+
+    var slide = [0, 0, 0];
+    slide[index % 3] = min;
+    console.log(slide);
+    return slide;
 };
