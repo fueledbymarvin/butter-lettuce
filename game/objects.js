@@ -75,6 +75,8 @@ NVMCClient.createObjectBuffers = function (gl, obj, createColorBuffer, createNor
     }
     obj.vertices = vertices;
     obj.triangles = triangles;
+    obj.aabb = this.findAABB(vertices);
+    obj.aabbVertices = this.findAABBVertices(obj.aabb);
 };
 
 NVMCClient.buildBVH = function(vertices, triangles, depth) {
@@ -134,7 +136,6 @@ NVMCClient.buildBVH = function(vertices, triangles, depth) {
     return {
         min: min,
         max: max,
-        // vertices: this.findAABBVertices(min, max),
         left: this.buildBVH(vertices, left, depth-1),
         right: this.buildBVH(vertices, right, depth-1)
     };
@@ -169,17 +170,17 @@ NVMCClient.findAABB = function(vertices) {
     return {min: min, max: max};
 };
 
-NVMCClient.findAABBVertices = function(min, max) {
+NVMCClient.findAABBVertices = function(aabb) {
 
     var vertices = new Array(8);
-    vertices[0] = [min[0], min[1], min[2], 1];
-    vertices[1] = [min[0], min[1], max[2], 1];
-    vertices[2] = [min[0], max[1], min[2], 1];
-    vertices[3] = [min[0], max[1], max[2], 1];
-    vertices[4] = [max[0], min[1], min[2], 1];
-    vertices[5] = [max[0], min[1], max[2], 1];
-    vertices[6] = [max[0], max[1], min[2], 1];
-    vertices[7] = [max[0], max[1], max[2], 1];
+    vertices[0] = [aabb.min[0], aabb.min[1], aabb.min[2], 1];
+    vertices[1] = [aabb.min[0], aabb.min[1], aabb.max[2], 1];
+    vertices[2] = [aabb.min[0], aabb.max[1], aabb.min[2], 1];
+    vertices[3] = [aabb.min[0], aabb.max[1], aabb.max[2], 1];
+    vertices[4] = [aabb.max[0], aabb.min[1], aabb.min[2], 1];
+    vertices[5] = [aabb.max[0], aabb.min[1], aabb.max[2], 1];
+    vertices[6] = [aabb.max[0], aabb.max[1], aabb.min[2], 1];
+    vertices[7] = [aabb.max[0], aabb.max[1], aabb.max[2], 1];
     return vertices;
 };
 

@@ -166,15 +166,15 @@ NVMCClient.drawScene = function (gl) {
     for (var i = 0; i < this.collideables.length; i++) {
         this.collideables[i].update();
     }
-    // for (var i = 0; i < this.colliders.length; i++) {
-    //     this.colliders[i].collision = false;
-    //     for (var j = 0; j < this.collideables.length; j++) {
-    //         this.checkCollision(this.colliders[i], this.collideables[j]);
-    //     }
-    //     for (var k = i+1; k < this.colliders.length; k++) {
-    //         this.checkCollision(this.colliders[i], this.colliders[k]);
-    //     }
-    // }
+    for (var i = 0; i < this.colliders.length; i++) {
+        this.colliders[i].collision = false;
+        for (var j = 0; j < this.collideables.length; j++) {
+            this.checkCollision(this.colliders[i], this.collideables[j]);
+        }
+        for (var k = i+1; k < this.colliders.length; k++) {
+            this.checkCollision(this.colliders[i], this.colliders[k]);
+        }
+    }
     this.cameras[this.currentCamera].setView(this.stack, this.player.getFrame());
     
     this.viewFrame = SglMat4.inverse(this.stack.matrix);
@@ -208,13 +208,69 @@ NVMCClient.drawScene = function (gl) {
 };
 
 NVMCClient.checkCollision = function(a, b) {
-    var as = a.body.getAABBs();
-    var bs = b.body.getAABBs();
 
-    for (var i = 0; i < as.length; i++) {
-        for (var j = 0; j < bs.length; j++) {
-            if (this.intersectAABBs(as[i], bs[j])) {
-                a.collision = true;
+    if (this.intersectAABBs(a.body.aabb, b.body.aabb)) {
+        var toTest = [];
+        var aPrims = a.body.getPrimitives();
+        var bPrims = b.body.getPrimitives();
+        for (var i = 0; i < aPrims.length; i++) {
+            if (this.intersectAABBs(aPrims[i].aabb, b.body.aabb)) {
+                for (var j = 0; j < bPrims.length; j++) {
+                    if (this.intersectAABBs(aPrims[i].aabb, bPrims[j].aabb)) {
+                        toTest.push([aPrims[i], bPrims[j]]);
+                    }
+                }
+            }
+        }
+
+        for (var i = 0; i < toTest.length; i++) {
+            // make world space bvh if not already done
+            if (toTest[i][0].bvh == null) {
+                toTest[i][0].updateBVH();
+            }
+            if (toTest[i][1].bvh == null) {
+                toTest[i][1].updateBVH();
+            }
+            var aPrim = toTest[i][0];
+            var bPrim = toTest[i][1];
+            var aStack = [aPrim.bvh];
+            while (aStack.length > 0) {
+                var aAABB = aStack.pop();
+                var foundIntersection = false;
+                if (this.intersectAABBs(aAABB, bPrim.aabb)) {
+                    // if hit a leaf, search through b's bvh
+                    if (aAABB.left == null && aAABB.right == null) {
+                        var bStack = [bPrim.bvh];
+                        while (bStack.length > 0) {
+                            var bAABB = bStack.pop();
+                            if (this.intersectAABBs(aAABB, bAABB)) {
+                                // if bvh at the leaf level, then count as intersection
+                                if (bAABB.left == null && bAABB.right == null) {
+                                    foundIntersection = true;
+                                    break;
+                                }
+                                if (bAABB.left) {
+                                    bStack.push(bAABB.left);
+                                }
+                                if (bAABB.right) {
+                                    bStack.push(bAABB.right);
+                                }
+                            }
+                        }
+                    }
+                    // otherwise continue searching
+                    if (aAABB.left) {
+                        aStack.push(aAABB.left);
+                    }
+                    if (aAABB.right) {
+                        aStack.push(aAABB.right);
+                    }
+                }
+                if (foundIntersection) {
+                    a.collision = true;
+                    b.collision = true;
+                    break;
+                }
             }
         }
     }

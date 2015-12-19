@@ -8,6 +8,9 @@ function Body(options) {
     this.graph = options.graph;
     this.transformation = options.transformations ?
         combineTransformations(options.transformations) : SglMat4.identity();
+    this.aabb = null;
+
+    /*** ANIMATION ***/
 
     this.translation = [0, 0, 0];
     this.rotation = [0, 0, 0];
@@ -128,6 +131,8 @@ function Body(options) {
         }
     };
 
+    /*** Drawing and Collisions ***/
+
     this.wrap = function(f, gl, depthOnly) {
         var stack = this.client.stack;
         stack.push();
@@ -150,6 +155,19 @@ function Body(options) {
                 this.processAnimation();
             }
             this.graph.update();
+
+            var vertices = [];
+            var toVisit = [this.graph];
+            while (toVisit.length > 0) {
+                var visiting = toVisit.pop();
+                for (var i = 0; i < visiting.primitives.length; i++) {
+                    vertices = vertices.concat(visiting.primitives[i].aabbVertices);
+                }
+                for (var j in visiting.joints) {
+                    toVisit.push(visiting.joints[j].child);
+                }
+            }
+            this.aabb = this.client.findAABB(vertices);
         }).bind(this));
     };
 
@@ -159,20 +177,20 @@ function Body(options) {
         }).bind(this), gl, depthOnly);
     };
 
-    this.getAABBs = function() {
+    this.getPrimitives = function() {
 
-        var aabbs = [];
+        var primitives = [];
         var toVisit = [this.graph];
         while (toVisit.length > 0) {
             var visiting = toVisit.pop();
             for (var i = 0; i < visiting.primitives.length; i++) {
-                aabbs.push(visiting.primitives[i].aabb);
+                primitives.push(visiting.primitives[i]);
             }
             for (var j in visiting.joints) {
                 toVisit.push(visiting.joints[j].child);
             }
         }
-        return aabbs;
+        return primitives;
     };
 }
 
@@ -274,7 +292,10 @@ function Primitive(options) {
     this.scaling = options.scaling ? options.scaling : [1, 1, 1];
     this.rotation = options.rotation ? options.rotation : [0, 0, 0];
     this.translation = options.translation ? options.translation : [0, 0, 0];
-    this.aabbs = [];
+
+    this.mat = null;
+    this.aabb = null;
+    this.bvh = null;
 
     this.wrap = function(f, gl, depthOnly) {
         var stack = this.client.stack;
@@ -289,27 +310,25 @@ function Primitive(options) {
 
     this.update = function() {
         this.wrap((function() {
-            var mat = this.client.stack.matrix;
+            this.bvh = null;
+            this.mat = this.client.stack.matrix;
             
-            var transformed = new Array(this.mesh.vertices.length);
+            var transformed = new Array(this.mesh.aabbVertices.length);
             for (var i = 0; i < transformed.length; i++) {
-                transformed[i] = SglMat4.mul4(mat, this.mesh.vertices[i]);
+                transformed[i] = SglMat4.mul4(this.mat, this.mesh.aabbVertices[i]);
             }
-            var bvh = this.client.buildBVH(transformed, this.mesh.triangles, this.client.bvhDepth);
-
-            this.aabbs = [];
-            var toVisit = [bvh];
-            while (toVisit.length > 0) {
-                var visiting = toVisit.pop();
-                
-                if (visiting.left == null && visiting.right == null) {
-                    this.aabbs.push(visiting);
-                } else {
-                    if (visiting.left) { toVisit.push(visiting.left); }
-                    if (visiting.right) { toVisit.push(visiting.right); }
-                }
-            }
+            this.aabb = this.client.findAABB(transformed);
+            this.aabbVertices = this.client.findAABBVertices(this.aabb);
         }).bind(this));
+    };
+    
+    this.updateBVH = function() {
+
+        var transformed = new Array(this.mesh.vertices.length);
+        for (var i = 0; i < transformed.length; i++) {
+            transformed[i] = SglMat4.mul4(this.mat, this.mesh.vertices[i]);
+        }
+        this.bvh = this.client.buildBVH(transformed, this.mesh.triangles, this.client.bvhDepth);
     };
 
     this.draw = function(gl, depthOnly) {
@@ -323,7 +342,7 @@ function Primitive(options) {
                 gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
             } else {
                 if (this.client.aabbs && this.mesh != this.client.texturedQuad) {
-                    this.drawAABBs(gl);
+                    this.drawAABB(gl);
                 }
                 if (this.texture) {
                     gl.activeTexture(gl.TEXTURE0);
@@ -340,36 +359,33 @@ function Primitive(options) {
         }).bind(this), gl, depthOnly);
     };
 
-    this.drawAABBs = function(gl) {
-        for (var i = 0; i < this.aabbs.length; i++) {
-            var aabb = this.aabbs[i];
+    this.drawAABB = function(gl) {
 
-            var translation = [
-                (aabb.max[0]+aabb.min[0])/2,
-                (aabb.max[1]+aabb.min[1])/2,
-                (aabb.max[2]+aabb.min[2])/2
-            ];
-            var scaling = [
-                (aabb.max[0]-aabb.min[0])/2,
-                (aabb.max[1]-aabb.min[1])/2,
-                (aabb.max[2]-aabb.min[2])/2
-            ];
-            var shader = this.client.lambertianSingleColorShadowShader;
+        var translation = [
+            (this.aabb.max[0]+this.aabb.min[0])/2,
+            (this.aabb.max[1]+this.aabb.min[1])/2,
+            (this.aabb.max[2]+this.aabb.min[2])/2
+        ];
+        var scaling = [
+            (this.aabb.max[0]-this.aabb.min[0])/2,
+            (this.aabb.max[1]-this.aabb.min[1])/2,
+            (this.aabb.max[2]-this.aabb.min[2])/2
+        ];
+        var shader = this.client.lambertianSingleColorShadowShader;
 
-            var stack = this.client.stack;
-            stack.push();
-            stack.loadIdentity();
-            stack.multiply(SglMat4.translation(translation));
-            stack.multiply(SglMat4.scaling(scaling));
-            gl.useProgram(shader);
-            gl.uniformMatrix4fv(shader.uModelMatrixLocation, false, stack.matrix);
-            var InvT = SglMat4.inverse(SglMat4.mul(this.client.viewMatrix, stack.matrix));
-            InvT = SglMat4.transpose(InvT);
-            gl.uniformMatrix3fv(shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
-            this.client.drawObject(gl, this.client.cube, shader, [1, 1, 1, 1]);
-            gl.useProgram(this.shader);
-            stack.pop();
-        }
+        var stack = this.client.stack;
+        stack.push();
+        stack.loadIdentity();
+        stack.multiply(SglMat4.translation(translation));
+        stack.multiply(SglMat4.scaling(scaling));
+        gl.useProgram(shader);
+        gl.uniformMatrix4fv(shader.uModelMatrixLocation, false, stack.matrix);
+        var InvT = SglMat4.inverse(SglMat4.mul(this.client.viewMatrix, stack.matrix));
+        InvT = SglMat4.transpose(InvT);
+        gl.uniformMatrix3fv(shader.uViewSpaceNormalMatrixLocation, false, SglMat4.to33(InvT));
+        this.client.drawObject(gl, this.client.cube, shader, [1, 1, 1, 1]);
+        gl.useProgram(this.shader);
+        stack.pop();
     };
 }
 
