@@ -2,7 +2,11 @@
 var NVMCClient = NVMCClient || {};
 /***********************************************************************/
 
-NVMCClient.buildBVH = function(vertices, triangles, depth, parent) {
+NVMCClient.buildBVH = function(vertices, triangles) {
+    return this.buildBVHHelper(vertices, triangles, this.bvhDepth, null, {id: 0});
+};
+
+NVMCClient.buildBVHHelper = function(vertices, triangles, depth, parent, id) {
     if (depth < 0 || triangles.length <= 1) { return null; }
 
     // find min and max points of aabb
@@ -57,12 +61,13 @@ NVMCClient.buildBVH = function(vertices, triangles, depth, parent) {
     }
 
     var aabb = {
+        id: id.id++,
         min: min,
         max: max,
         parent: parent
     };
-    aabb.left = this.buildBVH(vertices, left, depth-1, aabb);
-    aabb.right = this.buildBVH(vertices, right, depth-1, aabb);
+    aabb.left = this.buildBVHHelper(vertices, left, depth-1, aabb, id);
+    aabb.right = this.buildBVHHelper(vertices, right, depth-1, aabb, id);
     return aabb;
 };
 
@@ -130,8 +135,9 @@ NVMCClient.checkCollision = function(a, b, colliders) {
             var aPrim = toTest[i][0];
             var bPrim = toTest[i][1];
 
-            var aCollided = [];
-            var bCollided = [];
+            var aCollided = {};
+            var bCollided = {};
+            var foundCollision = false;
 
             if (aPrim.bvh == null) {
                 aPrim.updateBVH();
@@ -151,9 +157,9 @@ NVMCClient.checkCollision = function(a, b, colliders) {
                             if (this.intersectAABBs(aAABB, bAABB)) {
                                 // if bvh at the leaf level, then count as intersection
                                 if (bAABB.left == null && bAABB.right == null) {
-                                    aCollided.push(aAABB);
-                                    bCollided.push(bAABB);
-                                    // a.collisions.push([aAABB, bAABB]);
+                                    foundCollision = true;
+                                    aCollided[aAABB.id] = aAABB;
+                                    bCollided[bAABB.id] = bAABB;
                                 }
                                 if (bAABB.left) {
                                     bStack.push(bAABB.left);
@@ -173,7 +179,7 @@ NVMCClient.checkCollision = function(a, b, colliders) {
                 }
             }
 
-            if (aCollided.length > 0) {
+            if (foundCollision) {
                 var lcaA = this.lowestCommonAncestor(aCollided);
                 var lcaB = this.lowestCommonAncestor(bCollided);
                 a.collisions.push([lcaA, lcaB]);
@@ -196,9 +202,13 @@ NVMCClient.intersectAABBs = function(a, b) {
 
 NVMCClient.lowestCommonAncestor = function(aabbs) {
     
-    var lca = aabbs[0];
-    for (var i = 1; i < aabbs.length; i++) {
-        lca = this.lcaPair(lca, aabbs[i]);
+    var lca;
+    for (var i in aabbs) {
+        if (lca) {
+            lca = this.lcaPair(lca, aabbs[i]);
+        } else {
+            lca = aabbs[i];
+        }
     }
     return lca;
 };
