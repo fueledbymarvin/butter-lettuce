@@ -6,6 +6,7 @@ function Catbug(options) {
     this.client = NVMCClient;
 
     this.translation = options.translation ? options.translation : [0, 3, 0];
+    this.last = [0, 3, 0];
     this.rotation = [0, 0, 0];
     this.lastTime = new Date().getTime();
     this.dist = 8;
@@ -16,6 +17,7 @@ function Catbug(options) {
     var p2 = getRandomPoint(p1, SglVec3.sub(p1, p0), this.angle, this.dist);
     var p3 = getRandomPoint(p2, SglVec3.sub(p2, p1), this.angle, this.dist);
     this.spline = [p0, p1, p2, p3];
+    this.collisions = [];
 
     this.update = function() {
         var time = new Date().getTime();
@@ -31,9 +33,9 @@ function Catbug(options) {
             this.spline.shift();
             this.spline.push(nextPoint);
         }
-        var prev = this.translation;
+        this.last = this.translation;
         this.translation = catmullRom(this.spline, t);
-        this.rotation[1] = calcHeading(SglVec3.sub(this.translation, prev));        
+        this.rotation[1] = calcHeading(SglVec3.sub(this.translation, this.last));
         this.body.transformation = SglMat4.mul(
             SglMat4.translation(this.translation),
             SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
@@ -43,6 +45,27 @@ function Catbug(options) {
     };
 
     this.draw = function(gl, depthOnly) {
+        if (this.collisions.length > 0 && depthOnly) {
+            var slide = this.client.calcSlide(this.collisions);
+            this.translation = SglVec3.add(this.translation, slide);
+            this.body.transformation = SglMat4.mul(
+                SglMat4.translation(this.translation),
+                SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
+            );
+
+            this.lastTime = new Date().getTime();
+            this.spline[0] = this.last;
+            this.spline[1] = this.translation;
+            this.spline[2] = getRandomPoint(
+                this.spline[1], SglVec3.sub(this.spline[1], this.spline[0]),
+                this.angle, this.dist
+            );
+            this.spline[3] = getRandomPoint(
+                this.spline[2], SglVec3.sub(this.spline[2], this.spline[1]),
+                this.angle, this.dist
+            );
+        }
+
         this.body.draw(gl, depthOnly);
     };
 

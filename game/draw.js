@@ -162,12 +162,12 @@ NVMCClient.drawScene = function (gl) {
     stack.loadIdentity();
     for (var i = 0; i < this.colliders.length; i++) {
         this.colliders[i].update();
+        this.colliders[i].collisions = [];
     }
     for (var i = 0; i < this.collideables.length; i++) {
         this.collideables[i].update();
     }
     for (var i = 0; i < this.colliders.length; i++) {
-        this.colliders[i].collisions = [];
         for (var j = 0; j < this.collideables.length; j++) {
             this.checkCollision(this.colliders[i], this.collideables[j], false);
         }
@@ -272,14 +272,11 @@ NVMCClient.checkCollision = function(a, b, colliders) {
             }
 
             if (aCollided.length > 0) {
-                console.log(aCollided.length);
-                var collision = [
-                    this.lowestCommonAncestor(aCollided),
-                    this.lowestCommonAncestor(bCollided)
-                ];
-                a.collisions.push(collision);
+                var lcaA = this.lowestCommonAncestor(aCollided);
+                var lcaB = this.lowestCommonAncestor(bCollided);
+                a.collisions.push([lcaA, lcaB]);
                 if (colliders) {
-                    b.collisions.push(collision);
+                    b.collisions.push([lcaB, lcaA]);
                 }
             }
         }

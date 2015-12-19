@@ -19,7 +19,7 @@ function Player() {
     this.collisions = [];
 
     this.draw = function(gl, depthOnly) {
-        if (depthOnly) {
+        if (this.collisions.length > 0 && depthOnly) {
             var slide = this.client.calcSlide(this.collisions);
             this.translation = SglVec3.add(this.translation, slide);
             this.body.translation = this.translation;
