@@ -270,7 +270,9 @@ NVMCClient.checkCollision = function(a, b, colliders) {
                     }
                 }
             }
+
             if (aCollided.length > 0) {
+                console.log(aCollided.length);
                 var collision = [
                     this.lowestCommonAncestor(aCollided),
                     this.lowestCommonAncestor(bCollided)
@@ -321,3 +323,28 @@ NVMCClient.lcaPair = function(a, b) {
     return aPath[i - 1];
 };
 
+NVMCClient.calcSlide = function(collisions) {
+
+    var slide = [0, 0, 0];
+    for (var i = 0; i < collisions.length; i++) {
+        var a = collisions[i][0];
+        var b = collisions[i][1];
+
+        var vectors = new Array(4);
+        vectors[0] = [b.min[0] - a.max[0], 0, 0];
+        vectors[1] = [0, 0, b.min[2] - a.max[2]];
+        vectors[2] = [b.max[0] - a.min[0], 0, 0];
+        vectors[3] = [0, 0, b.max[2] - a.min[2]];
+        vectors.sort(function(v, w) {
+            return SglVec3.length(v) - SglVec3.length(w);
+        });
+
+        var newSlide = vectors[0];
+        for (var j = 0; j < slide.length; j++) {
+            if (Math.abs(newSlide[j]) > Math.abs(slide[j])) {
+                slide[j] = newSlide[j];
+            }
+        }
+    }
+    return slide;
+};

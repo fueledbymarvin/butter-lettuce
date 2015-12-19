@@ -19,39 +19,13 @@ function Player() {
     this.collisions = [];
 
     this.draw = function(gl, depthOnly) {
-        if (this.collisions.length > 0 && depthOnly) {
-            var slide = this.calcSlide();
+        if (depthOnly) {
+            var slide = this.client.calcSlide(this.collisions);
             this.translation = SglVec3.add(this.translation, slide);
             this.body.translation = this.translation;
         }
 
         this.body.draw(gl, depthOnly);
-    };
-
-    this.calcSlide = function() {
-
-        var slide = [0, 0, 0];
-        for (var i = 0; i < this.collisions.length; i++) {
-            var a = this.collisions[i][0];
-            var b = this.collisions[i][1];
-
-            var vectors = new Array(4);
-            vectors[0] = [b.min[0] - a.max[0], 0, 0];
-            vectors[1] = [0, 0, b.min[2] - a.max[2]];
-            vectors[2] = [b.max[0] - a.min[0], 0, 0];
-            vectors[3] = [0, 0, b.max[2] - a.min[2]];
-            vectors.sort(function(v, w) {
-                return SglVec3.length(v) - SglVec3.length(w);
-            });
-
-            var newSlide = vectors[0];
-            for (var i = 0; i < slide.length; i++) {
-                if (Math.abs(newSlide[i]) > Math.abs(slide[i])) {
-                    slide[i] = newSlide[i];
-                }
-            }
-        }
-        return slide;
     };
 
     this.getFrame = function() {
