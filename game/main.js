@@ -51,7 +51,8 @@ NVMCClient.onInitialize = function () {
     this.texture_roof = this.createTexture(gl, NVMC.resource_path+'textures/concreteplane2k.jpg');
 
     this.aabbs = false;
-    this.bvhDepth = 4;
+    this.bvhDepth = 6;
+    this.lod = 20;
 
     this.initializeObjects(gl);
     this.createFullScreenQuad(gl);

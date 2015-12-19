@@ -16,7 +16,7 @@ function ChaseCamera() {//line 74, Listnig 4.5{
                 0;
 
         var tilt = this.rotation[0] - movementY*Math.PI/720;
-        var upper = Math.PI/8;
+        var upper = Math.PI/10;
         var lower = -Math.PI/4;
         if (tilt > upper) {
             this.rotation[0] = upper;
@@ -29,7 +29,7 @@ function ChaseCamera() {//line 74, Listnig 4.5{
     this.mouseButtonDown = function (event) {};
     this.mouseButtonUp = function () {};
     this.setView = function (stack, F_0) {
-	var T = SglMat4.translation([0, 1, 6]);
+	var T = SglMat4.translation([0, 1, 8]);
 	var Rx = eulerToRot(this.rotation);
 	var Vc_0 = SglMat4.mul(Rx, T);
 	var V_0 = SglMat4.mul(F_0, Vc_0);

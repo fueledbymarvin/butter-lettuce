@@ -185,11 +185,11 @@ NVMCClient.findAABBVertices = function(aabb) {
 };
 
 NVMCClient.createObjects = function () {
-    this.cube = new Cube(16);
-    this.cylinder = new Cylinder(16);
-    this.cone = new Cone(16);
-    this.sphere = new Sphere(16, 16);
-    this.texturedSphere = new TexturedSphere(16, 16);
+    this.cube = new Cube(this.lod);
+    this.cylinder = new Cylinder(this.lod);
+    this.cone = new Cone(this.lod);
+    this.sphere = new Sphere(this.lod, this.lod);
+    this.texturedSphere = new TexturedSphere(this.lod, this.lod);
 
     var bbox = this.game.race.bbox;
     var quad = [bbox[0], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[5], bbox[0], bbox[1] - 0.01, bbox[5]];
@@ -257,29 +257,29 @@ NVMCClient.createEntities = function() {
     this.shadowables = this.shadowables.concat(this.hills);
     this.collideables = this.collideables.concat(this.hills);
 
-    // this.floaters = new Array(8);
-    // for (var i = 0; i < this.floaters.length; i++) {
-    //     var scale = 0.3+Math.random();
-    //     this.floaters[i] = new Floater({
-    //         transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 1+Math.random()*4, Math.random()*200-100])]
-    //     });
-    //     this.floaters[i].body.animate("spin", true);
-    // }
-    // this.drawables = this.drawables.concat(this.floaters);
-    // this.shadowables = this.shadowables.concat(this.floaters);
-    // this.collideables = this.collideables.concat(this.floaters);
+    this.floaters = new Array(8);
+    for (var i = 0; i < this.floaters.length; i++) {
+        var scale = 0.3+Math.random();
+        this.floaters[i] = new Floater({
+            transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 1+Math.random()*4, Math.random()*200-100])]
+        });
+        this.floaters[i].body.animate("spin", true);
+    }
+    this.drawables = this.drawables.concat(this.floaters);
+    this.shadowables = this.shadowables.concat(this.floaters);
+    this.collideables = this.collideables.concat(this.floaters);
 
-    // this.spinners = new Array(8);
-    // for (var i = 0; i < this.spinners.length; i++) {
-    //     var scale = 0.3+Math.random();
-    //     this.spinners[i] = new Spinner({
-    //         transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
-    //     });
-    //     this.spinners[i].body.animate("spin", true);
-    // }
-    // this.drawables = this.drawables.concat(this.spinners);
-    // this.shadowables = this.shadowables.concat(this.spinners);
-    // this.collideables = this.collideables.concat(this.spinners);
+    this.spinners = new Array(8);
+    for (var i = 0; i < this.spinners.length; i++) {
+        var scale = 0.3+Math.random();
+        this.spinners[i] = new Spinner({
+            transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
+        });
+        this.spinners[i].body.animate("spin", true);
+    }
+    this.drawables = this.drawables.concat(this.spinners);
+    this.shadowables = this.shadowables.concat(this.spinners);
+    this.collideables = this.collideables.concat(this.spinners);
 };
 
 NVMCClient.initializeObjects = function (gl) {

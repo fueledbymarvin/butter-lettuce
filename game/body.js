@@ -342,7 +342,7 @@ function Primitive(options) {
                 gl.uniformMatrix4fv(shader.uShadowMatrixLocation, false, stack.matrix);
             } else {
                 if (this.client.aabbs && this.mesh != this.client.texturedQuad) {
-                    this.drawAABB(gl);
+                    this.drawBVH(gl);
                 }
                 if (this.texture) {
                     gl.activeTexture(gl.TEXTURE0);
@@ -359,17 +359,35 @@ function Primitive(options) {
         }).bind(this), gl, depthOnly);
     };
 
-    this.drawAABB = function(gl) {
+    this.drawBVH = function(gl) {
+        if (this.bvh) {
+            var toVisit = [this.bvh];
+            while (toVisit.length > 0) {
+                var visiting = toVisit.pop();
+                if (visiting.left == null && visiting.right == null) {
+                    this.drawAABB(gl, visiting);
+                }
+                if (visiting.left) {
+                    toVisit.push(visiting.left);
+                }
+                if (visiting.right) {
+                    toVisit.push(visiting.right);
+                }
+            }
+        }
+    };
+
+    this.drawAABB = function(gl, aabb) {
 
         var translation = [
-            (this.aabb.max[0]+this.aabb.min[0])/2,
-            (this.aabb.max[1]+this.aabb.min[1])/2,
-            (this.aabb.max[2]+this.aabb.min[2])/2
+            (aabb.max[0]+aabb.min[0])/2,
+            (aabb.max[1]+aabb.min[1])/2,
+            (aabb.max[2]+aabb.min[2])/2
         ];
         var scaling = [
-            (this.aabb.max[0]-this.aabb.min[0])/2,
-            (this.aabb.max[1]-this.aabb.min[1])/2,
-            (this.aabb.max[2]-this.aabb.min[2])/2
+            (aabb.max[0]-aabb.min[0])/2,
+            (aabb.max[1]-aabb.min[1])/2,
+            (aabb.max[2]-aabb.min[2])/2
         ];
         var shader = this.client.lambertianSingleColorShadowShader;
 
