@@ -160,6 +160,8 @@ NVMCClient.drawScene = function (gl) {
     this.projectionMatrix = SglMat4.perspective(3.14/4,ratio,0.1,1000);
 
     stack.loadIdentity();
+
+    // update positions before checking for collisions
     for (var i = 0; i < this.colliders.length; i++) {
         this.colliders[i].update();
         this.colliders[i].collisions = [];
@@ -167,6 +169,7 @@ NVMCClient.drawScene = function (gl) {
     for (var i = 0; i < this.collideables.length; i++) {
         this.collideables[i].update();
     }
+    // check for collisions on prospective positions
     for (var i = 0; i < this.colliders.length; i++) {
         for (var j = 0; j < this.collideables.length; j++) {
             this.checkCollision(this.colliders[i], this.collideables[j], false);
@@ -175,6 +178,13 @@ NVMCClient.drawScene = function (gl) {
             this.checkCollision(this.colliders[i], this.colliders[k], true);
         }
     }
+    // handle collisions
+    for (var i = 0; i < this.colliders.length; i++) {
+        if (this.colliders[i].collisions.length > 0) {
+            this.colliders[i].collisionResponse(this.calcSlide(this.colliders[i].collisions));
+        }
+    }
+
     this.cameras[this.currentCamera].setView(this.stack, this.player.getFrame());
     
     this.viewFrame = SglMat4.inverse(this.stack.matrix);
@@ -207,141 +217,3 @@ NVMCClient.drawScene = function (gl) {
     this.drawEverything(gl);
 };
 
-NVMCClient.checkCollision = function(a, b, colliders) {
-
-    if (this.intersectAABBs(a.body.aabb, b.body.aabb)) {
-        var toTest = [];
-        var aPrims = a.body.getPrimitives();
-        var bPrims = b.body.getPrimitives();
-        for (var i = 0; i < aPrims.length; i++) {
-            if (this.intersectAABBs(aPrims[i].aabb, b.body.aabb)) {
-                for (var j = 0; j < bPrims.length; j++) {
-                    if (this.intersectAABBs(aPrims[i].aabb, bPrims[j].aabb)) {
-                        toTest.push([aPrims[i], bPrims[j]]);
-                    }
-                }
-            }
-        }
-
-        for (var i = 0; i < toTest.length; i++) {
-            // make world space bvh if not already done
-            var aPrim = toTest[i][0];
-            var bPrim = toTest[i][1];
-
-            var aCollided = [];
-            var bCollided = [];
-
-            if (aPrim.bvh == null) {
-                aPrim.updateBVH();
-            }
-            if (bPrim.bvh == null) {
-                bPrim.updateBVH();
-            }
-            var aStack = [aPrim.bvh];
-            while (aStack.length > 0) {
-                var aAABB = aStack.pop();
-                if (this.intersectAABBs(aAABB, bPrim.aabb)) {
-                    // if hit a leaf, search through b's bvh
-                    if (aAABB.left == null && aAABB.right == null) {
-                        var bStack = [bPrim.bvh];
-                        while (bStack.length > 0) {
-                            var bAABB = bStack.pop();
-                            if (this.intersectAABBs(aAABB, bAABB)) {
-                                // if bvh at the leaf level, then count as intersection
-                                if (bAABB.left == null && bAABB.right == null) {
-                                    aCollided.push(aAABB);
-                                    bCollided.push(bAABB);
-                                    // a.collisions.push([aAABB, bAABB]);
-                                }
-                                if (bAABB.left) {
-                                    bStack.push(bAABB.left);
-                                }
-                                if (bAABB.right) {
-                                    bStack.push(bAABB.right);
-                                }
-                            }
-                        }
-                    }
-                    if (aAABB.left) {
-                        aStack.push(aAABB.left);
-                    }
-                    if (aAABB.right) {
-                        aStack.push(aAABB.right);
-                    }
-                }
-            }
-
-            if (aCollided.length > 0) {
-                var lcaA = this.lowestCommonAncestor(aCollided);
-                var lcaB = this.lowestCommonAncestor(bCollided);
-                a.collisions.push([lcaA, lcaB]);
-                if (colliders) {
-                    b.collisions.push([lcaB, lcaA]);
-                }
-            }
-        }
-    }
-};
-
-NVMCClient.intersectAABBs = function(a, b) {
-    return a.max[0] > b.min[0] && 
-           a.max[1] > b.min[1] &&
-           a.max[2] > b.min[2] &&
-           a.min[0] < b.max[0] &&
-           a.min[1] < b.max[1] &&
-           a.min[2] < b.max[2];
-};
-
-NVMCClient.lowestCommonAncestor = function(aabbs) {
-    
-    var lca = aabbs[0];
-    for (var i = 1; i < aabbs.length; i++) {
-        lca = this.lcaPair(lca, aabbs[i]);
-    }
-    return lca;
-};
-
-NVMCClient.lcaPair = function(a, b) {
-
-    var aPath = [];
-    var bPath = [];
-    while (a) {
-        aPath.unshift(a);
-        a = a.parent;
-    }
-    while (b) {
-        bPath.unshift(b);
-        b = b.parent;
-    }
-    var i = 0;
-    while (i < aPath.length && i < bPath.length && aPath[i] === bPath[i]) {
-        i++;
-    }
-    return aPath[i - 1];
-};
-
-NVMCClient.calcSlide = function(collisions) {
-
-    var slide = [0, 0, 0];
-    for (var i = 0; i < collisions.length; i++) {
-        var a = collisions[i][0];
-        var b = collisions[i][1];
-
-        var vectors = new Array(4);
-        vectors[0] = [b.min[0] - a.max[0], 0, 0];
-        vectors[1] = [0, 0, b.min[2] - a.max[2]];
-        vectors[2] = [b.max[0] - a.min[0], 0, 0];
-        vectors[3] = [0, 0, b.max[2] - a.min[2]];
-        vectors.sort(function(v, w) {
-            return SglVec3.length(v) - SglVec3.length(w);
-        });
-
-        var newSlide = vectors[0];
-        for (var j = 0; j < slide.length; j++) {
-            if (Math.abs(newSlide[j]) > Math.abs(slide[j])) {
-                slide[j] = newSlide[j];
-            }
-        }
-    }
-    return slide;
-};

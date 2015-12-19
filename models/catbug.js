@@ -45,28 +45,29 @@ function Catbug(options) {
     };
 
     this.draw = function(gl, depthOnly) {
-        if (this.collisions.length > 0 && depthOnly) {
-            var slide = this.client.calcSlide(this.collisions);
-            this.translation = SglVec3.add(this.translation, slide);
-            this.body.transformation = SglMat4.mul(
-                SglMat4.translation(this.translation),
-                SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
-            );
-
-            this.lastTime = new Date().getTime();
-            this.spline[0] = this.last;
-            this.spline[1] = this.translation;
-            this.spline[2] = getRandomPoint(
-                this.spline[1], SglVec3.sub(this.spline[1], this.spline[0]),
-                this.angle, this.dist
-            );
-            this.spline[3] = getRandomPoint(
-                this.spline[2], SglVec3.sub(this.spline[2], this.spline[1]),
-                this.angle, this.dist
-            );
-        }
 
         this.body.draw(gl, depthOnly);
+    };
+
+    this.collisionResponse = function(slide) {
+
+        this.translation = SglVec3.add(this.translation, slide);
+        this.body.transformation = SglMat4.mul(
+            SglMat4.translation(this.translation),
+            SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
+        );
+
+        this.lastTime = new Date().getTime();
+        this.spline[0] = this.last;
+        this.spline[1] = this.translation;
+        this.spline[2] = getRandomPoint(
+            this.spline[1], SglVec3.sub(this.spline[1], this.spline[0]),
+            this.angle, this.dist
+        );
+        this.spline[3] = getRandomPoint(
+            this.spline[2], SglVec3.sub(this.spline[2], this.spline[1]),
+            this.angle, this.dist
+        );
     };
 
     options.graph = new Node({
