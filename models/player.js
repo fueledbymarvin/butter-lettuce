@@ -30,7 +30,8 @@ function Player() {
 
     this.calcSlide = function() {
 
-        for (var i = 0; i < 1; i++) {
+        var slide = [0, 0, 0];
+        for (var i = 0; i < this.collisions.length; i++) {
             var a = this.collisions[i][0];
             var b = this.collisions[i][1];
 
@@ -43,13 +44,14 @@ function Player() {
                 return SglVec3.length(v) - SglVec3.length(w);
             });
 
-            var dir = SglVec3.sub(this.translation, this.last);
-            for (var j = 0; j < vectors.length; j++) {
-                if (SglVec3.dot(vectors[j], dir) <= 0) {
-                    return vectors[j];
+            var newSlide = vectors[0];
+            for (var i = 0; i < slide.length; i++) {
+                if (Math.abs(newSlide[i]) > Math.abs(slide[i])) {
+                    slide[i] = newSlide[i];
                 }
             }
         }
+        return slide;
     };
 
     this.getFrame = function() {

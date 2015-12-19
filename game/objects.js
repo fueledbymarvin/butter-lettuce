@@ -79,7 +79,7 @@ NVMCClient.createObjectBuffers = function (gl, obj, createColorBuffer, createNor
     obj.aabbVertices = this.findAABBVertices(obj.aabb);
 };
 
-NVMCClient.buildBVH = function(vertices, triangles, depth) {
+NVMCClient.buildBVH = function(vertices, triangles, depth, parent) {
     if (depth < 0 || triangles.length <= 1) { return null; }
 
     // find min and max points of aabb
@@ -133,12 +133,14 @@ NVMCClient.buildBVH = function(vertices, triangles, depth) {
         }
     }
 
-    return {
+    var aabb = {
         min: min,
         max: max,
-        left: this.buildBVH(vertices, left, depth-1),
-        right: this.buildBVH(vertices, right, depth-1)
+        parent: parent
     };
+    aabb.left = this.buildBVH(vertices, left, depth-1, aabb);
+    aabb.right = this.buildBVH(vertices, right, depth-1, aabb);
+    return aabb;
 };
 
 NVMCClient.updateMinMax = function(vertex, min, max) {

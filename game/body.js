@@ -328,7 +328,7 @@ function Primitive(options) {
         for (var i = 0; i < transformed.length; i++) {
             transformed[i] = SglMat4.mul4(this.mat, this.mesh.vertices[i]);
         }
-        this.bvh = this.client.buildBVH(transformed, this.mesh.triangles, this.client.bvhDepth);
+        this.bvh = this.client.buildBVH(transformed, this.mesh.triangles, this.client.bvhDepth, null);
     };
 
     this.draw = function(gl, depthOnly) {

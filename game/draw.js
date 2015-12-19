@@ -225,18 +225,21 @@ NVMCClient.checkCollision = function(a, b, colliders) {
 
         for (var i = 0; i < toTest.length; i++) {
             // make world space bvh if not already done
-            if (toTest[i][0].bvh == null) {
-                toTest[i][0].updateBVH();
-            }
-            if (toTest[i][1].bvh == null) {
-                toTest[i][1].updateBVH();
-            }
             var aPrim = toTest[i][0];
             var bPrim = toTest[i][1];
+
+            var aCollided = [];
+            var bCollided = [];
+
+            if (aPrim.bvh == null) {
+                aPrim.updateBVH();
+            }
+            if (bPrim.bvh == null) {
+                bPrim.updateBVH();
+            }
             var aStack = [aPrim.bvh];
             while (aStack.length > 0) {
                 var aAABB = aStack.pop();
-                var foundIntersection = false;
                 if (this.intersectAABBs(aAABB, bPrim.aabb)) {
                     // if hit a leaf, search through b's bvh
                     if (aAABB.left == null && aAABB.right == null) {
@@ -246,14 +249,9 @@ NVMCClient.checkCollision = function(a, b, colliders) {
                             if (this.intersectAABBs(aAABB, bAABB)) {
                                 // if bvh at the leaf level, then count as intersection
                                 if (bAABB.left == null && bAABB.right == null) {
-                                    if (colliders) {
-                                        a.collisions.push([aAABB, bAABB]);
-                                        b.collisions.push([bAABB, aAABB]);
-                                    } else {
-                                        a.collisions.push([aAABB, bAABB]);
-                                    }
-                                    foundIntersection = true;
-                                    break;
+                                    aCollided.push(aAABB);
+                                    bCollided.push(bAABB);
+                                    // a.collisions.push([aAABB, bAABB]);
                                 }
                                 if (bAABB.left) {
                                     bStack.push(bAABB.left);
@@ -264,7 +262,6 @@ NVMCClient.checkCollision = function(a, b, colliders) {
                             }
                         }
                     }
-                    // otherwise continue searching
                     if (aAABB.left) {
                         aStack.push(aAABB.left);
                     }
@@ -272,8 +269,15 @@ NVMCClient.checkCollision = function(a, b, colliders) {
                         aStack.push(aAABB.right);
                     }
                 }
-                if (foundIntersection) {
-                    break;
+            }
+            if (aCollided.length > 0) {
+                var collision = [
+                    this.lowestCommonAncestor(aCollided),
+                    this.lowestCommonAncestor(bCollided)
+                ];
+                a.collisions.push(collision);
+                if (colliders) {
+                    b.collisions.push(collision);
                 }
             }
         }
@@ -287,5 +291,33 @@ NVMCClient.intersectAABBs = function(a, b) {
            a.min[0] < b.max[0] &&
            a.min[1] < b.max[1] &&
            a.min[2] < b.max[2];
+};
+
+NVMCClient.lowestCommonAncestor = function(aabbs) {
+    
+    var lca = aabbs[0];
+    for (var i = 1; i < aabbs.length; i++) {
+        lca = this.lcaPair(lca, aabbs[i]);
+    }
+    return lca;
+};
+
+NVMCClient.lcaPair = function(a, b) {
+
+    var aPath = [];
+    var bPath = [];
+    while (a) {
+        aPath.unshift(a);
+        a = a.parent;
+    }
+    while (b) {
+        bPath.unshift(b);
+        b = b.parent;
+    }
+    var i = 0;
+    while (i < aPath.length && i < bPath.length && aPath[i] === bPath[i]) {
+        i++;
+    }
+    return aPath[i - 1];
 };
 
