@@ -167,7 +167,7 @@ NVMCClient.drawScene = function (gl) {
         this.collideables[i].update();
     }
     for (var i = 0; i < this.colliders.length; i++) {
-        this.colliders[i].collision = null;
+        this.colliders[i].collisions = [];
         for (var j = 0; j < this.collideables.length; j++) {
             this.checkCollision(this.colliders[i], this.collideables[j], false);
         }
@@ -246,13 +246,11 @@ NVMCClient.checkCollision = function(a, b, colliders) {
                             if (this.intersectAABBs(aAABB, bAABB)) {
                                 // if bvh at the leaf level, then count as intersection
                                 if (bAABB.left == null && bAABB.right == null) {
-                                    var slide = this.calcSlide(aAABB, bAABB);
                                     if (colliders) {
-                                        // both colliders so both slide
-                                        a.collision = SglVec3.muls(slide, -0.51);
-                                        b.collision = SglVec3.muls(slide, 0.51);
+                                        a.collisions.push([aAABB, bAABB]);
+                                        b.collisions.push([bAABB, aAABB]);
                                     } else {
-                                        a.collision = SglVec3.muls(slide, -1.01);
+                                        a.collisions.push([aAABB, bAABB]);
                                     }
                                     foundIntersection = true;
                                     break;
@@ -291,24 +289,3 @@ NVMCClient.intersectAABBs = function(a, b) {
            a.min[2] < b.max[2];
 };
 
-NVMCClient.calcSlide = function(a, b) {
-    var diffs = new Array(6);
-    for (var i = 0; i < 3; i++) {
-        diffs[i] = a.max[i] - b.min[i];
-        diffs[i+3] = a.min[i] - b.max[i];
-    }
-
-    var index = 0;
-    var min = diffs[0];
-    for (var i = 1; i < diffs.length; i++) {
-        if (Math.abs(diffs[i]) < Math.abs(min) && i % 3 != 1) { // don't want to slide in y
-            index = i;
-            min = diffs[i];
-        }
-    }
-
-    var slide = [0, 0, 0];
-    slide[index % 3] = min;
-    console.log(slide);
-    return slide;
-};

@@ -11,19 +11,45 @@ function Player() {
     this.back = false;
     this.left = false;
     this.right = false;
+    this.last = [0, 2, 0];
     this.translation = [0, 2, 0];
     this.rotation = [0, 0, 0];
     this.lastTime = new Date().getTime();
     this.velocity = 12;
-    this.collision = null;
+    this.collisions = [];
 
     this.draw = function(gl, depthOnly) {
-        if (this.collision && depthOnly) {
-            this.translation = SglVec3.add(this.translation, this.collision);
+        if (this.collisions.length > 0 && depthOnly) {
+            var slide = this.calcSlide();
+            this.translation = SglVec3.add(this.translation, slide);
             this.body.translation = this.translation;
         }
 
         this.body.draw(gl, depthOnly);
+    };
+
+    this.calcSlide = function() {
+
+        for (var i = 0; i < 1; i++) {
+            var a = this.collisions[i][0];
+            var b = this.collisions[i][1];
+
+            var vectors = new Array(4);
+            vectors[0] = [b.min[0] - a.max[0], 0, 0];
+            vectors[1] = [0, 0, b.min[2] - a.max[2]];
+            vectors[2] = [b.max[0] - a.min[0], 0, 0];
+            vectors[3] = [0, 0, b.max[2] - a.min[2]];
+            vectors.sort(function(v, w) {
+                return SglVec3.length(v) - SglVec3.length(w);
+            });
+
+            var dir = SglVec3.sub(this.translation, this.last);
+            for (var j = 0; j < vectors.length; j++) {
+                if (SglVec3.dot(vectors[j], dir) <= 0) {
+                    return vectors[j];
+                }
+            }
+        }
     };
 
     this.getFrame = function() {
@@ -43,6 +69,7 @@ function Player() {
         var time = new Date().getTime();
         var elapsed = (time - this.lastTime)/1000;
         this.lastTime = time;
+        this.last = this.translation;
 
         var y = [0, 1, 0];
 	var z = SglMat4.mul4(SglMat4.rotationAngleAxis(this.rotation[1], y), [0, 0, 1, 0]);
