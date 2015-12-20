@@ -3,19 +3,6 @@
 /***********************************************************************/
 var NVMCClient = NVMCClient || {};
 /***********************************************************************/
-NVMCClient.sgl_car_model = null;
-NVMCClient.sgl_renderer = null;
-
-NVMCClient.loadCarModel = function (gl, data) {//line 158, Listing 6.5{
-    if (!data)
-	data = NVMC.resource_path+"geometry/cars/eclipse/eclipse.obj";
-    var that = this;
-    this.sgl_car_model = null;
-    sglRequestObj(data, function (modelDescriptor) {
-	that.sgl_car_model = new SglModel(that.ui.gl, modelDescriptor);
-	that.ui.postDrawEvent();
-    });
-};//line 167}
 
 NVMCClient.createObjectBuffers = function (gl, obj, createColorBuffer, createNormalBuffer, createTexCoordBuffer) {
     obj.vertexBuffer = gl.createBuffer();
@@ -152,30 +139,6 @@ NVMCClient.createEntities = function() {
     this.drawables = this.drawables.concat(this.hills);
     this.shadowables = this.shadowables.concat(this.hills);
     this.collideables = this.collideables.concat(this.hills);
-
-    this.floaters = new Array(8);
-    for (var i = 0; i < this.floaters.length; i++) {
-        var scale = 0.3+Math.random();
-        this.floaters[i] = new Floater({
-            transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 1+Math.random()*4, Math.random()*200-100])]
-        });
-        this.floaters[i].body.animate("spin", true);
-    }
-    this.drawables = this.drawables.concat(this.floaters);
-    this.shadowables = this.shadowables.concat(this.floaters);
-    this.collideables = this.collideables.concat(this.floaters);
-
-    this.spinners = new Array(8);
-    for (var i = 0; i < this.spinners.length; i++) {
-        var scale = 0.3+Math.random();
-        this.spinners[i] = new Spinner({
-            transformations: [SglMat4.scaling([scale, scale, scale]), SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
-        });
-        this.spinners[i].body.animate("spin", true);
-    }
-    this.drawables = this.drawables.concat(this.spinners);
-    this.shadowables = this.shadowables.concat(this.spinners);
-    this.collideables = this.collideables.concat(this.spinners);
 };
 
 NVMCClient.initializeObjects = function (gl) {

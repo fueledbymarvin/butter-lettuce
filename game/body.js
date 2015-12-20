@@ -252,7 +252,7 @@ function Joint(options) {
     // bank/roll (around z-axis)
     this.marker = new Primitive({
         mesh: this.client.sphere,
-        shader: this.client.lambertianSingleColorShadowShader,
+        shader: this.client.phongSingleColorShadowShader,
         color: [1, 1, 1, 1],
         scaling: [0.1, 0.1, 0.1]
     });
@@ -395,7 +395,7 @@ function Primitive(options) {
             (aabb.max[1]-aabb.min[1])/2,
             (aabb.max[2]-aabb.min[2])/2
         ];
-        var shader = this.client.lambertianSingleColorShadowShader;
+        var shader = this.client.phongSingleColorShadowShader;
 
         var stack = this.client.stack;
         stack.push();

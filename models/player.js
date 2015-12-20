@@ -124,7 +124,7 @@ function Player() {
             primitives: [
                 new Primitive({
                     mesh: this.client.sphere,
-                    shader: this.client.lambertianSingleColorShadowShader,
+                    shader: this.client.phongSingleColorShadowShader,
                     color: [0.40, 0.25, 0.45, 1]
                 })
             ]

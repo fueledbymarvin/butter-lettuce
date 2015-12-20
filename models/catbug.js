@@ -76,7 +76,7 @@ function Catbug(options) {
         primitives: [
             new Primitive({
                 mesh: this.client.sphere,
-                shader: this.client.lambertianSingleColorShadowShader,
+                shader: this.client.phongSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
                 scaling: [0.55, 0.6, 0.5]
             }),
@@ -98,7 +98,7 @@ function Catbug(options) {
             }),
             new Primitive({ // left leg
                 mesh: this.client.sphere,
-                shader: this.client.lambertianSingleColorShadowShader,
+                shader: this.client.phongSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
                 scaling: [0.1, 0.2, 0.1],
                 translation: [-0.3, -0.45, 0.2],
@@ -106,7 +106,7 @@ function Catbug(options) {
             }),
             new Primitive({ // right leg
                 mesh: this.client.sphere,
-                shader: this.client.lambertianSingleColorShadowShader,
+                shader: this.client.phongSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
                 scaling: [0.1, 0.2, 0.1],
                 translation: [0.3, -0.45, 0.2],
@@ -114,7 +114,7 @@ function Catbug(options) {
             }),
             new Primitive({ // left arm
                 mesh: this.client.sphere,
-                shader: this.client.lambertianSingleColorShadowShader,
+                shader: this.client.phongSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
                 scaling: [0.1, 0.2, 0.1],
                 translation: [-0.3, 0.2, 0.3],
@@ -122,7 +122,7 @@ function Catbug(options) {
             }),
             new Primitive({ // right arm
                 mesh: this.client.sphere,
-                shader: this.client.lambertianSingleColorShadowShader,
+                shader: this.client.phongSingleColorShadowShader,
                 color: [0.67, 0.81, 0.93, 1.0],
                 scaling: [0.1, 0.2, 0.1],
                 translation: [0.3, 0.2, 0.3],
@@ -137,7 +137,7 @@ function Catbug(options) {
                     primitives: [
                         new Primitive({
                             mesh: this.client.sphere,
-                            shader: this.client.lambertianSingleColorShadowShader,
+                            shader: this.client.phongSingleColorShadowShader,
                             color: [0.93, 0.96, 0.97, 1.0],
                             scaling: [0.6, 0.3, 0.1],
                             rotation: [Math.PI/4, -Math.PI/2, 0]
@@ -152,7 +152,7 @@ function Catbug(options) {
                     primitives: [
                         new Primitive({
                             mesh: this.client.sphere,
-                            shader: this.client.lambertianSingleColorShadowShader,
+                            shader: this.client.phongSingleColorShadowShader,
                             color: [0.93, 0.96, 0.97, 1.0],
                             scaling: [0.6, 0.3, 0.1],
                             rotation: [Math.PI/4, Math.PI/2, 0]
@@ -169,13 +169,13 @@ function Catbug(options) {
                     primitives: [
                         new Primitive({
                             mesh: this.client.sphere,
-                            shader: this.client.lambertianSingleColorShadowShader,
+                            shader: this.client.phongSingleColorShadowShader,
                             color: [0.67, 0.81, 0.93, 1.0],
                             scaling: [0.5, 0.4, 0.5]
                         }),
                         new Primitive({ // left ear
                             mesh: this.client.cone,
-                            shader: this.client.lambertianSingleColorShadowShader,
+                            shader: this.client.phongSingleColorShadowShader,
                             color: [0.67, 0.81, 0.93, 1.0],
                             scaling: [0.15, 0.15, 0.15],
                             rotation: [0, 0, Math.PI/8],
@@ -183,7 +183,7 @@ function Catbug(options) {
                         }),
                         new Primitive({ // right ear
                             mesh: this.client.cone,
-                            shader: this.client.lambertianSingleColorShadowShader,
+                            shader: this.client.phongSingleColorShadowShader,
                             color: [0.67, 0.81, 0.93, 1.0],
                             scaling: [0.15, 0.15, 0.15],
                             rotation: [0, 0, -Math.PI/8],
@@ -191,7 +191,7 @@ function Catbug(options) {
                         }),
                         new Primitive({ // left eye
                             mesh: this.client.sphere,
-                            shader: this.client.lambertianSingleColorShadowShader,
+                            shader: this.client.phongSingleColorShadowShader,
                             color: [0.93, 0.96, 0.97, 1.0],
                             scaling: [0.05, 0.06, 0.03],
                             rotation: [-Math.PI/12, 0, 0],
@@ -199,7 +199,7 @@ function Catbug(options) {
                         }),
                         new Primitive({ // right eye
                             mesh: this.client.sphere,
-                            shader: this.client.lambertianSingleColorShadowShader,
+                            shader: this.client.phongSingleColorShadowShader,
                             color: [0.93, 0.96, 0.97, 1.0],
                             scaling: [0.05, 0.06, 0.03],
                             rotation: [-Math.PI/12, 0, 0],

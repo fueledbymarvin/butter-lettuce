@@ -56,4 +56,3 @@ skyBoxShader = function (gl) {
     return shaderProgram;
 };
 
-

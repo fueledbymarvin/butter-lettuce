@@ -86,29 +86,16 @@ NVMCClient.setupShaders = function(gl) {
     gl.uniformMatrix4fv(this.uniformShader.uProjectionMatrixLocation, false, this.projectionMatrix);
 
     // Setup parameters for phong shader
-    gl.useProgram(this.phongShader);
-    gl.uniformMatrix4fv(this.phongShader.uProjectionMatrixLocation,false,this.projectionMatrix);
-    gl.uniformMatrix4fv(this.phongShader.uModelViewMatrixLocation,false,stack.matrix  );
-    gl.uniformMatrix3fv(this.phongShader.uViewSpaceNormalMatrixLocation,false, SglMat4.to33(this.stack.matrix) );	
-    gl.uniform4fv(this.phongShader.uLightDirectionLocation,this.sunLightDirectionViewSpace);
-    
-    gl.uniform3fv(this.phongShader.uLightColorLocation,[0.9,0.9,0.9]);
-    gl.uniform1f(this.phongShader.uShininessLocation,0.2);
-    gl.uniform1f(this.phongShader.uKaLocation,0.5);
-    gl.uniform1f(this.phongShader.uKdLocation,0.5);
-    gl.uniform1f(this.phongShader.uKsLocation, 1.0);
-    
-    // Setup parameters for lambertian shader
-    gl.useProgram(this.lambertianSingleColorShadowShader);
+    gl.useProgram(this.phongSingleColorShadowShader);
 
-    gl.uniform1i(this.lambertianSingleColorShadowShader.uShadowMapLocation, 1);
+    gl.uniform1i(this.phongSingleColorShadowShader.uShadowMapLocation, 1);
 
-    gl.uniformMatrix4fv(this.lambertianSingleColorShadowShader.uProjectionMatrixLocation,false,this.projectionMatrix);
-    gl.uniformMatrix4fv(this.lambertianSingleColorShadowShader.uViewMatrixLocation,false, this.stack.matrix);
-    gl.uniformMatrix4fv(this.lambertianSingleColorShadowShader.uShadowMatrixLocation,false, this.shadowMatrix);
+    gl.uniformMatrix4fv(this.phongSingleColorShadowShader.uProjectionMatrixLocation,false,this.projectionMatrix);
+    gl.uniformMatrix4fv(this.phongSingleColorShadowShader.uModelViewMatrixLocation,false, this.stack.matrix);
+    gl.uniformMatrix4fv(this.phongSingleColorShadowShader.uShadowMatrixLocation,false, this.shadowMatrix);
 
-    gl.uniform4fv(this.lambertianSingleColorShadowShader.uLightDirectionLocation,this.sunLightDirectionViewSpace);
-    gl.uniform3fv(this.lambertianSingleColorShadowShader.uLightColorLocation,[1.0,1.0,1.0]);
+    gl.uniform4fv(this.phongSingleColorShadowShader.uLightDirectionLocation,this.sunLightDirectionViewSpace);
+    gl.uniform3fv(this.phongSingleColorShadowShader.uLightColorLocation,[1.0,1.0,1.0]);
 
     // Setup parameters for texture shader
     gl.useProgram(this.textureShadowShader);
@@ -117,7 +104,7 @@ NVMCClient.setupShaders = function(gl) {
     gl.uniformMatrix4fv(this.textureShadowShader.uModelViewMatrixLocation, false, this.stack.matrix);
     gl.uniformMatrix4fv(this.textureShadowShader.uShadowMatrixLocation, false, this.shadowMatrix);
     gl.uniform4fv(this.textureShadowShader.uLightDirectionLocation, this.sunLightDirectionViewSpace);
-    gl.uniform3fv(this.textureShadowShader.uLightColorLocation,[0.9,0.9,0.9]);
+    gl.uniform3fv(this.textureShadowShader.uLightColorLocation,[1, 1, 1]);
     gl.uniform1i(this.textureShadowShader.uTextureLocation, 0);
     gl.uniform1i(this.textureShadowShader.uShadowMapLocation, 1);
 
