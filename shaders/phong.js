@@ -111,7 +111,7 @@ void main()    \n\
                 float spec = max(0.0, pow(RdotV, uShininess));                     \n\
                 vec3 specular = (mat_specular * uLightColor) * spec;               \n\
               	                                                                 \n\
-                vec3 color = diffuse;  \n\
+                vec3 color = uKa*ambient + uKd*diffuse + uKs*specular;  \n\
 	float shadow = 0.6 + 0.4*(1.0-IsInShadow());\n\
 	color.x*=shadow;\n\
 	color.y*=shadow;\n\

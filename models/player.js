@@ -123,8 +123,9 @@ function Player() {
         graph: new Node({
             primitives: [
                 new Primitive({
-                    mesh: this.client.sphere,
-                    shader: this.client.phongSingleColorShadowShader,
+                    mesh: this.client.texturedSphere,
+                    shader: this.client.textureShadowShader,
+                    texture: this.client.rockTextures[Math.floor(Math.random()*3)],
                     color: [0.40, 0.25, 0.45, 1]
                 })
             ]
