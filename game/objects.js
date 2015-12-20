@@ -125,7 +125,6 @@ NVMCClient.createEntities = function() {
     this.catbug = new Catbug({
         transformations: [SglMat4.translation([0, 2, 0])]
     });
-    this.catbug.body.animate("fly", true);
     this.drawables.push(this.catbug);
     this.shadowables.push(this.catbug);
     this.colliders.push(this.catbug);

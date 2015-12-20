@@ -289,7 +289,7 @@ function Primitive(options) {
     this.shader = options.shader;
     this.color = options.color;
     this.texture = options.texture;
-    this.phong = options.phong ? options.phong : [0.4, 0.8, 0.2, 1];
+    this.phong = options.phong ? options.phong : [0.2, 0.8, 0.2, 1];
     this.scaling = options.scaling ? options.scaling : [1, 1, 1];
     this.rotation = options.rotation ? options.rotation : [0, 0, 0];
     this.translation = options.translation ? options.translation : [0, 0, 0];

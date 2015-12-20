@@ -25,7 +25,10 @@ function Player() {
     this.collisionResponse = function(slide) {
 
         this.translation = SglVec3.add(this.translation, slide);
-        this.body.translation = this.translation;
+        this.body.transformation = SglMat4.mul(
+            SglMat4.translation(this.translation),
+            SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
+        );
     };
 
     this.getFrame = function() {
@@ -75,8 +78,10 @@ function Player() {
                 SglVec3.muls(x, this.velocity*elapsed)
             );
         }
-        this.body.translation = this.translation;
-        this.body.rotation = this.rotation;
+        this.body.transformation = SglMat4.mul(
+            SglMat4.translation(this.translation),
+            SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
+        );
 
         this.body.update();
     };
@@ -119,19 +124,9 @@ function Player() {
         this.rotation[1] += movementX*Math.PI/720;
     };
 
-    var options = {
-        graph: new Node({
-            primitives: [
-                new Primitive({
-                    mesh: this.client.texturedSphere,
-                    shader: this.client.textureShadowShader,
-                    texture: this.client.rockTextures[Math.floor(Math.random()*3)],
-                    color: [0.40, 0.25, 0.45, 1]
-                })
-            ]
-        })
-    };
+    var options = getCatbugOptions();
     this.body = new Body(options);
+    this.body.animate("fly", true);
 };
 
 function setupPointerLock() {
