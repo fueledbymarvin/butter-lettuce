@@ -260,3 +260,21 @@ NVMCClient.calcSlide = function(collisions) {
     return slide;
 };
 
+NVMCClient.checkInitCollision = function(obj) {
+
+    obj.collisions = [];
+    obj.collisionObjects = [];
+    for (var i = 0; i < this.colliders.length; i++) {
+        this.checkCollision(obj, this.colliders[i]);
+        if (obj.collisions.length > 0) {
+            return true;
+        }
+    }
+    for (var i = 0; i < this.collideables.length; i++) {
+        this.checkCollision(obj, this.collideables[i]);
+        if (obj.collisions.length > 0) {
+            return true;
+        }
+    }
+    return false;
+};

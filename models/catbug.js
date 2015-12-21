@@ -14,12 +14,16 @@ function Catbug(options) {
     this.dist = this.client.movementSpeed + this.client.difficulty;
     this.period = 1000;
     this.angle = Math.PI/2;
-    var p0 = getRandomPoint(this.translation, [0, 0, 1], Math.PI, this.dist);
-    var p1 = this.translation;
-    var p2 = getRandomPoint(p1, SglVec3.sub(p1, p0), this.angle, this.dist);
-    var p3 = getRandomPoint(p2, SglVec3.sub(p2, p1), this.angle, this.dist);
-    this.spline = [p0, p1, p2, p3];
-    this.collisions = [];
+
+    this.initSpline = function() {
+
+        var p0 = getRandomPoint(this.translation, [0, 0, 1], Math.PI, this.dist);
+        var p1 = this.translation;
+        var p2 = getRandomPoint(p1, SglVec3.sub(p1, p0), this.angle, this.dist);
+        var p3 = getRandomPoint(p2, SglVec3.sub(p2, p1), this.angle, this.dist);
+        this.spline = [p0, p1, p2, p3];
+    };
+    this.initSpline();
 
     this.update = function() {
 

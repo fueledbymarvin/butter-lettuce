@@ -113,6 +113,7 @@ NVMCClient.createEntities = function() {
     this.drawables.push(this.player);
     this.shadowables.push(this.player);
     this.colliders.push(this.player);
+    this.player.update();
     
     this.ground = new Body({
         graph: new Node({
@@ -128,25 +129,38 @@ NVMCClient.createEntities = function() {
     });
     this.drawables.push(this.ground);
 
-    this.hills = new Array(8);
+    this.hills = new Array(20);
     for (var i = 0; i < this.hills.length; i++) {
-        this.hills[i] = new Hill({
-            transformations: [SglMat4.translation([Math.random()*200-100, 0, Math.random()*200-100])]
-        });
+        var hill = new Hill({});
+
+        var foundCollision = true;
+        while (foundCollision) {
+            hill.body.transformation = SglMat4.translation(this.getRandomPoint(0));
+            hill.update();
+            foundCollision = this.checkInitCollision(hill);
+        }
+        this.hills[i] = hill;
+        this.collideables.push(hill);
     }
     this.drawables = this.drawables.concat(this.hills);
     this.shadowables = this.shadowables.concat(this.hills);
-    this.collideables = this.collideables.concat(this.hills);
 
     this.catbugs = new Array(this.nLettuce);
     for (var i = 0; i < this.catbugs.length; i++) {
-        this.catbugs[i] = new Catbug({
-            translation: [Math.random()*200-100, 3, Math.random()*200-100]
-        });
+        var catbug = new Catbug({});
+
+        var foundCollision = true;
+        while (foundCollision) {
+            catbug.translation = this.getRandomPoint(3);
+            catbug.initSpline();
+            catbug.update();
+            foundCollision = this.checkInitCollision(catbug);
+        }
+        this.catbugs[i] = catbug;
+        this.colliders.push(catbug);
     }
     this.drawables = this.drawables.concat(this.catbugs);
     this.shadowables = this.shadowables.concat(this.catbugs);
-    this.colliders = this.colliders.concat(this.catbugs);
 
     var spacing = 0.15;
     var scale = 0.07;
@@ -173,5 +187,11 @@ NVMCClient.initializeObjects = function (gl) {
     this.createObjects();
     this.createBuffers(gl);
     this.createEntities();
+};
+
+NVMCClient.getRandomPoint = function(y) {
+    
+    var size = 180;
+    return [Math.random()*size - size/2, y, Math.random()*size - size/2];
 };
 
