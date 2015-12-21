@@ -18,14 +18,14 @@ function Tree(options) {
     var primitives = [
         new Primitive({
             mesh: this.client.texturedSphere,
-            texture: this.client.leafTexture,
+            texture: this.client.treeTextures[Math.floor(Math.random()*this.client.treeTextures.length)],
             shader: this.client.textureShadowShader,
             translation: [0, 1.5, 0],
             scaling: [0.7, 0.7, 0.7]
         }),
         new Primitive({
             mesh: this.client.texturedSphere,
-            texture: this.client.leafTexture,
+            texture: this.client.treeTextures[Math.floor(Math.random()*this.client.treeTextures.length)],
             shader: this.client.textureShadowShader,
             scaling: [1.2, 1.2, 1.2]
         }),
@@ -33,6 +33,7 @@ function Tree(options) {
     
     var joints = {};
     var nPetals = Math.floor(Math.random()*5+3);
+    var texture = this.client.treeTextures[Math.floor(Math.random()*this.client.treeTextures.length)];
     var scaling = [Math.random()*0.5+0.5, Math.random()*1.5+0.5, Math.random()*0.2+0.1];
     for (var i = 0; i < nPetals; i++) {
         joints["petal"+i] = new Joint({
@@ -45,7 +46,7 @@ function Tree(options) {
                 primitives: [
                     new Primitive({
                         mesh: this.client.texturedSphere,
-                        texture: this.client.leafTexture,
+                        texture: texture,
                         shader: this.client.textureShadowShader,
                         scaling: scaling,
                         translation: [0, scaling[1], 0]

@@ -38,6 +38,11 @@ NVMCClient.onInitialize = function () {
     this.rockTextures = [this.texture_ground];
     this.rockTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/turquoise_rock.jpg'));
     this.rockTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/emerald_rock.jpg'));
+    this.treeTextures = [];
+    this.treeTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/blue.jpg'));
+    this.treeTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/purple.jpg'));
+    this.treeTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/red.jpg'));
+    this.treeTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/orange.jpg'));
     this.lettuceTexture = this.createTexture(gl, NVMC.resource_path+'textures/lettuce.png');
     this.lettuceAltTexture = this.createTexture(gl, NVMC.resource_path+'textures/lettuce_alt.png');
 
