@@ -15,7 +15,7 @@ function Player() {
     this.translation = [0, 2, 0];
     this.rotation = [0, 0, 0];
     this.lastTime = new Date().getTime();
-    this.velocity = 12;
+    this.velocity = this.client.movementSpeed;
 
     this.draw = function(gl, depthOnly) {
 
@@ -64,30 +64,23 @@ function Player() {
 	var z = SglMat4.mul4(SglMat4.rotationAngleAxis(this.rotation[1], y), [0, 0, 1, 0]);
 	var x = SglVec3.cross(y, z);
 
+        var direction = [0, 0, 0];
         if (this.forward) {
-            this.translation = SglVec3.add(
-                this.translation,
-                SglVec3.muls(z, this.velocity*elapsed)
-            );
+            direction = SglVec3.add(direction, z);
         }
         if (this.back) {
-            this.translation = SglVec3.sub(
-                this.translation,
-                SglVec3.muls(z, this.velocity*elapsed)
-            );
+            direction = SglVec3.add(direction, SglVec3.muls(z, -1));
         }
         if (this.left) {
-            this.translation = SglVec3.sub(
-                this.translation,
-                SglVec3.muls(x, this.velocity*elapsed)
-            );
+            direction = SglVec3.add(direction, SglVec3.muls(x, -1));
         }
         if (this.right) {
-            this.translation = SglVec3.add(
-                this.translation,
-                SglVec3.muls(x, this.velocity*elapsed)
-            );
+            direction = SglVec3.add(direction, x);
         }
+        if (SglVec3.length(direction) > 0) {
+            direction = SglVec3.normalize(direction);
+        }
+        this.translation = SglVec3.add(this.translation, SglVec3.muls(direction, this.velocity*elapsed));
         this.body.transformation = SglMat4.mul(
             SglMat4.translation(this.translation),
             SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])

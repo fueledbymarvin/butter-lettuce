@@ -11,7 +11,7 @@ function Catbug(options) {
     this.last = this.translation;
     this.rotation = [0, 0, 0];
     this.lastTime = new Date().getTime();
-    this.dist = 16;
+    this.dist = this.client.movementSpeed + this.client.difficulty;
     this.period = 1000;
     this.angle = Math.PI/2;
     var p0 = getRandomPoint(this.translation, [0, 0, 1], Math.PI, this.dist);

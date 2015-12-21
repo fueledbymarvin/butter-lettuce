@@ -41,11 +41,12 @@ NVMCClient.onInitialize = function () {
     this.lettuceTexture = this.createTexture(gl, NVMC.resource_path+'textures/lettuce.png');
     this.lettuceAltTexture = this.createTexture(gl, NVMC.resource_path+'textures/lettuce_alt.png');
 
-
     this.aabbs = false;
     this.bvhDepth = 6;
     this.lod = 20;
     this.nLettuce = 8;
+    this.movementSpeed = 15;
+    this.difficulty = 1;
 
     this.initializeObjects(gl);
     this.createFullScreenQuad(gl);
