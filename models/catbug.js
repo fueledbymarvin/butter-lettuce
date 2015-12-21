@@ -11,7 +11,7 @@ function Catbug(options) {
     this.last = [0, 3, 0];
     this.rotation = [0, 0, 0];
     this.lastTime = new Date().getTime();
-    this.dist = 8;
+    this.dist = 16;
     this.period = 1000;
     this.angle = Math.PI/2;
     var p0 = getRandomPoint(this.translation, [0, 0, 1], Math.PI, this.dist);
@@ -117,7 +117,7 @@ function getRandomPoint(p, v, maxAngle, dist) {
         res = SglVec3.add(p, SglVec3.muls(newDir, dist));
     }
     var dAlt = Math.random()*2 - 1; // alter altitude
-    while (res[1]+dAlt > 5 || res[1]+dAlt < 1) {
+    while (res[1]+dAlt > 4 || res[1]+dAlt < 2) {
         dAlt += Math.random()*2 - 1; // alter altitude
     }
     res[1] += dAlt;
