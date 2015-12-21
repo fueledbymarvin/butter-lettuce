@@ -44,7 +44,7 @@ NVMCClient.onInitialize = function () {
     this.aabbs = false;
     this.bvhDepth = 6;
     this.lod = 20;
-    this.nLettuce = 8;
+    this.nLettuce = 5;
     this.movementSpeed = 15;
     this.difficulty = 1;
 

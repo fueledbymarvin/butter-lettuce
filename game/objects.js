@@ -145,6 +145,26 @@ NVMCClient.createEntities = function() {
     this.drawables = this.drawables.concat(this.hills);
     this.shadowables = this.shadowables.concat(this.hills);
 
+    this.trees = new Array(16);
+    for (var i = 0; i < this.trees.length; i++) {
+        var tree = new Tree({});
+
+        var foundCollision = true;
+        while (foundCollision) {
+            var size = Math.random()+0.8;
+            tree.body.transformation = SglMat4.mul(
+                SglMat4.translation(this.getRandomPoint(Math.random())),
+                SglMat4.scaling([size, Math.random()+0.8, size])
+            );
+            tree.update();
+            foundCollision = this.checkInitCollision(tree);
+        }
+        this.trees[i] = tree;
+        this.collideables.push(tree);
+    }
+    this.drawables = this.drawables.concat(this.trees);
+    this.shadowables = this.shadowables.concat(this.trees);
+
     this.catbugs = new Array(this.nLettuce);
     for (var i = 0; i < this.catbugs.length; i++) {
         var catbug = new Catbug({});

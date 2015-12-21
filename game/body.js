@@ -30,39 +30,16 @@ function Body(options) {
     this.callback = null;
 
     this.animate = function(animation, loop, transition, callback, context) {
-        // if (transition) {
-        //     this.animations.transition.frames[0] = this.getCurrentFrame();
-        //     var frameNum = this.animations[animation].sequence[0][0];
-        //     this.animations.transition.frames[1] = this.animations[animation].frames[frameNum];
-        //     this.animate("transition", false, false,
-        //                  function() {
-        //                      this.animate(animation, loop, false, callback, context);
-        //                  }, this);
-        // } else {
         this.currentAnimation = animation;
         this.loop = loop;
         this.lastTime = new Date().getTime();
         if (callback) {
             this.callback = callback.bind(context);
         }
-        // }
     };
     
     this.stopAnimation = function() {
         this.currentAnimation = null;
-        // this.animations.reset.frames[0] = this.getCurrentFrame();
-        // var resetJoints = {};
-        // for (var joint in this.animations.reset.frames[0].joints) {
-        //     resetJoints[joint] = [0, 0, 0];
-        // }
-        // this.animations.reset.frames[1] = {
-        //     root: {
-        //         translation: [0, 0, 0],
-        //         rotation: [0, 0, 0]
-        //     },
-        //     joints: resetJoints
-        // };
-        // this.animate("reset", false, false);
     };
     
     this.checkAnimation = function() {
@@ -75,32 +52,7 @@ function Body(options) {
             this.lastTime = time;
             var nFrames = animation.sequence.length;
             this.currentFrame = (this.currentFrame + 1) % nFrames;
-            // if (this.currentFrame == nFrames - 1 && !this.loop) {
-            //     this.callback();
-            //     this.stopAnimation();
-            // }
         }
-    };
-
-    this.getCurrentFrame = function() {
-        var frame = {
-            root: {
-                translation: this.translation,
-                rotation: this.rotation
-            },
-            joints: {}
-        };
-
-        var toVisit = [this.graph];
-        while (toVisit.length > 0) {
-            var visiting = toVisit.pop();
-            for (var j in visiting.joints) {
-                var joint = visiting.joints[j];
-                frame.joints[j] = joint.rotation;
-                toVisit.push(joint.child);
-            }
-        }
-        return frame;
     };
 
     this.processAnimation = function() {
