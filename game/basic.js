@@ -63,7 +63,6 @@ NVMCClient.onKeyUp = function (keyCode, event) {
 
     if (keyCode == "Z") {
         this.aabbs = !this.aabbs;
-        // this.toggleCamera();
 	return;
     }
     

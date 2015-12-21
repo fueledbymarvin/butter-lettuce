@@ -12,7 +12,6 @@ NVMCClient.drawObject = function (gl, obj, shader, fillColor, drawWire) {
     gl.enableVertexAttribArray(shader.aPositionIndex);
     gl.vertexAttribPointer(shader.aPositionIndex, 3, gl.FLOAT, false, 0, 0);
 
-
     if (shader.aColorIndex && obj.colorBuffer) {
         gl.bindBuffer(gl.ARRAY_BUFFER, obj.colorBuffer);
         gl.enableVertexAttribArray(shader.aColorIndex);
@@ -53,7 +52,6 @@ NVMCClient.drawObject = function (gl, obj, shader, fillColor, drawWire) {
         gl.drawElements(gl.LINES, obj.numTriangles * 3 * 2, gl.UNSIGNED_SHORT, 0);
         gl.useProgram(shader);
     }
-
 };
 
 NVMCClient.drawShadowCastersDepthOnly = function (gl) {
@@ -64,11 +62,25 @@ NVMCClient.drawShadowCastersDepthOnly = function (gl) {
 };
 
 
-NVMCClient.drawEverything = function (gl,excludeCar) {
+NVMCClient.drawEverything = function (gl) {
 
     for (var i = 0; i < this.drawables.length; i++) {
         this.drawables[i].draw(gl);
     }
+};
+
+NVMCClient.drawBillboards = function (gl) {
+
+    gl.disable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+    for (var i = 0; i < this.billboards.length; i++) {
+        this.billboards[i].draw(gl);
+    }
+
+    gl.disable(gl.BLEND);
+    gl.enable(gl.DEPTH_TEST);
 };
 
 NVMCClient.setupShaders = function(gl) {
@@ -207,4 +219,6 @@ NVMCClient.drawScene = function (gl) {
     gl.viewport(0, 0, width, height);
     
     this.drawEverything(gl);
+
+    this.drawBillboards(gl);
 };

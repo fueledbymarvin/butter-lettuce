@@ -16,8 +16,8 @@ function ChaseCamera() {//line 74, Listnig 4.5{
                 0;
 
         var tilt = this.rotation[0] - movementY*Math.PI/720;
-        var upper = Math.PI/2;
-        var lower = -Math.PI/2;
+        var upper = Math.PI/9;
+        var lower = -Math.PI/4;
         if (tilt > upper) {
             this.rotation[0] = upper;
         } else if (tilt < lower) {
@@ -39,32 +39,10 @@ function ChaseCamera() {//line 74, Listnig 4.5{
     };
 };
 
-function DriverCamera() {
-    this.position = [];
-    this.keyDown = function (keyCode) {};
-    this.keyUp = function (keyCode) {};
-    this.mouseMove = function (event) {};
-    this.mouseButtonDown = function (event) {};
-    this.mouseButtonUp = function () {};
-
-    this.setView = function (stack, frame) {
-	var driverFrame = SglMat4.dup(frame);
-	var pos = SglMat4.col(driverFrame, 3);
-	SglMat4.col$(driverFrame, 3, SglVec4.add(pos, [0, 1.5, 0, 0]));
-	var invV = SglMat4.inverse(driverFrame);
-	stack.multiply(invV);
-    };
-};
-
 NVMCClient.cameras = [];
 NVMCClient.cameras[0] = new ChaseCamera();
-NVMCClient.cameras[1] = new DriverCamera();
-NVMCClient.n_cameras = 2;
+NVMCClient.n_cameras = 1;
 NVMCClient.currentCamera = 0;
-
-NVMCClient.toggleCamera = function () {
-    this.currentCamera = this.currentCamera == 0 ? 1 : 0;
-};
 
 /***********************************************************************/
 

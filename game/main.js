@@ -28,6 +28,7 @@ NVMCClient.onInitialize = function () {
     this.textureNormalMapShadowShader 	= new textureNormalMapShadowShader(gl);
     this.reflectionMapShadowShader 	= new reflectionMapPCFShadowShader(gl);
     this.phongSingleColorShadowShader   = new phongSingleColorPCFShadowShader(gl);
+    this.onScreenBillboardShader        = new onScreenBillboardShader(gl);
 
     /*************************************************************/
 
@@ -37,10 +38,14 @@ NVMCClient.onInitialize = function () {
     this.rockTextures = [this.texture_ground];
     this.rockTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/turquoise_rock.jpg'));
     this.rockTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/emerald_rock.jpg'));
+    this.lettuceTexture = this.createTexture(gl, NVMC.resource_path+'textures/lettuce.png');
+    this.lettuceAltTexture = this.createTexture(gl, NVMC.resource_path+'textures/lettuce_alt.png');
+
 
     this.aabbs = false;
     this.bvhDepth = 6;
     this.lod = 20;
+    this.nLettuce = 8;
 
     this.initializeObjects(gl);
     this.createFullScreenQuad(gl);

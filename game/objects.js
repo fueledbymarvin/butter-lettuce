@@ -75,8 +75,12 @@ NVMCClient.createObjects = function () {
 
     var bbox = this.game.race.bbox;
     var quad = [bbox[0], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[5], bbox[0], bbox[1] - 0.01, bbox[5]];
-    var text_coords = [-10, -10, 10, -10, 10, 10, -10, 10];
-    this.texturedQuad = new TexturedQuadrilateral(quad, text_coords);
+    var textCoords = [-10, -10, 10, -10, 10, 10, -10, 10];
+    this.texturedQuad = new TexturedQuadrilateral(quad, textCoords);
+
+    var quadGeo = [-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0];
+    var tex = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0];
+    this.billboardQuad = new TexturedQuadrilateral(quadGeo, tex);
 };
 
 NVMCClient.createBuffers = function (gl) {
@@ -95,6 +99,7 @@ NVMCClient.createBuffers = function (gl) {
     this.createObjectBuffers(gl, this.texturedSphere, false, true, true);
     
     this.createObjectBuffers(gl, this.texturedQuad, false, false, true);
+    this.createObjectBuffers(gl, this.billboardQuad, false, false, true);
 };
 
 NVMCClient.createEntities = function() {
@@ -102,6 +107,7 @@ NVMCClient.createEntities = function() {
     this.shadowables = [];
     this.colliders = [];
     this.collideables = [];
+    this.billboards = [];
 
     this.player = new Player();
     this.drawables.push(this.player);
@@ -120,17 +126,7 @@ NVMCClient.createEntities = function() {
             ]
         })
     });
-    // this.drawables.push(this.ground);
-
-    this.catbugs = new Array(8);
-    for (var i = 0; i < this.catbugs.length; i++) {
-        this.catbugs[i] = new Catbug({
-            translation: [Math.random()*200-100, 3, Math.random()*200-100]
-        });
-    }
-    this.drawables = this.drawables.concat(this.catbugs);
-    this.shadowables = this.shadowables.concat(this.catbugs);
-    this.colliders = this.colliders.concat(this.catbugs);
+    this.drawables.push(this.ground);
 
     this.hills = new Array(8);
     for (var i = 0; i < this.hills.length; i++) {
@@ -141,6 +137,36 @@ NVMCClient.createEntities = function() {
     this.drawables = this.drawables.concat(this.hills);
     this.shadowables = this.shadowables.concat(this.hills);
     this.collideables = this.collideables.concat(this.hills);
+
+    this.catbugs = new Array(this.nLettuce);
+    for (var i = 0; i < this.catbugs.length; i++) {
+        this.catbugs[i] = new Catbug({
+            translation: [Math.random()*200-100, 3, Math.random()*200-100]
+        });
+    }
+    this.drawables = this.drawables.concat(this.catbugs);
+    this.shadowables = this.shadowables.concat(this.catbugs);
+    this.colliders = this.colliders.concat(this.catbugs);
+
+    var spacing = 0.15;
+    var scale = 0.07;
+    this.lettuces = new Array(this.nLettuce);
+    for (var i = 0; i < this.catbugs.length; i++) {
+        this.lettuces[i] = new Body({
+            graph: new Node({
+                primitives: [
+                    new Primitive({
+                        mesh: this.billboardQuad,
+                        shader: this.onScreenBillboardShader,
+                        texture: this.lettuceTexture,
+                        translation: [(i-this.nLettuce/2)*spacing + spacing/2, -0.75, 0],
+                        scaling: [scale, scale*3/2, 1]
+                    })
+                ]
+            })
+        });
+    }
+    this.billboards = this.billboards.concat(this.lettuces);
 };
 
 NVMCClient.initializeObjects = function (gl) {
