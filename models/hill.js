@@ -13,16 +13,33 @@ function Hill(options) {
         this.body.draw(gl, depthOnly);
     };
 
-    var primitives = new Array(Math.floor(Math.random()*3+1));
-    for (var i = 0; i < primitives.length; i++) {
-        primitives[i] = new Primitive({
-            mesh: this.client.texturedSphere,
-            shader: this.client.textureShadowShader,
-            texture: this.client.rockTextures[Math.floor(Math.random()*3)],
-            scaling: [Math.random()*8+2, Math.random()*8+2, Math.random()*8+2],
-            rotation: [Math.PI/4*Math.random(), 0, Math.PI/4*Math.random()],
-            translation: [Math.random()*8-4, Math.random()*2-1, Math.random()*8-4]
-        });
+    var texture = this.client.rockTextures[Math.floor(Math.random()*3)];
+
+    var primitives = [];
+    var nPrimsLevel = Math.floor(Math.random()*5+1);
+    var scale = 3;
+    var avgPos = [0, -2, 0];
+    while (nPrimsLevel > 0) {
+        var sum = [0, 0, 0];
+        for (var i = 0; i < nPrimsLevel; i++) {
+            var scaling = [Math.random()*scale+1, Math.random()*scale+1, Math.random()*scale+1];
+            var translation = [
+                avgPos[0] + (2*Math.random()-1)*scaling[0],
+                avgPos[1] + Math.random()*scaling[1],
+                avgPos[2] + (2*Math.random()-1)*scaling[2]
+            ];
+            sum = SglVec3.add(sum, translation);
+            primitives.push(new Primitive({
+                mesh: this.client.texturedSphere,
+                shader: this.client.textureShadowShader,
+                texture: texture,
+                rotation: [Math.PI/4*Math.random(), 0, Math.PI/4*Math.random()],
+                scaling: scaling,
+                translation: translation
+            }));
+        }
+        avgPos = SglVec3.muls(sum, 1/nPrimsLevel);
+        nPrimsLevel -= Math.floor(Math.random()*2);
     }
 
     options.graph = new Node({
