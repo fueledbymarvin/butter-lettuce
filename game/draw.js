@@ -154,6 +154,7 @@ NVMCClient.drawScene = function (gl) {
     for (var i = 0; i < this.colliders.length; i++) {
         this.colliders[i].update();
         this.colliders[i].collisions = [];
+        this.colliders[i].collisionObjects = [];
     }
     for (var i = 0; i < this.collideables.length; i++) {
         this.collideables[i].update();
@@ -205,4 +206,3 @@ NVMCClient.drawScene = function (gl) {
     
     this.drawEverything(gl);
 };
-

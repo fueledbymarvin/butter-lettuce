@@ -183,8 +183,10 @@ NVMCClient.checkCollision = function(a, b, colliders) {
                 var lcaA = this.lowestCommonAncestor(aCollided);
                 var lcaB = this.lowestCommonAncestor(bCollided);
                 a.collisions.push([lcaA, lcaB]);
+                a.collisionObjects.push(b);
                 if (colliders) {
                     b.collisions.push([lcaB, lcaA]);
+                    a.collisionObjects.push(a);
                 }
             }
         }
@@ -257,3 +259,4 @@ NVMCClient.calcSlide = function(collisions) {
     }
     return slide;
 };
+

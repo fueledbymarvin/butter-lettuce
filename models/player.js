@@ -24,6 +24,11 @@ function Player() {
     
     this.collisionResponse = function(slide) {
 
+        for (var i = 0; i < this.collisionObjects.length; i++) {
+            if (this.collisionObjects[i].name == "catbug") {
+                this.collisionObjects[i].removeLettuce();
+            }
+        }
         this.translation = SglVec3.add(this.translation, slide);
         this.body.transformation = SglMat4.mul(
             SglMat4.translation(this.translation),
@@ -124,7 +129,7 @@ function Player() {
         this.rotation[1] += movementX*Math.PI/720;
     };
 
-    var options = getCatbugOptions();
+    var options = getCatbugOptions(false);
     this.body = new Body(options);
     this.body.animate("fly", true);
 };
@@ -138,4 +143,3 @@ function setupPointerLock() {
         canvas.requestPointerLock();
     };
 }
-

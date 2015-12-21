@@ -5,6 +5,8 @@ var NVMCClient = NVMCClient || {};
 function Catbug(options) {
     this.client = NVMCClient;
 
+    this.name = "catbug";
+
     this.translation = options.translation ? options.translation : [0, 3, 0];
     this.last = [0, 3, 0];
     this.rotation = [0, 0, 0];
@@ -20,26 +22,29 @@ function Catbug(options) {
     this.collisions = [];
 
     this.update = function() {
-        var time = new Date().getTime();
-        var t = (time - this.lastTime)/this.period;
-        if (t > 1) {
-            t -= 1;
-            this.lastTime += this.period;
-            var nextPoint = getRandomPoint(
-                this.spline[3],
-                SglVec3.sub(this.spline[3], this.spline[2]),
-                this.angle, this.dist
+
+        if (this.hasLettuce) {
+            var time = new Date().getTime();
+            var t = (time - this.lastTime)/this.period;
+            if (t > 1) {
+                t -= 1;
+                this.lastTime += this.period;
+                var nextPoint = getRandomPoint(
+                    this.spline[3],
+                    SglVec3.sub(this.spline[3], this.spline[2]),
+                    this.angle, this.dist
+                );
+                this.spline.shift();
+                this.spline.push(nextPoint);
+            }
+            this.last = this.translation;
+            this.translation = catmullRom(this.spline, t);
+            this.rotation[1] = calcHeading(SglVec3.sub(this.translation, this.last));
+            this.body.transformation = SglMat4.mul(
+                SglMat4.translation(this.translation),
+                SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
             );
-            this.spline.shift();
-            this.spline.push(nextPoint);
         }
-        this.last = this.translation;
-        this.translation = catmullRom(this.spline, t);
-        this.rotation[1] = calcHeading(SglVec3.sub(this.translation, this.last));
-        this.body.transformation = SglMat4.mul(
-            SglMat4.translation(this.translation),
-            SglMat4.rotationAngleAxis(this.rotation[1], [0, 1, 0])
-        );
 
         this.body.update();
     };
@@ -70,8 +75,14 @@ function Catbug(options) {
         );
     };
 
+    this.hasLettuce = true;
+    this.removeLettuce = function() {
+
+        this.hasLettuce = false;
+        delete this.body.graph.joints.lettuce;
+    };
+
     options = getCatbugOptions(true);
-    
     this.body = new Body(options);
     this.body.animate("fly", true);
 };
@@ -128,7 +139,7 @@ function getCatbugOptions(lettuce) {
 
     var client = NVMCClient;
 
-    options = {};
+    var options = {};
     options.graph = new Node({
         name: "body",
         rotation: [Math.PI/4, 0, 0],
@@ -279,7 +290,7 @@ function getCatbugOptions(lettuce) {
                         mesh: client.sphere,
                         shader: client.phongSingleColorShadowShader,
                         color: [0, 1, 0, 1],
-                        scaling: [0.25, 0.3, 0.25],
+                        scaling: [0.25, 0.3, 0.25]
                     }),
                     new Primitive({
                         mesh: client.sphere,
@@ -331,7 +342,7 @@ function getCatbugOptions(lettuce) {
                     }),
                 ]
             })
-        })
+        });
     }
 
     options.animations = {
