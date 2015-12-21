@@ -158,7 +158,7 @@ NVMCClient.createEntities = function() {
                     new Primitive({
                         mesh: this.billboardQuad,
                         shader: this.onScreenBillboardShader,
-                        texture: this.lettuceTexture,
+                        texture: this.lettuceAltTexture,
                         translation: [(i-this.nLettuce/2)*spacing + spacing/2, -0.75, 0],
                         scaling: [scale, scale*3/2, 1]
                     })

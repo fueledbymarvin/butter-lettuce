@@ -22,11 +22,15 @@ function Player() {
         this.body.draw(gl, depthOnly);
     };
     
+    this.nLettuce = 0;
     this.collisionResponse = function(slide) {
 
         for (var i = 0; i < this.collisionObjects.length; i++) {
-            if (this.collisionObjects[i].name == "catbug") {
+            if (this.collisionObjects[i].name == "catbug"
+                && this.collisionObjects[i].hasLettuce) {
                 this.collisionObjects[i].removeLettuce();
+                this.client.lettuces[this.nLettuce++].graph.primitives[0].texture =
+                    this.client.lettuceTexture;
             }
         }
         this.translation = SglVec3.add(this.translation, slide);
