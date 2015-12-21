@@ -8,7 +8,7 @@ function Catbug(options) {
     this.name = "catbug";
 
     this.translation = options.translation ? options.translation : [0, 3, 0];
-    this.last = [0, 3, 0];
+    this.last = this.translation;
     this.rotation = [0, 0, 0];
     this.lastTime = new Date().getTime();
     this.dist = 16;
@@ -287,55 +287,55 @@ function getCatbugOptions(lettuce) {
                 scaling: [1, 1, 0.7],
                 primitives: [
                     new Primitive({
-                        mesh: client.sphere,
-                        shader: client.phongSingleColorShadowShader,
-                        color: [0, 1, 0, 1],
+                        mesh: client.texturedSphere,
+                        shader: client.textureShadowShader,
+                        texture: client.leafTexture,
                         scaling: [0.25, 0.3, 0.25]
                     }),
                     new Primitive({
-                        mesh: client.sphere,
-                        shader: client.phongSingleColorShadowShader,
-                        color: [0, 1, 0, 1],
+                        mesh: client.texturedSphere,
+                        shader: client.textureShadowShader,
+                        texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
                         translation: [0, 0.05, 0.25],
                         rotation: [Math.PI/10, 0, 0]
                     }),
                     new Primitive({
-                        mesh: client.sphere,
-                        shader: client.phongSingleColorShadowShader,
-                        color: [0, 1, 0, 1],
+                        mesh: client.texturedSphere,
+                        shader: client.textureShadowShader,
+                        texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
                         translation: [0.15, 0.02, 0.15],
                         rotation: [Math.PI/10, Math.PI/3, 0]
                     }),
                     new Primitive({
-                        mesh: client.sphere,
-                        shader: client.phongSingleColorShadowShader,
-                        color: [0, 1, 0, 1],
+                        mesh: client.texturedSphere,
+                        shader: client.textureShadowShader,
+                        texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
                         translation: [0.2, 0.04, -0.1],
                         rotation: [Math.PI/10, 3*Math.PI/5, 0]
                     }),
                     new Primitive({
-                        mesh: client.sphere,
-                        shader: client.phongSingleColorShadowShader,
-                        color: [0, 1, 0, 1],
+                        mesh: client.texturedSphere,
+                        shader: client.textureShadowShader,
+                        texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
                         translation: [0.05, 0.03, -0.2],
                         rotation: [Math.PI/10, 7*Math.PI/8, 0]
                     }),
                     new Primitive({
-                        mesh: client.sphere,
-                        shader: client.phongSingleColorShadowShader,
-                        color: [0, 1, 0, 1],
+                        mesh: client.texturedSphere,
+                        shader: client.textureShadowShader,
+                        texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
                         translation: [-0.1, 0.05, -0.15],
                         rotation: [Math.PI/10, 9*Math.PI/7, 0]
                     }),
                     new Primitive({
-                        mesh: client.sphere,
-                        shader: client.phongSingleColorShadowShader,
-                        color: [0, 1, 0, 1],
+                        mesh: client.texturedSphere,
+                        shader: client.textureShadowShader,
+                        texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
                         translation: [-0.1, 0.02, 0.1],
                         rotation: [Math.PI/10, 8*Math.PI/5, 0]

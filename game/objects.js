@@ -122,12 +122,15 @@ NVMCClient.createEntities = function() {
     });
     this.drawables.push(this.ground);
 
-    this.catbug = new Catbug({
-        transformations: [SglMat4.translation([0, 2, 0])]
-    });
-    this.drawables.push(this.catbug);
-    this.shadowables.push(this.catbug);
-    this.colliders.push(this.catbug);
+    this.catbugs = new Array(8);
+    for (var i = 0; i < this.catbugs.length; i++) {
+        this.catbugs[i] = new Catbug({
+            translation: [Math.random()*200-100, 3, Math.random()*200-100]
+        });
+    }
+    this.drawables = this.drawables.concat(this.catbugs);
+    this.shadowables = this.shadowables.concat(this.catbugs);
+    this.colliders = this.colliders.concat(this.catbugs);
 
     this.hills = new Array(8);
     for (var i = 0; i < this.hills.length; i++) {

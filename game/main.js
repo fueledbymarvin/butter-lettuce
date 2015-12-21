@@ -33,6 +33,7 @@ NVMCClient.onInitialize = function () {
 
     this.texture_ground = this.createTexture(gl, NVMC.resource_path+'textures/rocky.jpg');
     this.dotsTexture = this.createTexture(gl, NVMC.resource_path+'textures/dots.jpg');
+    this.leafTexture = this.createTexture(gl, NVMC.resource_path+'textures/leaf.jpg');
     this.rockTextures = [this.texture_ground];
     this.rockTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/turquoise_rock.jpg'));
     this.rockTextures.push(this.createTexture(gl, NVMC.resource_path+'textures/emerald_rock.jpg'));

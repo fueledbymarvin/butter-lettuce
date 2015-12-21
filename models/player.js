@@ -50,6 +50,7 @@ function Player() {
     };
 
     this.update = function() {
+
         var time = new Date().getTime();
         var elapsed = (time - this.lastTime)/1000;
         this.lastTime = time;
