@@ -61,13 +61,13 @@ texturePCFShadowShader = function (gl) {
                     float dy = 1.0/4096.0;\n\
                     float n_shadow = 0.0;\n\
                     float Sz = Unpack(texture2D(uShadowMap, shadowPos.xy+vec2(-dx/2.0,-dy/2.0)));\n\
-                    if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
+                    if ( Sz +0.001< Fz) n_shadow+=1.0;\n\
                     Sz = Unpack(texture2D(uShadowMap,  shadowPos.xy+vec2( dx/2.0,-dy/2.0)));\n\
-                    if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
+                    if ( Sz +0.001< Fz) n_shadow+=1.0;\n\
                     Sz = Unpack(texture2D(uShadowMap, shadowPos.xy +vec2( dx/2.0,dy/2.0) ));\n\
-                    if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
+                    if ( Sz +0.001< Fz) n_shadow+=1.0;\n\
                     Sz = Unpack(texture2D(uShadowMap, shadowPos.xy+vec2(-dx/2.0, dy/2.0)));\n\
-                    if ( Sz +0.007< Fz) n_shadow+=1.0;\n\
+                    if ( Sz +0.001< Fz) n_shadow+=1.0;\n\
                     \n\
                     return n_shadow/4.0;\n\
                 }\n\
