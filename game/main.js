@@ -46,12 +46,12 @@ NVMCClient.onInitialize = function () {
     this.createFullScreenQuad(gl);
 
     this.cubeMap = this.createCubeMap(gl,
-                                      NVMC.resource_path+'textures/cubemap/posx.png',
-                                      NVMC.resource_path+'textures/cubemap/negx.png',
-                                      NVMC.resource_path+'textures/cubemap/posy.png',
-                                      NVMC.resource_path+'textures/cubemap/negy.png',
-                                      NVMC.resource_path+'textures/cubemap/posz.png',
-                                      NVMC.resource_path+'textures/cubemap/negz.png'
+                                      NVMC.resource_path+'textures/cubemap/negx.jpg',
+                                      NVMC.resource_path+'textures/cubemap/posx.jpg',
+                                      NVMC.resource_path+'textures/cubemap/negy.jpg',
+                                      NVMC.resource_path+'textures/cubemap/posy.jpg',
+                                      NVMC.resource_path+'textures/cubemap/posz.jpg',
+                                      NVMC.resource_path+'textures/cubemap/negz.jpg'
                                      );
     this.createReflectionMap(gl);
     

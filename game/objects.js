@@ -120,7 +120,7 @@ NVMCClient.createEntities = function() {
             ]
         })
     });
-    this.drawables.push(this.ground);
+    // this.drawables.push(this.ground);
 
     this.catbugs = new Array(8);
     for (var i = 0; i < this.catbugs.length; i++) {

@@ -16,8 +16,8 @@ function ChaseCamera() {//line 74, Listnig 4.5{
                 0;
 
         var tilt = this.rotation[0] - movementY*Math.PI/720;
-        var upper = Math.PI/10;
-        var lower = -Math.PI/4;
+        var upper = Math.PI/2;
+        var lower = -Math.PI/2;
         if (tilt > upper) {
             this.rotation[0] = upper;
         } else if (tilt < lower) {
