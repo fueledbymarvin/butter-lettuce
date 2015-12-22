@@ -129,7 +129,7 @@ NVMCClient.createEntities = function() {
     });
     this.drawables.push(this.ground);
 
-    this.hills = new Array(16);
+    this.hills = new Array(20);
     for (var i = 0; i < this.hills.length; i++) {
         var hill = new Hill({});
 
@@ -145,7 +145,7 @@ NVMCClient.createEntities = function() {
     this.drawables = this.drawables.concat(this.hills);
     this.shadowables = this.shadowables.concat(this.hills);
 
-    this.trees = new Array(16);
+    this.trees = new Array(10);
     for (var i = 0; i < this.trees.length; i++) {
         var tree = new Tree({});
 

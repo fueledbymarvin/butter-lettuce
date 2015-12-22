@@ -42,37 +42,20 @@
     <script type="text/javascript" src="lib/nvmc-glue.js"></script>
   </head>
   <body>
-    <ul class="combar">
-      <li>Instructions</li>
-      <li>
-        [w]: move forward<br>
-        [s]: move backward<br>
-        [a]: turn left<br>
-        [d]: turn right<br>
-        [z]: toggle first person/third person<br>
-      </li>
-    </ul>
+    <div id="main">
+      <h1>Butter Lettuce</h1>
+      <canvas id="nvmc-canvas" width="600" height="400"></canvas>
 
-    <ul class="navbar">
-        <li>A game of sorts.</li>
-        <li>Well, not yet really.</li>
-    </ul>
-
-    <center>
-      <h2>Butter Lettuce</h2>
-      <div>
-	<canvas id="nvmc-canvas" width="600" height="400" style="border:1px solid gray;"></canvas>
+      <div id="info">
+        <h3>Instructions</h3>
+        <ul id="instructions">
+          <li>Try to catch the other catbugs to get their butter lettuce!</li>
+          <li>Use the mouse to look around and WASD to move.</li>
+          <li>Press Z to toggle drawing of the AABB bounding volume hierarchies when checking collisions (only shown if conservative tests not enough).</li>
+        </ul>
+        
+        <p id="nvmc-fps"></p>
       </div>
-
-      <h3>Log</h3>
-      <textarea id="nvmc-log" rows="4" cols="80"></textarea>
-      <div>
-	<div id="nvmc-fps">FPS</div>
-	<div id="nvmc-latency">Latency</div>
-	<div id="nvmc-server-clock-delta">Server Clock Delta</div>
-	<div id="nvmc-server-time">Server Time</div>
-      </div>
-      <hr/>
-    </center>
+    </section>
   </body>
 </html>
