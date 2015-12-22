@@ -5,69 +5,9 @@
 var NVMCClient = NVMCClient || {};
 /***********************************************************************/
 
-NVMCClient.texture_facade = [];
-NVMCClient.texture_roof = null;
-
-NVMCClient.createFullScreenQuad = function (gl) {
-    var quad = [	-1.0,-1,0,
-			1.0,-1,0,
-			1.0,1,0,
-			-1.0,1,0];
-    var text_coords = 	[ 0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0];
-    this.quad = new TexturedQuadrilateral(quad,text_coords);
-    this.createObjectBuffers(gl, this.quad,false,false,true);
-};
-
 NVMCClient.shadowMapTextureTarget = null;
 NVMCClient.shadowMatrix = null;
 NVMCClient.viewMatrix = null;
-
-NVMCClient.createTechniqueShadow = function (gl) {
-    var options = { vertexShader: this.reflectionMapShadowShader.vertex_shader, 
-		    fragmentShader: this.reflectionMapShadowShader.fragment_shader,
-		    vertexStreams: {
-			"aPosition": [ 0.0,0.0,0.0],
-			"aDiffuse": [ 0.0,0.0,0.0,1.0],
-			"aSpecular": [ 0.0,0.0,0.0,1.0],
-			"aNormal": [ 0.0,1.0,1.0 ],
-			"aAmbient": [ 0.0,0.0,0.0,1.0]
-		    },
-		    globals: {
-			"uProjectionMatrix": { semantic: "PROJECTION_MATRIX", value: this.projectionMatrix },
-			"uModelViewMatrix": { semantic: "WORLD_VIEW_MATRIX", value: this.stack.matrix },
-			"uViewSpaceNormalMatrix": { semantic: "VIEW_SPACE_NORMAL_MATRIX", value:SglMat4.to33(this.stack.matrix) },
-			"uViewToWorldMatrix": { semantic: "VIEW_TO_WORLD_MATRIX", value: SglMat4.identity()},
-			"uShadowMatrix": { semantic: "SHADOW_MATRIX", value: SglMat4.identity()},
- 			"uCubeMap": {semantic: "CUBE_MAP", value:2},
-			"uShadowMap": {semantic:"SHADOW_MAP",value:1},
-			"uLightDirection": {semantic: "LIGHTS_GEOMETRY", value: this.sunLightDirectionViewSpace},
-			"uLightColor": {semantic: "LIGHT_COLOR",value: [0.9,0.9,0.9]},
-			"uAmbient": {semantic: "AMBIENT",value: [0.4,0.4,0.4]}
-                    }
-		  };
-
-    this.sgl_renderer = new SglModelRenderer(gl);	
-    this.sgl_technique = new SglTechnique(gl, options);
-};
-
-NVMCClient.createDepthOnlyTechnique = function (gl) {
-    this.depthOnlyRenderer = new SglModelRenderer(gl);
-    this.depthOnlyTechnique = new SglTechnique(gl, {
-        vertexShader: this.shadowMapCreateShader.vertex_shader,
-        fragmentShader: this.shadowMapCreateShader.fragment_shader,
-        vertexStreams: {
-            "a_position": [0.0, 0.0, 0.0, 1.0]
-        },
-        globals: {
-            "uShadowMatrix": {
-                semantic: "SHADOW_MATRIX",
-                value: this.stack.matrix
-            }
-        }
-        
-    });
-
-};
 
 updateBBox = function ( bbox, newpoint){
     if(newpoint[0] < bbox[0]) bbox[0] = newpoint[0]; 

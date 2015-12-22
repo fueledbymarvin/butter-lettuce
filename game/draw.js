@@ -139,7 +139,7 @@ NVMCClient.drawScene = function (gl) {
     var ratio  = width / height;
     
     // compute the shadow matrix
-    var bbox =  this.game.race.bbox;
+    var bbox =  this.bbox;
 
     var eye = SglVec3.muls(this.sunLightDirection,-0.0);
     var target = SglVec3.add(eye, this.sunLightDirection);

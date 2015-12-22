@@ -18,7 +18,8 @@ NVMCClient.onInitialize = function () {
     /*************************************************************/
     this.stack 			= new SglMatrixStack();
     this.projection_matrix 	=  SglMat4.identity();
-    enlargeBBox(this.game.race.bbox,0.01);
+    this.bbox = [ -100, 0, -100, 100, 10, 100 ];
+    enlargeBBox(this.bbox,0.01);
     /*************************************************************/
     this.uniformShader 			= new uniformShader(gl);
     this.skyBoxShader 			= new skyBoxShader(gl);
@@ -26,7 +27,6 @@ NVMCClient.onInitialize = function () {
     this.shadowMapShader		= new shadowMapShader(gl);
     this.textureShadowShader		= new texturePCFShadowShader(gl);
     this.textureNormalMapShadowShader 	= new textureNormalMapShadowShader(gl);
-    this.reflectionMapShadowShader 	= new reflectionMapPCFShadowShader(gl);
     this.phongSingleColorShadowShader   = new phongSingleColorPCFShadowShader(gl);
     this.onScreenBillboardShader        = new onScreenBillboardShader(gl);
 
@@ -54,7 +54,6 @@ NVMCClient.onInitialize = function () {
     this.difficulty = 1;
 
     this.initializeObjects(gl);
-    this.createFullScreenQuad(gl);
 
     this.cubeMap = this.createCubeMap(gl,
                                       NVMC.resource_path+'textures/cubemap/negx.jpg',
@@ -64,14 +63,8 @@ NVMCClient.onInitialize = function () {
                                       NVMC.resource_path+'textures/cubemap/posz.jpg',
                                       NVMC.resource_path+'textures/cubemap/negz.jpg'
                                      );
-    this.createReflectionMap(gl);
-    
-    this.createTechniqueShadow(gl);
-
-    this.createDepthOnlyTechnique(gl);
 
     this.shadowMapTextureTarget = this.prepareRenderToTextureFrameBuffer(gl,false,4096,4096);
-    this.prepareRenderToCubeMapFrameBuffer(gl);
     this.sunLightDirection = [-1,-1,-1,0.0];
 };
 

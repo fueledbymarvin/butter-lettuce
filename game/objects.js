@@ -72,7 +72,7 @@ NVMCClient.createObjects = function () {
     this.cone = new Cone(this.lod);
     this.sphere = new Sphere(this.lod);
 
-    var bbox = this.game.race.bbox;
+    var bbox = this.bbox;
     var quad = [bbox[0], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[2], bbox[3], bbox[1] - 0.01, bbox[5], bbox[0], bbox[1] - 0.01, bbox[5]];
     var textCoords = [-10, -10, 10, -10, 10, 10, -10, 10];
     this.texturedQuad = new TexturedQuadrilateral(quad, textCoords);
