@@ -13,6 +13,7 @@ NVMCClient.buildBVHHelper = function(vertices, triangles, depth, parent, id) {
     var firstV = vertices[triangles[0][0]];
     var min = [firstV[0], firstV[1], firstV[2]];
     var max = [firstV[0], firstV[1], firstV[2]];
+    var sum = [0, 0, 0];
     for (var i = 0; i < triangles.length; i++) {
         var vs = [
             vertices[triangles[i][0]],
@@ -21,6 +22,9 @@ NVMCClient.buildBVHHelper = function(vertices, triangles, depth, parent, id) {
         ];
         
         for (var j = 0; j < vs.length; j++) {
+            sum[0] += vs[j][0];
+            sum[1] += vs[j][1];
+            sum[2] += vs[j][2];
             this.updateMinMax(vs[j], min, max);
         }
     }
@@ -35,7 +39,7 @@ NVMCClient.buildBVHHelper = function(vertices, triangles, depth, parent, id) {
     } else {
         axis = 2;
     }
-    var split = (min[axis]+max[axis])/2;
+    var split = sum[axis]/(triangles.length*3);
 
     // split triangles
     var left = [];
