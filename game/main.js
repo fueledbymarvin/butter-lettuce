@@ -47,8 +47,8 @@ NVMCClient.onInitialize = function () {
     this.lettuceAltTexture = this.createTexture(gl, NVMC.resource_path+'textures/lettuce_alt.png');
 
     this.aabbs = false;
-    this.bvhDepth = 6;
-    this.lod = 20;
+    this.bvhDepth = 5;
+    this.lod = 10;
     this.nLettuce = 5;
     this.movementSpeed = 15;
     this.difficulty = 1;

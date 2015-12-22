@@ -32,7 +32,7 @@ function Sphere(n) {
     var triangles = [];
     for (var j = 0; j < m; j++) {
         triangles.push(j, (m+1) + j, (m+1) + j + 1);
-        triangles.push(n * (m+1) + j, (n-1) * (m+1) + j, (n-1) * (m+1) + j + 1);
+        triangles.push(n * (m+1) + j, (n-1) * (m+1) + j + 1, (n-1) * (m+1) + j);
     }
     for (var i = 1; i < n; i++) {
         for (var j = 0; j < m; j++) {
