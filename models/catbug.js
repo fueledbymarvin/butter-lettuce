@@ -155,7 +155,7 @@ function getCatbugOptions(lettuce) {
                 scaling: [0.55, 0.6, 0.5]
             }),
             new Primitive({ // left cover
-                mesh: client.texturedSphere,
+                mesh: client.sphere,
                 shader: client.textureShadowShader,
                 texture: client.dotsTexture,
                 scaling: [0.4, 0.7, 0.08],
@@ -163,7 +163,7 @@ function getCatbugOptions(lettuce) {
                 translation: [-0.4, 0.6, -0.8]
             }),
             new Primitive({ // right cover
-                mesh: client.texturedSphere,
+                mesh: client.sphere,
                 shader: client.textureShadowShader,
                 texture: client.dotsTexture,
                 scaling: [0.4, 0.7, 0.08],
@@ -291,13 +291,13 @@ function getCatbugOptions(lettuce) {
                 scaling: [1, 1, 0.7],
                 primitives: [
                     new Primitive({
-                        mesh: client.texturedSphere,
+                        mesh: client.sphere,
                         shader: client.textureShadowShader,
                         texture: client.leafTexture,
                         scaling: [0.25, 0.3, 0.25]
                     }),
                     new Primitive({
-                        mesh: client.texturedSphere,
+                        mesh: client.sphere,
                         shader: client.textureShadowShader,
                         texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
@@ -305,7 +305,7 @@ function getCatbugOptions(lettuce) {
                         rotation: [Math.PI/10, 0, 0]
                     }),
                     new Primitive({
-                        mesh: client.texturedSphere,
+                        mesh: client.sphere,
                         shader: client.textureShadowShader,
                         texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
@@ -313,7 +313,7 @@ function getCatbugOptions(lettuce) {
                         rotation: [Math.PI/10, Math.PI/3, 0]
                     }),
                     new Primitive({
-                        mesh: client.texturedSphere,
+                        mesh: client.sphere,
                         shader: client.textureShadowShader,
                         texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
@@ -321,7 +321,7 @@ function getCatbugOptions(lettuce) {
                         rotation: [Math.PI/10, 3*Math.PI/5, 0]
                     }),
                     new Primitive({
-                        mesh: client.texturedSphere,
+                        mesh: client.sphere,
                         shader: client.textureShadowShader,
                         texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
@@ -329,7 +329,7 @@ function getCatbugOptions(lettuce) {
                         rotation: [Math.PI/10, 7*Math.PI/8, 0]
                     }),
                     new Primitive({
-                        mesh: client.texturedSphere,
+                        mesh: client.sphere,
                         shader: client.textureShadowShader,
                         texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],
@@ -337,7 +337,7 @@ function getCatbugOptions(lettuce) {
                         rotation: [Math.PI/10, 9*Math.PI/7, 0]
                     }),
                     new Primitive({
-                        mesh: client.texturedSphere,
+                        mesh: client.sphere,
                         shader: client.textureShadowShader,
                         texture: client.leafTexture,
                         scaling: [0.2, 0.35, 0.1],

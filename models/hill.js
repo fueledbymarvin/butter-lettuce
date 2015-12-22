@@ -30,7 +30,7 @@ function Hill(options) {
             ];
             sum = SglVec3.add(sum, translation);
             primitives.push(new Primitive({
-                mesh: this.client.texturedSphere,
+                mesh: this.client.sphere,
                 shader: this.client.textureShadowShader,
                 texture: texture,
                 rotation: [Math.PI/4*Math.random(), 0, Math.PI/4*Math.random()],

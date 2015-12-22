@@ -13,18 +13,16 @@ function Tree(options) {
         this.body.draw(gl, depthOnly);
     };
 
-    var options = {};
-
     var primitives = [
         new Primitive({
-            mesh: this.client.texturedSphere,
+            mesh: this.client.sphere,
             texture: this.client.treeTextures[Math.floor(Math.random()*this.client.treeTextures.length)],
             shader: this.client.textureShadowShader,
             translation: [0, 1.5, 0],
             scaling: [0.7, 0.7, 0.7]
         }),
         new Primitive({
-            mesh: this.client.texturedSphere,
+            mesh: this.client.sphere,
             texture: this.client.treeTextures[Math.floor(Math.random()*this.client.treeTextures.length)],
             shader: this.client.textureShadowShader,
             scaling: [1.2, 1.2, 1.2]
@@ -45,7 +43,7 @@ function Tree(options) {
             child: new Node({
                 primitives: [
                     new Primitive({
-                        mesh: this.client.texturedSphere,
+                        mesh: this.client.sphere,
                         texture: texture,
                         shader: this.client.textureShadowShader,
                         scaling: scaling,

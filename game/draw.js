@@ -203,7 +203,7 @@ NVMCClient.drawScene = function (gl) {
     this.stack.loadIdentity();
     this.stack.multiply(this.shadowMatrix);
 
-    gl.enable(gl.CULL_FACE);
+    // gl.enable(gl.CULL_FACE);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.shadowMapTextureTarget.framebuffer);
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -213,7 +213,7 @@ NVMCClient.drawScene = function (gl) {
 
     this.drawShadowCastersDepthOnly(gl);// that is,draw everything with shadowMapCreateShader
 
-    gl.disable(gl.CULL_FACE);
+    // gl.disable(gl.CULL_FACE);
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);
     this.stack.pop();
     gl.viewport(0, 0, width, height);

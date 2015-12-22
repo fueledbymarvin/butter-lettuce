@@ -41,7 +41,7 @@ shadowMapShader = function (gl){
 		float Sz = Unpack(texture2D(uShadowMap, shadowPos.xy));\n\
 \n\
 		// shadow test\n\
-		bool  inShadow = (Sz +0.007< Fz);\n\
+		bool  inShadow = (Sz +0.01< Fz);\n\
 		return inShadow;\n\
 	}\n\
 	void main(void)\n\
