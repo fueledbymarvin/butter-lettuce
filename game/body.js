@@ -15,14 +15,6 @@ function Body(options) {
     this.translation = [0, 0, 0];
     this.rotation = [0, 0, 0];
     this.animations = options.animations ? options.animations : {};
-    this.animations.transition = {
-        frames: [{}, {}],
-        sequence: [[0, 100], [1, 100]]
-    };
-    this.animations.reset = {
-        frames: [{}, {}],
-        sequence: [[0, 100], [1, 100]]
-    };
     this.currentAnimation = options.currentAnimation ? options.currentAnimation : null;
     this.currentFrame = 0;
     this.lastTime = 0;
